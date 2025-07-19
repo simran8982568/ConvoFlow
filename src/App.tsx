@@ -6,7 +6,14 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "@/layouts/AdminLayout";
 import SuperAdminLayout from "@/layouts/SuperAdminLayout";
 import ProtectedRoute from "@/components/common/ProtectedRoute";
-import LoginForm from "@/components/auth/LoginForm";
+// Admin Auth Components
+import AdminLoginForm from "@/components/auth/admin/LoginForm";
+import AdminSignupForm from "@/components/auth/admin/SignupForm";
+import AdminForgotPasswordForm from "@/components/auth/admin/ForgotPasswordForm";
+import AdminCreateNewPasswordForm from "@/components/auth/admin/CreateNewPasswordForm";
+
+// Superadmin Auth Components
+import SuperAdminLoginForm from "@/components/auth/superadmin/LoginForm";
 import AdminDashboard from "@/components/pageswise/admin/dashboard/indexdashboard.tsx";
 import AdminTemplates from "@/components/pageswise/admin/templates/indextemplates.tsx";
 import AdminContacts from "@/components/pageswise/admin/contacts/indexcontacts.tsx";
@@ -38,8 +45,11 @@ const App = () => (
           {/* Root redirect */}
           <Route path="/" element={<Navigate to="/admin/login" replace />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/login" element={<LoginForm role="admin" />} />
+          {/* Admin Authentication Routes */}
+          <Route path="/admin/login" element={<AdminLoginForm />} />
+          <Route path="/admin/signup" element={<AdminSignupForm />} />
+          <Route path="/admin/forgot-password" element={<AdminForgotPasswordForm />} />
+          <Route path="/admin/create-new-password" element={<AdminCreateNewPasswordForm />} />
           <Route
             path="/admin"
             
@@ -62,11 +72,8 @@ const App = () => (
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
 
-          {/* Super Admin Routes */}
-          <Route
-            path="/superadmin/login"
-            element={<LoginForm role="superadmin" />}
-          />
+          {/* Super Admin Authentication Routes */}
+          <Route path="/superadmin/login" element={<SuperAdminLoginForm />} />
           <Route
             path="/superadmin"
             element={

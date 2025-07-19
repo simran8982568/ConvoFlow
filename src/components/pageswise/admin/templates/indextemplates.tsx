@@ -1,18 +1,43 @@
 import React, { useState } from 'react';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 
 // Import components
 import TemplateStatsCards from './templatestatscards';
 import TemplateFilters from './templatefilters';
 import TemplateGrid from './templategrid';
+import CreateTemplateModal from './CreateTemplateModal';
+import WhatsAppPreviewModal from './WhatsAppPreviewModal';
+import EditTemplateModal from './EditTemplateModal';
 
 // Import data hook
 import { useTemplatesData, Template } from './templatesdata';
 
 const AdminTemplates: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState<Template | null>(null);
   const { toast } = useToast();
 
   // Use the templates data hook
@@ -47,36 +72,33 @@ const AdminTemplates: React.FC = () => {
 
   const handlePreviewTemplate = (template: Template) => {
     setSelectedTemplate(template);
-    // TODO: Open preview dialog
-    toast({
-      title: "Template Preview",
-      description: `Previewing template: ${template.name}`,
-    });
+    setIsPreviewModalOpen(true);
   };
 
   const handleEditTemplate = (template: Template) => {
-    // TODO: Open edit dialog
-    toast({
-      title: "Edit Template",
-      description: `Editing template: ${template.name}`,
-    });
+    setSelectedTemplate(template);
+    setIsEditModalOpen(true);
   };
 
   const handleDeleteTemplate = (template: Template) => {
-    // TODO: Implement delete functionality
-    toast({
-      title: "Delete Template",
-      description: `Template "${template.name}" has been deleted.`,
-      variant: "destructive",
-    });
+    setTemplateToDelete(template);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteTemplate = () => {
+    if (templateToDelete) {
+      toast({
+        title: "Template Deleted",
+        description: `Template "${templateToDelete.name}" has been deleted.`,
+        variant: "destructive",
+      });
+      setTemplateToDelete(null);
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   const handleCreateTemplate = () => {
-    // TODO: Open create dialog
-    toast({
-      title: "Create Template",
-      description: "Opening template creation dialog...",
-    });
+    setIsCreateModalOpen(true);
   };
 
   // Show global error state
@@ -155,6 +177,77 @@ const AdminTemplates: React.FC = () => {
         onEdit={handleEditTemplate}
         onDelete={handleDeleteTemplate}
       />
+
+      {/* Create Template Modal */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Template</DialogTitle>
+            <DialogDescription>
+              Create a new WhatsApp message template with text, images, videos, and GIFs.
+            </DialogDescription>
+          </DialogHeader>
+          <CreateTemplateModal onClose={() => setIsCreateModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
+
+      {/* WhatsApp Preview Modal */}
+      <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Template Preview</DialogTitle>
+            <DialogDescription>
+              WhatsApp-style preview of your template
+            </DialogDescription>
+          </DialogHeader>
+          {selectedTemplate && (
+            <WhatsAppPreviewModal
+              template={selectedTemplate}
+              onClose={() => setIsPreviewModalOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Template Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Template</DialogTitle>
+            <DialogDescription>
+              Update your template content and settings.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedTemplate && (
+            <EditTemplateModal
+              template={selectedTemplate}
+              onClose={() => setIsEditModalOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Template</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{templateToDelete?.name}"? This action cannot be undone.
+              All campaigns using this template will be affected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteTemplate}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete Template
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

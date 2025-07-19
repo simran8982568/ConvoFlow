@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { mockContacts, availableTags } from "./mockdata";
 import ContactsHeader from "./header";
+import ContactsImportExport from "./ContactsImportExport";
 import Cards from "./cards";
 import Filters from "./filters";
 import ContactGrids from "./contactgrids";
@@ -54,15 +55,10 @@ const AdminContacts: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       <ContactsHeader />
+
       <div className="flex gap-2 mb-4">
-        <Button variant="outline">
-          <Upload className="w-4 h-4 mr-2" />
-          Import
-        </Button>
-        <Button variant="outline">
-          <Download className="w-4 h-4 mr-2" />
-          Export
-        </Button>
+        <ContactsImportExport />
+
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-teal-600 hover:bg-teal-700">
@@ -141,6 +137,7 @@ const AdminContacts: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
+
       <Cards filteredCount={filteredContacts.length} />
       <Filters
         searchTerm={searchTerm}

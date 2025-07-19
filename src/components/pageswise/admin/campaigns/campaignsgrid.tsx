@@ -1,6 +1,6 @@
 // Campaigns grid component to display campaign cards
 
-import React from "react";
+import React, { useState } from "react";
 import { Send } from "lucide-react";
 import {
   Card,
@@ -24,6 +24,19 @@ interface CampaignsGridProps {
 }
 
 const CampaignsGrid: React.FC<CampaignsGridProps> = ({ campaigns }) => {
+  const [pausedCampaigns, setPausedCampaigns] = useState<Set<number>>(new Set());
+
+  const handlePauseToggle = (campaignId: number, isPaused: boolean) => {
+    setPausedCampaigns(prev => {
+      const newSet = new Set(prev);
+      if (isPaused) {
+        newSet.add(campaignId);
+      } else {
+        newSet.delete(campaignId);
+      }
+      return newSet;
+    });
+  };
   if (campaigns.length === 0) {
     return (
       <div className="text-center py-12">
@@ -40,29 +53,39 @@ const CampaignsGrid: React.FC<CampaignsGridProps> = ({ campaigns }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {campaigns.map((campaign) => (
-        <Card key={campaign.id} className="hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Send className="w-4 h-4 text-teal-600" />
-                  {campaign.name}
-                </CardTitle>
-                <CardDescription className="mt-1">
-                  Template: {campaign.template} • Audience: {campaign.audience}
-                </CardDescription>
+      {campaigns.map((campaign) => {
+        const isPaused = pausedCampaigns.has(campaign.id);
+        return (
+          <Card
+            key={campaign.id}
+            className={`hover:shadow-lg transition-all duration-300 ${
+              isPaused ? 'bg-red-50 border-red-200' : ''
+            }`}
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle className={`text-lg flex items-center gap-2 ${
+                    isPaused ? 'text-red-700' : ''
+                  }`}>
+                    <Send className={`w-4 h-4 ${isPaused ? 'text-red-600' : 'text-teal-600'}`} />
+                    {campaign.name}
+                    {isPaused && <span className="text-sm font-normal text-red-600">(Paused)</span>}
+                  </CardTitle>
+                  <CardDescription className={`mt-1 ${isPaused ? 'text-red-600' : ''}`}>
+                    Template: {campaign.template} • Audience: {campaign.audience}
+                  </CardDescription>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {getStatusBadge(campaign.status)}
+                  {getTypeBadge(campaign.type)}
+                </div>
               </div>
-              <div className="flex flex-col gap-1">
-                {getStatusBadge(campaign.status)}
-                {getTypeBadge(campaign.type)}
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* Campaign Stats */}
-              <div className="grid grid-cols-2 gap-4">
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Campaign Stats */}
+                <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <p className="text-2xl font-bold text-gray-900">
                     {campaign.sent.toLocaleString()}
@@ -92,12 +115,17 @@ const CampaignsGrid: React.FC<CampaignsGridProps> = ({ campaigns }) => {
               {/* Schedule Info */}
               <ScheduleInfo campaign={campaign} />
 
-              {/* Action Buttons */}
-              <CampaignActionButtons campaign={campaign} />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+                {/* Action Buttons */}
+                <CampaignActionButtons
+                  campaign={campaign}
+                  isPaused={isPaused}
+                  onPauseToggle={handlePauseToggle}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 };

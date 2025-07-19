@@ -51,11 +51,24 @@ const WorkflowsGrid: React.FC<WorkflowsGridProps> = ({ workflows }) => {
     null
   );
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [pausedWorkflows, setPausedWorkflows] = useState<Set<number>>(new Set());
 
   const handleWorkflowAction = (action: string, workflowId: number) => {
     // You can add toast or logic here if needed
     // For now, just a placeholder
     // toast({ ... })
+  };
+
+  const handlePauseToggle = (workflowId: number, isPaused: boolean) => {
+    setPausedWorkflows(prev => {
+      const newSet = new Set(prev);
+      if (isPaused) {
+        newSet.add(workflowId);
+      } else {
+        newSet.delete(workflowId);
+      }
+      return newSet;
+    });
   };
 
   const openWorkflowBuilder = (workflow: Workflow) => {
@@ -65,22 +78,31 @@ const WorkflowsGrid: React.FC<WorkflowsGridProps> = ({ workflows }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-      {workflows.map((workflow) => (
-        <Card key={workflow.id} className="hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  {/* You can add an icon here if needed */}
-                  {workflow.name}
-                </CardTitle>
-                <CardDescription className="mt-1">
-                  {workflow.description}
-                </CardDescription>
+      {workflows.map((workflow) => {
+        const isPaused = pausedWorkflows.has(workflow.id);
+        return (
+          <Card
+            key={workflow.id}
+            className={`hover:shadow-lg transition-all duration-300 ${
+              isPaused ? 'bg-red-50 border-red-200' : ''
+            }`}
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle className={`text-lg flex items-center gap-2 ${
+                    isPaused ? 'text-red-700' : ''
+                  }`}>
+                    {workflow.name}
+                    {isPaused && <span className="text-sm font-normal text-red-600">(Paused)</span>}
+                  </CardTitle>
+                  <CardDescription className={`mt-1 ${isPaused ? 'text-red-600' : ''}`}>
+                    {workflow.description}
+                  </CardDescription>
+                </div>
+                {getStatusBadge(workflow.status)}
               </div>
-              {getStatusBadge(workflow.status)}
-            </div>
-          </CardHeader>
+            </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {/* Workflow Stats */}
@@ -110,11 +132,14 @@ const WorkflowsGrid: React.FC<WorkflowsGridProps> = ({ workflows }) => {
                 workflow={workflow}
                 onEdit={openWorkflowBuilder}
                 onAction={handleWorkflowAction}
+                isPaused={isPaused}
+                onPauseToggle={handlePauseToggle}
               />
             </div>
           </CardContent>
         </Card>
-      ))}
+        );
+      })}
     </div>
   );
 };
