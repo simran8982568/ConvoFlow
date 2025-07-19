@@ -6,6 +6,7 @@ import {
   XCircle,
   Eye,
   MessageSquare,
+  Search,
 } from "lucide-react";
 import {
   Card,
@@ -16,6 +17,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -33,6 +36,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+
+// Import admin template components for inherited functionality
+import WhatsAppPreviewModal from "../../admin/templates/WhatsAppPreviewModal";
 import HeaderCard from "./headercard";
 
 // Mock data
@@ -100,11 +106,21 @@ const SuperAdminTemplates: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [comment, setComment] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Admin template functionality states
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+
+  const { toast } = useToast();
 
   const filteredTemplates = mockTemplates.filter((template) => {
-    return (
-      filterStatus === "all" || template.status.toLowerCase() === filterStatus
-    );
+    const matchesStatus = filterStatus === "all" || template.status.toLowerCase() === filterStatus;
+    const matchesSearch = searchTerm === "" ||
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.category.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesStatus && matchesSearch;
   });
 
   const getStatusBadge = (status: string) => {
@@ -149,15 +165,27 @@ const SuperAdminTemplates: React.FC = () => {
     );
   };
 
+  // Admin template functionality handlers
+  const handlePreviewTemplate = (template: any) => {
+    setSelectedTemplate(template);
+    setIsPreviewModalOpen(true);
+  };
+
+  // SuperAdmin specific handlers
   const handleApprove = (templateId: number) => {
-    console.log(`Approved template ${templateId} with comment: ${comment}`);
-    // TODO: Send approval to backend
+    toast({
+      title: "Template Approved",
+      description: "Template has been approved and is now available for use.",
+    });
     setComment("");
   };
 
   const handleReject = (templateId: number) => {
-    console.log(`Rejected template ${templateId} with comment: ${comment}`);
-    // TODO: Send rejection to backend
+    toast({
+      title: "Template Rejected",
+      description: "Template has been rejected and the business has been notified.",
+      variant: "destructive",
+    });
     setComment("");
   };
 
@@ -167,13 +195,23 @@ const SuperAdminTemplates: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Template Moderation
+            Template Management
           </h1>
           <p className="text-gray-600 mt-1">
-            Review and approve WhatsApp templates submitted by businesses
+            Create, review and approve WhatsApp templates for businesses
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search templates..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-64"
+            />
+          </div>
+
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -228,17 +266,27 @@ const SuperAdminTemplates: React.FC = () => {
                   </TableCell>
                   <TableCell>{getStatusBadge(template.status)}</TableCell>
                   <TableCell>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedTemplate(template)}
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Review
-                        </Button>
-                      </DialogTrigger>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handlePreviewTemplate(template)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Preview
+                      </Button>
+
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedTemplate(template)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View Details
+                          </Button>
+                        </DialogTrigger>
                       <DialogContent className="max-w-2xl">
                         <DialogHeader>
                           <DialogTitle>{template.name}</DialogTitle>
@@ -347,6 +395,7 @@ const SuperAdminTemplates: React.FC = () => {
                         </div>
                       </DialogContent>
                     </Dialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -354,6 +403,24 @@ const SuperAdminTemplates: React.FC = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* WhatsApp Preview Modal */}
+      <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Template Preview</DialogTitle>
+            <DialogDescription>
+              WhatsApp-style preview of the template
+            </DialogDescription>
+          </DialogHeader>
+          {selectedTemplate && (
+            <WhatsAppPreviewModal
+              template={selectedTemplate}
+              onClose={() => setIsPreviewModalOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

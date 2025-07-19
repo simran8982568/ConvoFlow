@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "@/layouts/AdminLayout";
 import SuperAdminLayout from "@/layouts/SuperAdminLayout";
 import ProtectedRoute from "@/components/common/ProtectedRoute";
+import GlobalErrorBoundary from "@/components/common/GlobalErrorBoundary";
 // Admin Auth Components
 import AdminLoginForm from "@/components/auth/admin/LoginForm";
 import AdminSignupForm from "@/components/auth/admin/SignupForm";
@@ -36,11 +37,12 @@ import SuperAdminSettings from "@/components/pageswise/superadmin/settings/index
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+  <GlobalErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
         <Routes>
           {/* Root redirect */}
           <Route path="/" element={<Navigate to="/admin/login" replace />} />
@@ -98,9 +100,10 @@ const App = () => (
           {/* Catch all */}
           <Route path="*" element={<Navigate to="/admin/login" replace />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </GlobalErrorBoundary>
 );
 
 export default App;

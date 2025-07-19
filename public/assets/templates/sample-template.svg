@@ -1,0 +1,36 @@
+<svg width="300" height="400" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- WhatsApp-style background -->
+  <rect width="300" height="400" fill="#E5DDD5"/>
+  
+  <!-- Message bubble -->
+  <rect x="20" y="50" width="260" height="300" rx="8" fill="#DCF8C6"/>
+  
+  <!-- Header -->
+  <rect x="30" y="70" width="240" height="40" rx="4" fill="#128C7E"/>
+  <text x="150" y="95" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Template Preview</text>
+  
+  <!-- Body text area -->
+  <rect x="30" y="120" width="240" height="120" rx="4" fill="white"/>
+  <text x="40" y="140" fill="#333" font-family="Arial" font-size="12">Your message content will</text>
+  <text x="40" y="160" fill="#333" font-family="Arial" font-size="12">appear here with dynamic</text>
+  <text x="40" y="180" fill="#333" font-family="Arial" font-size="12">variables like {{name}} and</text>
+  <text x="40" y="200" fill="#333" font-family="Arial" font-size="12">{{company}} replaced with</text>
+  <text x="40" y="220" fill="#333" font-family="Arial" font-size="12">actual values.</text>
+  
+  <!-- Buttons -->
+  <rect x="30" y="250" width="110" height="30" rx="15" fill="#25D366"/>
+  <text x="85" y="270" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Call Now</text>
+  
+  <rect x="150" y="250" width="120" height="30" rx="15" fill="#075E54"/>
+  <text x="210" y="270" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Visit Website</text>
+  
+  <!-- Footer -->
+  <text x="150" y="310" text-anchor="middle" fill="#666" font-family="Arial" font-size="10">Powered by AyuChat</text>
+  
+  <!-- Timestamp -->
+  <text x="250" y="330" fill="#999" font-family="Arial" font-size="9">12:34 PM</text>
+  
+  <!-- Read receipt -->
+  <circle cx="270" cy="325" r="3" fill="#4FC3F7"/>
+  <circle cx="280" cy="325" r="3" fill="#4FC3F7"/>
+</svg>

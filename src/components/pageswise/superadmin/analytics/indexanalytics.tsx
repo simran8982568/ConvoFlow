@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { Download, RefreshCw, AlertCircle } from "lucide-react";
+import { Download, RefreshCw, AlertCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 // Import components
@@ -16,8 +23,26 @@ import { useAnalyticsData, exportAnalyticsReport } from "./analyticsdata";
 
 const SuperAdminAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState("6months");
+  const [selectedMonth, setSelectedMonth] = useState("all");
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
+
+  // Month options for the filter
+  const monthOptions = [
+    { value: "all", label: "All Months" },
+    { value: "january", label: "January" },
+    { value: "february", label: "February" },
+    { value: "march", label: "March" },
+    { value: "april", label: "April" },
+    { value: "may", label: "May" },
+    { value: "june", label: "June" },
+    { value: "july", label: "July" },
+    { value: "august", label: "August" },
+    { value: "september", label: "September" },
+    { value: "october", label: "October" },
+    { value: "november", label: "November" },
+    { value: "december", label: "December" },
+  ];
 
   // Use the analytics data hook
   const {
@@ -31,19 +56,76 @@ const SuperAdminAnalytics: React.FC = () => {
     refetchData,
   } = useAnalyticsData(timeRange);
 
+  // Filter data based on selected month
+  const getFilteredData = (data: any[]) => {
+    if (selectedMonth === "all") return data;
+
+    return data.filter(item => {
+      if (item.month) {
+        return item.month.toLowerCase().includes(selectedMonth);
+      }
+      return true;
+    });
+  };
+
   const handleExportReport = async () => {
     setIsExporting(true);
     try {
-      const result = await exportAnalyticsReport(timeRange, "pdf");
+      // Create CSV content with filtered data
+      const filteredMessageVolumeData = getFilteredData(messageVolumeData);
+      const filteredBusinessGrowthData = getFilteredData(businessGrowthData);
+
+      // Create comprehensive CSV export
+      const csvData = [
+        // KPI Data
+        ['KPI Metrics'],
+        ['Metric', 'Value', 'Trend'],
+        ['Monthly Active Users', kpiData?.monthlyActiveUsers.value || 0, `${kpiData?.monthlyActiveUsers.trend || 0}%`],
+        ['Messages Sent', kpiData?.messagesSent.value || 0, `${kpiData?.messagesSent.trend || 0}%`],
+        ['Template Approvals', kpiData?.templateApprovals.value || 0, `${kpiData?.templateApprovals.trend || 0}%`],
+        ['Automation Runs', kpiData?.automationRuns.value || 0, `${kpiData?.automationRuns.trend || 0}%`],
+        [''],
+
+        // Message Volume Data
+        ['Message Volume Data'],
+        ['Month', 'Messages', 'Businesses'],
+        ...filteredMessageVolumeData.map(item => [item.month, item.messages, item.businesses]),
+        [''],
+
+        // Business Growth Data
+        ['Business Growth Data'],
+        ['Month', 'New Businesses', 'Total Businesses'],
+        ...filteredBusinessGrowthData.map(item => [item.month, item.new, item.total]),
+        [''],
+
+        // Top Templates Data
+        ['Top Templates'],
+        ['Template Name', 'Usage Count', 'Category'],
+        ...topTemplatesData.map(item => [item.name, item.usage, item.category || 'N/A']),
+      ];
+
+      const csvContent = csvData.map(row => row.join(',')).join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      const monthLabel = selectedMonth === "all" ? "all-months" : selectedMonth;
+      link.setAttribute('download', `analytics-report-${monthLabel}-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       toast({
         title: "Export Successful",
-        description: result.message,
+        description: `Analytics report for ${selectedMonth === "all" ? "all months" : monthOptions.find(m => m.value === selectedMonth)?.label} has been downloaded.`,
       });
     } catch (error) {
       toast({
         title: "Export Failed",
-        description:
-          error instanceof Error ? error.message : "Failed to export report",
+        description: "Failed to export analytics report. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -95,6 +177,20 @@ const SuperAdminAnalytics: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="w-48">
+                <Calendar className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Select month" />
+              </SelectTrigger>
+              <SelectContent>
+                {monthOptions.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
@@ -106,6 +202,7 @@ const SuperAdminAnalytics: React.FC = () => {
               <option value="6months">Last 6 Months</option>
               <option value="1year">Last Year</option>
             </select>
+
             <Button
               onClick={handleRefresh}
               variant="outline"
@@ -118,7 +215,7 @@ const SuperAdminAnalytics: React.FC = () => {
             </Button>
             <Button
               onClick={handleExportReport}
-              className="bg-teal-600 hover:bg-teal-700"
+              className="bg-purple-600 hover:bg-purple-700"
               disabled={isExporting || loading}
             >
               <Download className="h-4 w-4 mr-2" />
@@ -133,7 +230,7 @@ const SuperAdminAnalytics: React.FC = () => {
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <MessageVolumeChart
-            data={messageVolumeData}
+            data={getFilteredData(messageVolumeData)}
             loading={loading}
             error={error}
           />
@@ -146,7 +243,7 @@ const SuperAdminAnalytics: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <BusinessGrowthChart
-            data={businessGrowthData}
+            data={getFilteredData(businessGrowthData)}
             loading={loading}
             error={error}
           />

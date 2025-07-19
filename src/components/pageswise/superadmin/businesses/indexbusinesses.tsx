@@ -8,6 +8,7 @@ import {
   TrendingUp,
   MessageSquare,
   RefreshCw,
+  Download,
 } from "lucide-react";
 import {
   Card,
@@ -19,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import HeaderCard from "./headercard";
 import BusinessDirectory from "./businessdirectory";
 import { useBusinessData } from "../../../../api/apicall/superadmin/businesses/data/businessdata";
@@ -46,6 +48,8 @@ const SuperAdminBusinesses: React.FC = () => {
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(
     null
   );
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
 
   const {
     businesses,
@@ -65,6 +69,74 @@ const SuperAdminBusinesses: React.FC = () => {
     activeCount,
     inactiveCount,
   } = useBusinessData();
+
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+
+    try {
+      // Create CSV content
+      const headers = [
+        'Business Name',
+        'Email',
+        'Phone',
+        'Industry',
+        'Plan',
+        'Status',
+        'Signup Date',
+        'Last Active',
+        'Campaigns',
+        'Messages',
+        'Automations',
+        'Usage %',
+        'Website'
+      ];
+
+      const csvData = allBusinesses.map(business => [
+        business.name,
+        business.email || 'N/A',
+        business.phone || 'N/A',
+        business.industry || 'N/A',
+        business.plan,
+        business.status,
+        business.signupDate,
+        business.lastActive || 'N/A',
+        business.campaigns,
+        business.messages,
+        business.automations,
+        business.usage,
+        business.website || 'N/A'
+      ]);
+
+      const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `businesses-export-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: "Export Successful",
+        description: `Exported ${allBusinesses.length} businesses to CSV file.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export business data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     return status === "Active" ? (
@@ -122,6 +194,16 @@ const SuperAdminBusinesses: React.FC = () => {
               className="pl-10 w-64"
             />
           </div>
+
+          <Button
+            variant="outline"
+            onClick={handleExportCSV}
+            disabled={isExporting || allBusinesses.length === 0}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {isExporting ? 'Exporting...' : 'Export CSV'}
+          </Button>
           <select
             value={filters.planFilter}
             onChange={(e) => updateFilters({ planFilter: e.target.value })}

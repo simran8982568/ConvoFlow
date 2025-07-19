@@ -130,10 +130,73 @@ src/
 ### Build for Production
 
 ```bash
+# Run deployment readiness check
+npm run deploy:check
+
+# Build for production
 npm run build
+
+# Build with production environment
+npm run build:prod
 ```
 
 The built files will be in the `dist/` directory.
+
+## 🚀 Deployment
+
+### Vercel Deployment (Recommended)
+
+1. **Prepare for deployment:**
+   ```bash
+   npm run deploy:check
+   ```
+
+2. **Deploy to Vercel:**
+   ```bash
+   npm run deploy:vercel
+   ```
+
+3. **Manual Vercel deployment:**
+   ```bash
+   npm run build
+   vercel --prod
+   ```
+
+### Environment Variables
+
+Copy `.env.example` to `.env.production` and configure:
+
+```bash
+# Required for production
+VITE_API_BASE_URL=https://your-api-domain.com
+VITE_APP_NAME=Your App Name
+VITE_BRAND_COLOR=teal
+```
+
+### Deployment Checklist
+
+- ✅ All assets are in `/public/assets/` directory
+- ✅ No hardcoded `file://` URLs in code
+- ✅ Environment variables configured
+- ✅ Vercel configuration is correct
+- ✅ Build passes without errors
+- ✅ Type checking passes
+
+### Troubleshooting Deployment Issues
+
+**Error: `net::ERR_FILE_NOT_FOUND`**
+- Ensure all assets are in the `/public` directory
+- Use relative paths starting with `/assets/`
+- Check that `vite.config.ts` has correct `base` and `publicDir` settings
+
+**Error: `Uncaught (in promise) Error: A listener indicated an asynchronous response`**
+- This is typically from browser extensions, not your app
+- Can be safely ignored in production
+
+**Build Errors:**
+- Run `npm run type-check` to identify TypeScript issues
+- Run `npm run lint:fix` to fix linting issues
+- Ensure all imports use correct paths
 
 ## 🔐 Authentication
 

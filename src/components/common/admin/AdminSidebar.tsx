@@ -50,24 +50,7 @@ const AdminSidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* User Info */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-            <span className="text-teal-600 font-medium">
-              {user?.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {user?.name}
-            </p>
-            <p className="text-xs text-gray-500 truncate">
-              {user?.company || user?.email}
-            </p>
-          </div>
-        </div>
-      </div>
+
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-4 space-y-1">

@@ -1,8 +1,19 @@
-import React from 'react';
-import { Edit, Check, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit, Check, X, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface Plan {
   id: number;
@@ -20,15 +31,18 @@ interface PlanCardProps {
   plan: Plan;
   onEdit: (plan: Plan) => void;
   onToggleStatus: (planId: number) => void;
+  onDelete?: (planId: number) => void;
   loading?: boolean;
 }
 
-const PlanCard: React.FC<PlanCardProps> = ({ 
-  plan, 
-  onEdit, 
-  onToggleStatus, 
-  loading = false 
+const PlanCard: React.FC<PlanCardProps> = ({
+  plan,
+  onEdit,
+  onToggleStatus,
+  onDelete,
+  loading = false
 }) => {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   if (loading) {
     return (
       <Card className="relative">
@@ -143,6 +157,48 @@ const PlanCard: React.FC<PlanCardProps> = ({
             )}
           </Button>
         </div>
+
+        {/* Delete Button with Confirmation */}
+        {onDelete && (
+          <div className="pt-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                  disabled={loading}
+                >
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  Delete Plan
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Plan</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete the "{plan.name}" plan? This action cannot be undone.
+                    {plan.subscribers > 0 && (
+                      <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
+                        <strong>Warning:</strong> This plan has {plan.subscribers} active subscribers.
+                        Deleting it will affect their subscriptions.
+                      </div>
+                    )}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => onDelete(plan.id)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Delete Plan
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

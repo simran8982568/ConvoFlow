@@ -26,6 +26,7 @@ const SuperAdminPlans: React.FC = () => {
     createPlan,
     updatePlan,
     togglePlanStatus,
+    deletePlan,
     refetchPlans,
   } = usePlansData();
 
@@ -82,6 +83,23 @@ const SuperAdminPlans: React.FC = () => {
           error instanceof Error
             ? error.message
             : "Failed to update plan status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeletePlan = async (planId: number) => {
+    try {
+      await deletePlan(planId);
+      toast({
+        title: "Plan Deleted",
+        description: "Plan has been deleted successfully.",
+        variant: "destructive",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete plan. Please try again.",
         variant: "destructive",
       });
     }
@@ -169,6 +187,7 @@ const SuperAdminPlans: React.FC = () => {
                 plan={plan}
                 onEdit={handleEditPlan}
                 onToggleStatus={handleTogglePlanStatus}
+                onDelete={handleDeletePlan}
                 loading={saving}
               />
             ))

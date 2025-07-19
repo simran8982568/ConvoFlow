@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { authService } from '@/utils/auth';
 import { useNavigate } from 'react-router-dom';
+import { getUserAvatarPath } from '@/utils/assets';
 
 interface UserHeaderProps {
   role: 'admin' | 'superadmin';
@@ -58,8 +59,8 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                 brandColor === 'teal' ? 'bg-teal-100' : 'bg-purple-100'
               }`}>
                 {user?.avatar ? (
-                  <img 
-                    src={user.avatar} 
+                  <img
+                    src={getUserAvatarPath(user.avatar)}
                     alt={user.name}
                     className="w-8 h-8 rounded-full object-cover"
                   />

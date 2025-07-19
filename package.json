@@ -5,13 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run type-check && vite build",
     "build:dev": "vite build --mode development",
+    "build:prod": "vite build --mode production",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "verify": "node scripts/verify-files.js"
+    "verify": "node scripts/verify-files.js",
+    "deploy:check": "node scripts/deployment-check.js",
+    "deploy:vercel": "npm run deploy:check && npm run build && vercel --prod",
+    "analyze": "npm run build && npx vite-bundle-analyzer dist/stats.html"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
