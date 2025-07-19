@@ -44,7 +44,7 @@ const App = () => (
             path="/admin"
             element={
               <ProtectedRoute requiredRole="admin">
-                <AdminLayout children={""} />
+                <AdminLayout />
               </ProtectedRoute>
             }
           >
@@ -70,7 +70,7 @@ const App = () => (
             path="/superadmin"
             element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperAdminLayout children={""} />
+                <SuperAdminLayout />
               </ProtectedRoute>
             }
           >
