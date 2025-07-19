@@ -18,9 +18,14 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
   },
   build: {
+    target: 'es2015',
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -30,5 +35,8 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
   },
 }));

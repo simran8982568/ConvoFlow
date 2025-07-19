@@ -16,15 +16,15 @@ import AdminAutomation from "@/components/pageswise/admin/automation/indexautoma
 import AdminPhoneNumbers from "@/components/pageswise/admin/phonenumbers/indexphone";
 import AdminSettings from "@/components/pageswise/admin/settings/indexsettings";
 import AdminBilling from "@/components/pageswise/admin/billing/indexbilling";
-import { AdminAnalytics } from "@/components/pageswise/admin/analytics";
+import AdminAnalytics from "@/components/pageswise/admin/analytics/indexanalytics";
 import SuperAdminDashboard from "@/components/pageswise/superadmin/dashboard/indexdashboard";
 import SuperAdminBusinesses from "@/components/pageswise/superadmin/businesses/indexbusinesses";
 import SuperAdminTemplates from "@/components/pageswise/superadmin/templates/indextemplates";
 import SuperAdminAnalytics from "@/components/pageswise/superadmin/analytics/indexanalytics";
 import SuperAdminPlans from "@/components/pageswise/superadmin/plans/indexplans";
-import { SuperAdminLogs } from "@/components/pageswise/superadmin/logs";
+import SuperAdminLogs from "@/components/pageswise/superadmin/logs/indexlogs";
 import SuperAdminSettings from "@/components/pageswise/superadmin/settings/indexsettings";
-import NavigationTest from "@/components/common/NavigationTest";
+// import NavigationTest from "@/components/common/NavigationTest";
 
 const queryClient = new QueryClient();
 
@@ -85,7 +85,7 @@ const App = () => (
           </Route>
 
           {/* Navigation Test Route */}
-          <Route path="/test" element={<NavigationTest />} />
+          <Route path="/test" element={<div className="p-6"><h1 className="text-2xl font-bold">Navigation Test</h1><p>Test page for navigation</p></div>} />
 
           {/* Catch all */}
           <Route path="*" element={<Navigate to="/admin/login" replace />} />

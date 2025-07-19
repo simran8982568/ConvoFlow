@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import ResponsiveSidebar from "@/components/common/ResponsiveSidebar";
 
-const SuperAdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const SuperAdminLayout: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
