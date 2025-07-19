@@ -40,6 +40,15 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
   const location = useLocation();
   const user = authService.getCurrentUser();
 
+  // Handle potential auth errors gracefully
+  if (!user && (location.pathname.includes('/admin/') || location.pathname.includes('/superadmin/'))) {
+    // Redirect to login if user is not authenticated on protected routes
+    React.useEffect(() => {
+      navigate(role === 'admin' ? '/admin/login' : '/superadmin/login');
+    }, [navigate, role]);
+    return null;
+  }
+
   // Check if we're on mobile
   useEffect(() => {
     const checkMobile = () => {

@@ -49,18 +49,30 @@ class AuthService {
 
   getCurrentUser(): User | null {
     if (this.currentUser) return this.currentUser;
-    
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      this.currentUser = JSON.parse(storedUser);
-      return this.currentUser;
+
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        this.currentUser = JSON.parse(storedUser);
+        return this.currentUser;
+      }
+    } catch (error) {
+      console.warn('Error parsing stored user data:', error);
+      // Clear corrupted data
+      localStorage.removeItem('user');
+      localStorage.removeItem('role');
     }
-    
+
     return null;
   }
 
   getRole(): UserRole {
-    return localStorage.getItem('role') as UserRole;
+    try {
+      return localStorage.getItem('role') as UserRole;
+    } catch (error) {
+      console.warn('Error getting role from localStorage:', error);
+      return null;
+    }
   }
 
   isAuthenticated(): boolean {

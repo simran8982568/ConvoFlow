@@ -127,14 +127,14 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <CardTitle className="text-lg">{template.name}</CardTitle>
-                <CardDescription className="mt-1">
+                <div className="mt-2 flex items-center gap-2">
                   <Badge variant="secondary" className={getCategoryColor(template.category)}>
                     {template.category}
                   </Badge>
                   {template.type === 'system' && (
-                    <Badge variant="outline" className="ml-2">System</Badge>
+                    <Badge variant="outline">System</Badge>
                   )}
-                </CardDescription>
+                </div>
               </div>
               {getStatusBadge(template.status)}
             </div>
