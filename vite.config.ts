@@ -20,6 +20,11 @@ export default defineConfig(({ mode }) => ({
     },
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
   },
+  esbuild: {
+    loader: 'tsx',
+    include: /src\/.*\.[tj]sx?$/,
+    exclude: [],
+  },
   build: {
     target: 'es2015',
     outDir: 'dist',
