@@ -87,18 +87,18 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
         {[...Array(6)].map((_, index) => (
           <Card key={index}>
-            <CardHeader>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-32 mb-2" />
-              <div className="h-3 bg-gray-200 rounded animate-pulse w-24" />
+            <CardHeader className="p-3 sm:p-4 md:p-6">
+              <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-24 sm:w-32 mb-2" />
+              <div className="h-2 sm:h-3 bg-gray-200 rounded animate-pulse w-16 sm:w-24" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
               <div className="space-y-2">
-                <div className="h-3 bg-gray-200 rounded animate-pulse w-full" />
-                <div className="h-3 bg-gray-200 rounded animate-pulse w-3/4" />
-                <div className="h-8 bg-gray-200 rounded animate-pulse w-full mt-4" />
+                <div className="h-2 sm:h-3 bg-gray-200 rounded animate-pulse w-full" />
+                <div className="h-2 sm:h-3 bg-gray-200 rounded animate-pulse w-3/4" />
+                <div className="h-6 sm:h-8 bg-gray-200 rounded animate-pulse w-full mt-3 sm:mt-4" />
               </div>
             </CardContent>
           </Card>
@@ -120,46 +120,49 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
       {templates.map((template) => (
         <Card key={template.id} className="hover:shadow-md transition-shadow">
-          <CardHeader>
+          <CardHeader className="p-3 sm:p-4 md:p-6">
             <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <CardTitle className="text-lg">{template.name}</CardTitle>
-                <div className="mt-2 flex items-center gap-2">
-                  <Badge variant="secondary" className={getCategoryColor(template.category)}>
+              <div className="flex-1 min-w-0">
+                <CardTitle className="text-sm sm:text-base md:text-lg truncate">{template.name}</CardTitle>
+                <div className="mt-1 sm:mt-2 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
+                  <Badge variant="secondary" className={`text-xs ${getCategoryColor(template.category)}`}>
                     {template.category}
                   </Badge>
                   {template.type === 'system' && (
-                    <Badge variant="outline">System</Badge>
+                    <Badge variant="outline" className="text-xs">System</Badge>
                   )}
                 </div>
               </div>
-              {getStatusBadge(template.status)}
+              <div className="flex-shrink-0 ml-2">
+                {getStatusBadge(template.status)}
+              </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="text-sm text-gray-600">
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="text-xs sm:text-sm text-gray-600">
                 <p className="line-clamp-2">{template.content.body}</p>
               </div>
-              
+
               {template.usageCount !== undefined && (
                 <div className="text-xs text-gray-500">
                   Used {template.usageCount.toLocaleString()} times
                 </div>
               )}
-              
-              <div className="flex items-center gap-2 pt-2">
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1 sm:gap-2 pt-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onPreview(template)}
-                  className="flex-1"
+                  className="flex-1 text-xs sm:text-sm h-7 sm:h-8"
                 >
-                  <Eye className="w-4 h-4 mr-1" />
-                  Preview
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  <span className="hidden sm:inline">Preview</span>
+                  <span className="sm:hidden">View</span>
                 </Button>
                 {template.type === 'custom' && (
                   <>
@@ -167,16 +170,17 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
                       variant="outline"
                       size="sm"
                       onClick={() => onEdit(template)}
+                      className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3"
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => onDelete(template)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 hover:text-red-700 text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   </>
                 )}

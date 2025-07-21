@@ -24,16 +24,16 @@ const BusinessDirectory: React.FC<BusinessDirectoryProps> = ({
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
       <Card className="hover:shadow-md transition-shadow">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Total Businesses
+        <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium text-gray-600 flex items-center gap-1 sm:gap-2">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="truncate">Total Businesses</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-gray-900">
+        <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+          <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
             {mockBusinesses.length}
           </div>
           <p className="text-xs text-gray-500 mt-1">
@@ -43,14 +43,14 @@ const BusinessDirectory: React.FC<BusinessDirectoryProps> = ({
       </Card>
 
       <Card className="hover:shadow-md transition-shadow">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Active Businesses
+        <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium text-gray-600 flex items-center gap-1 sm:gap-2">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="truncate">Active Businesses</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-600">
+        <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+          <div className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">
             {activeBusinesses}
           </div>
           <p className="text-xs text-gray-500 mt-1">
@@ -61,14 +61,14 @@ const BusinessDirectory: React.FC<BusinessDirectoryProps> = ({
       </Card>
 
       <Card className="hover:shadow-md transition-shadow">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Total Messages
+        <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium text-gray-600 flex items-center gap-1 sm:gap-2">
+            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="truncate">Total Messages</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-blue-600">
+        <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+          <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">
             {totalMessages.toLocaleString()}
           </div>
           <p className="text-xs text-gray-500 mt-1">
@@ -80,14 +80,14 @@ const BusinessDirectory: React.FC<BusinessDirectoryProps> = ({
       </Card>
 
       <Card className="hover:shadow-md transition-shadow">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
-            <Zap className="h-4 w-4" />
-            Total Automations
+        <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium text-gray-600 flex items-center gap-1 sm:gap-2">
+            <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="truncate">Total Automations</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-purple-600">
+        <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+          <div className="text-lg sm:text-xl md:text-2xl font-bold text-purple-600">
             {totalAutomations}
           </div>
           <p className="text-xs text-gray-500 mt-1">

@@ -1,7 +1,8 @@
-import React from 'react';
-import { RefreshCw, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { RefreshCw, AlertCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { downloadTextReport } from '@/utils/pdfExport';
 
 // Import components
 import StatsCards from './statscards';
@@ -14,6 +15,7 @@ import { useDashboardData } from './dashboarddata';
 
 const AdminDashboard: React.FC = () => {
   const { toast } = useToast();
+  const [isExporting, setIsExporting] = useState(false);
 
   // Use the dashboard data hook
   const {
@@ -39,6 +41,30 @@ const AdminDashboard: React.FC = () => {
       title: "Retrying",
       description: "Attempting to reload dashboard data...",
     });
+  };
+
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    try {
+      // Generate HTML-based report (since we don't have a full PDF library)
+      const filename = `dashboard-report-${new Date().toISOString().split('T')[0]}.html`;
+
+      // Use the text report for now (more reliable)
+      downloadTextReport(data, filename.replace('.html', '.txt'));
+
+      toast({
+        title: "Export Successful",
+        description: "Dashboard report has been downloaded successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Show global error state
@@ -72,6 +98,18 @@ const AdminDashboard: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Button
+              onClick={handleExportPDF}
+              disabled={loading || isExporting}
+              size="sm"
+              className="bg-teal-600 hover:bg-teal-700 md:size-default"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">{isExporting ? 'Exporting...' : 'Export PDF'}</span>
+              <span className="sm:hidden">
+                <Download className="h-4 w-4" />
+              </span>
+            </Button>
             <Button
               variant="outline"
               onClick={handleRefresh}

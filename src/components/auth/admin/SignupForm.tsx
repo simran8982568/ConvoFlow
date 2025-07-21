@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import TermsModal from './TermsModal';
+import PrivacyModal from './PrivacyModal';
 
 const AdminSignupForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +22,8 @@ const AdminSignupForm: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -193,13 +197,21 @@ const AdminSignupForm: React.FC = () => {
               />
               <Label htmlFor="terms" className="text-sm text-gray-600">
                 I agree to the{" "}
-                <Link to="/terms" className="text-teal-600 hover:underline">
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(true)}
+                  className="text-teal-600 hover:underline focus:outline-none"
+                >
                   Terms of Service
-                </Link>{" "}
+                </button>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-teal-600 hover:underline">
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="text-teal-600 hover:underline focus:outline-none"
+                >
                   Privacy Policy
-                </Link>
+                </button>
               </Label>
             </div>
 
@@ -223,6 +235,16 @@ const AdminSignupForm: React.FC = () => {
           </form>
         </CardContent>
       </Card>
+
+      {/* Terms and Privacy Modals */}
+      <TermsModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+      <PrivacyModal
+        isOpen={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      />
     </div>
   );
 };

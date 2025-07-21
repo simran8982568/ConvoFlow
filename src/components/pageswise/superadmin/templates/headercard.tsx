@@ -23,51 +23,51 @@ interface HeaderCardProps {
  * Stats grid for template moderation dashboard
  */
 const HeaderCard: React.FC<HeaderCardProps> = ({ mockTemplates }) => (
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">
+      <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+        <CardTitle className="text-xs sm:text-sm font-medium text-gray-600">
           Total Templates
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-gray-900">
+      <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+        <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
           {mockTemplates.length}
         </div>
       </CardContent>
     </Card>
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-yellow-600">
+      <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+        <CardTitle className="text-xs sm:text-sm font-medium text-yellow-600">
           Pending Review
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-yellow-600">
+      <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+        <div className="text-lg sm:text-xl md:text-2xl font-bold text-yellow-600">
           {mockTemplates.filter((t) => t.status === "Pending").length}
         </div>
       </CardContent>
     </Card>
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-green-600">
+      <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+        <CardTitle className="text-xs sm:text-sm font-medium text-green-600">
           Approved
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-green-600">
+      <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+        <div className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">
           {mockTemplates.filter((t) => t.status === "Approved").length}
         </div>
       </CardContent>
     </Card>
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-red-600">
+      <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
+        <CardTitle className="text-xs sm:text-sm font-medium text-red-600">
           Rejected
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-red-600">
+      <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+        <div className="text-lg sm:text-xl md:text-2xl font-bold text-red-600">
           {mockTemplates.filter((t) => t.status === "Rejected").length}
         </div>
       </CardContent>

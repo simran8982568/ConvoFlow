@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Send, Paperclip, Smile } from "lucide-react";
+import { Send, Paperclip, Smile, Mic, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,17 +29,20 @@ const AdminInbox: React.FC = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex">
+    <div className="h-[calc(100vh-2rem)] flex bg-white">
       {/* Conversations List */}
-      <div className="w-80 border-r border-gray-200 flex flex-col">
+      <div className="w-80 border-r border-gray-200 flex flex-col bg-white">
         <InboxHeader />
         <div className="relative p-4 pt-0">
-          <Input
-            placeholder="Search conversations..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search conversations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-gray-50 border-gray-200 rounded-full"
+            />
+          </div>
         </div>
         <Conversations
           selectedId={selectedConversation.id}
@@ -48,41 +51,74 @@ const AdminInbox: React.FC = () => {
         />
       </div>
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-gray-50">
         <ChatHeader conversation={selectedConversation} />
-        <ScrollArea className="flex-1 p-4">
+
+        {/* Messages Area with WhatsApp-style background */}
+        <div
+          className="flex-1 p-4 overflow-y-auto"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundColor: '#f0f2f5'
+          }}
+        >
           <Messages messages={selectedConversation.messages} />
-        </ScrollArea>
-        <div className="px-4 py-2 border-t border-gray-100">
+        </div>
+
+        {/* Quick Replies */}
+        <div className="px-4 py-2 bg-white border-t border-gray-100">
           <QuickReplies onReply={handleQuickReply} />
         </div>
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm">
-              <Paperclip className="w-4 h-4" />
+
+        {/* Input Area */}
+        <div className="p-4 bg-white border-t border-gray-200">
+          <div className="flex items-end space-x-3">
+            {/* Attachment Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-500 hover:text-gray-700 p-2 rounded-full"
+            >
+              <Paperclip className="w-5 h-5" />
             </Button>
+
+            {/* Message Input */}
             <div className="flex-1 relative">
-              <Input
-                placeholder="Type a message..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                className="pr-10"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2"
-              >
-                <Smile className="w-4 h-4" />
-              </Button>
+              <div className="flex items-end bg-white border border-gray-300 rounded-3xl px-4 py-2 focus-within:border-teal-500 transition-colors">
+                <input
+                  type="text"
+                  placeholder="Type a message..."
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  className="flex-1 bg-transparent outline-none text-sm resize-none max-h-20 py-1"
+                  style={{ minHeight: '20px' }}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 hover:text-gray-700 p-1 ml-2"
+                >
+                  <Smile className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
+
+            {/* Send/Mic Button */}
             <Button
               onClick={handleSendMessage}
               disabled={!messageInput.trim()}
-              className="bg-teal-600 hover:bg-teal-700"
+              className={`p-3 rounded-full transition-all ${
+                messageInput.trim()
+                  ? "bg-teal-500 hover:bg-teal-600 text-white"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-500"
+              }`}
             >
-              <Send className="w-4 h-4" />
+              {messageInput.trim() ? (
+                <Send className="w-5 h-5" />
+              ) : (
+                <Mic className="w-5 h-5" />
+              )}
             </Button>
           </div>
         </div>
