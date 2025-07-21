@@ -7,6 +7,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import SuperAdminLayout from "@/layouts/SuperAdminLayout";
 import ProtectedRoute from "@/components/common/ProtectedRoute";
 import GlobalErrorBoundary from "@/components/common/GlobalErrorBoundary";
+
 // Admin Auth Components
 import AdminLoginForm from "@/components/auth/admin/LoginForm";
 import AdminSignupForm from "@/components/auth/admin/SignupForm";
@@ -15,23 +16,23 @@ import AdminCreateNewPasswordForm from "@/components/auth/admin/CreateNewPasswor
 
 // Superadmin Auth Components
 import SuperAdminLoginForm from "@/components/auth/superadmin/LoginForm";
-import AdminDashboard from "@/components/pageswise/admin/dashboard/indexdashboard.tsx";
-import AdminTemplates from "@/components/pageswise/admin/templates/indextemplates.tsx";
-import AdminContacts from "@/components/pageswise/admin/contacts/indexcontacts.tsx";
-import AdminCampaigns from "@/components/pageswise/admin/campaigns/indexcampaigns.tsx";
-import AdminInbox from "@/components/pageswise/admin/inbox/indexinbox.tsx";
-import AdminAutomation from "@/components/pageswise/admin/automation/indexautomation.tsx";
-import AdminPhoneNumbers from "@/components/pageswise/admin/phonenumbers/indexphone.tsx";
-import AdminSettings from "@/components/pageswise/admin/settings/indexsettings.tsx";
-import AdminBilling from "@/components/pageswise/admin/billing/indexbilling.tsx";
-import AdminAnalytics from "@/components/pageswise/admin/analytics/indexanalytics.tsx";
-import SuperAdminDashboard from "@/components/pageswise/superadmin/dashboard/indexdashboard.tsx";
-import SuperAdminBusinesses from "@/components/pageswise/superadmin/businesses/indexbusinesses.tsx";
-import SuperAdminTemplates from "@/components/pageswise/superadmin/templates/indextemplates.tsx";
-import SuperAdminAnalytics from "@/components/pageswise/superadmin/analytics/indexanalytics.tsx";
-import SuperAdminPlans from "@/components/pageswise/superadmin/plans/indexplans.tsx";
-import SuperAdminLogs from "@/components/pageswise/superadmin/logs/indexlogs.tsx";
-import SuperAdminSettings from "@/components/pageswise/superadmin/settings/indexsettings.tsx";
+import AdminDashboard from "@/components/pageswise/admin/dashboard/indexdashboard";
+import AdminTemplates from "@/components/pageswise/admin/templates/indextemplates";
+import AdminContacts from "@/components/pageswise/admin/contacts/indexcontacts";
+import AdminCampaigns from "@/components/pageswise/admin/campaigns/indexcampaigns";
+import AdminInbox from "@/components/pageswise/admin/inbox/indexinbox";
+import AdminAutomation from "@/components/pageswise/admin/automation/indexautomation";
+import AdminPhoneNumbers from "@/components/pageswise/admin/phonenumbers/indexphone";
+import AdminSettings from "@/components/pageswise/admin/settings/indexsettings";
+import AdminBilling from "@/components/pageswise/admin/billing/indexbilling";
+import AdminAnalytics from "@/components/pageswise/admin/analytics/indexanalytics";
+import SuperAdminDashboard from "@/components/pageswise/superadmin/dashboard/indexdashboard";
+import SuperAdminBusinesses from "@/components/pageswise/superadmin/businesses/indexbusinesses";
+import SuperAdminTemplates from "@/components/pageswise/superadmin/templates/indextemplates";
+import SuperAdminAnalytics from "@/components/pageswise/superadmin/analytics/indexanalytics";
+import SuperAdminPlans from "@/components/pageswise/superadmin/plans/indexplans";
+import SuperAdminLogs from "@/components/pageswise/superadmin/logs/indexlogs";
+import SuperAdminSettings from "@/components/pageswise/superadmin/settings/indexsettings";
 // import NavigationTest from "@/components/common/NavigationTest";
 
 const queryClient = new QueryClient();
