@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "npm run type-check && vite build",
@@ -14,8 +17,8 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
     "verify": "node scripts/verify-files.js",
-    "deploy:check": "node scripts/deployment-check.js",
-    "deploy:vercel": "npm run deploy:check && npm run build && vercel --prod",
+    "deploy:check": "node scripts/verify-deployment.cjs",
+    "deploy:vercel": "npm run build && npm run deploy:check && vercel --prod",
     "analyze": "npm run build && npx vite-bundle-analyzer dist/stats.html"
   },
   "dependencies": {
