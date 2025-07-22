@@ -1,15 +1,13 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  MessageSquare, 
-  Settings,
+import {
+  LayoutDashboard,
+  MessageSquare,
   FileText,
   BarChart3,
   LogOut,
   Building2,
   ScrollText,
-  DollarSign,
   Shield
 } from 'lucide-react';
 import { authService } from '@/utils/auth';
@@ -29,9 +27,7 @@ const SuperAdminSidebar: React.FC = () => {
     { icon: Building2, label: 'Businesses', path: '/superadmin/businesses' },
     { icon: FileText, label: 'Templates', path: '/superadmin/templates' },
     { icon: BarChart3, label: 'Analytics', path: '/superadmin/analytics' },
-    { icon: DollarSign, label: 'Plans', path: '/superadmin/plans' },
     { icon: ScrollText, label: 'Logs', path: '/superadmin/logs' },
-    { icon: Settings, label: 'Settings', path: '/superadmin/settings' },
   ];
 
   return (

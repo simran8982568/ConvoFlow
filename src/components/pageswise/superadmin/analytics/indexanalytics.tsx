@@ -22,7 +22,7 @@ import ErrorBoundary from "./errorboundary";
 import { useAnalyticsData, exportAnalyticsReport } from "./analyticsdata";
 
 const SuperAdminAnalytics: React.FC = () => {
-  const [timeRange, setTimeRange] = useState("6months");
+  const [timeRange, setTimeRange] = useState("3months");
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
@@ -199,7 +199,6 @@ const SuperAdminAnalytics: React.FC = () => {
             >
               <option value="1month">Last Month</option>
               <option value="3months">Last 3 Months</option>
-              <option value="6months">Last 6 Months</option>
               <option value="1year">Last Year</option>
             </select>
 

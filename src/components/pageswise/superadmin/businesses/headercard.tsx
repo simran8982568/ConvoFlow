@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Building2, Eye, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { Building2, Eye, Edit, Trash2, MoreHorizontal, Check, X } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -24,6 +24,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import type { Business } from "../../../../api/apicall/superadmin/businesses/businessapi";
 
 /**
@@ -114,7 +116,26 @@ const HeaderCard: React.FC<HeaderCardProps> = ({
                 </TableCell>
                 <TableCell>{business.campaigns}</TableCell>
                 <TableCell>{business.messages.toLocaleString()}</TableCell>
-                <TableCell>{getStatusBadge(business.status)}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={business.status === "Active"}
+                      onCheckedChange={() => handleStatusToggle(business)}
+                      disabled={actionLoading === business.id}
+                      className="data-[state=checked]:bg-green-600"
+                    />
+                    <span className={`text-sm font-medium ${
+                      business.status === "Active"
+                        ? "text-green-700"
+                        : "text-gray-500"
+                    }`}>
+                      {business.status}
+                    </span>
+                    {actionLoading === business.id && (
+                      <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <Dialog>
                     <DialogTrigger asChild>

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { RefreshCw, AlertCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { downloadTextReport } from '@/utils/pdfExport';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // Import components
 import StatsCards from './statscards';
@@ -46,20 +47,56 @@ const AdminDashboard: React.FC = () => {
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      // Generate HTML-based report (since we don't have a full PDF library)
-      const filename = `dashboard-report-${new Date().toISOString().split('T')[0]}.html`;
+      // Wait a moment for any animations to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Use the text report for now (more reliable)
-      downloadTextReport(data, filename.replace('.html', '.txt'));
+      // Get the dashboard container
+      const dashboardContainer = document.getElementById('dashboard-container');
+      if (!dashboardContainer) {
+        throw new Error('Dashboard container not found');
+      }
+
+      // Take screenshot using html2canvas
+      const canvas = await html2canvas(dashboardContainer, {
+        useCORS: true,
+        allowTaint: true,
+        background: '#ffffff',
+        width: dashboardContainer.scrollWidth,
+        height: dashboardContainer.scrollHeight,
+      });
+
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Download the PDF
+      const fileName = `dashboard-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
 
       toast({
         title: "Export Successful",
-        description: "Dashboard report has been downloaded successfully.",
+        description: `Dashboard report has been downloaded as ${fileName}`,
       });
     } catch (error) {
       toast({
         title: "Export Failed",
-        description: "Failed to generate report. Please try again.",
+        description: "Failed to export dashboard report. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -88,7 +125,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="p-4 md:p-6 space-y-6 min-h-screen">
+      <div id="dashboard-container" className="p-4 md:p-6 space-y-6 min-h-screen">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>

@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  MessageSquare, 
-  Users, 
-  Send, 
-  Settings,
+import {
+  LayoutDashboard,
+  MessageSquare,
+  Users,
+  Send,
   Zap,
   FileText,
   Phone,
   BarChart3,
-  CreditCard,
   LogOut,
   Building2,
   ScrollText,
-  DollarSign,
   Shield,
   Menu,
   X
@@ -86,9 +83,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
     { icon: Building2, label: 'Businesses', path: '/superadmin/businesses' },
     { icon: FileText, label: 'Templates', path: '/superadmin/templates' },
     { icon: BarChart3, label: 'Analytics', path: '/superadmin/analytics' },
-    { icon: DollarSign, label: 'Plans', path: '/superadmin/plans' },
     { icon: ScrollText, label: 'Logs', path: '/superadmin/logs' },
-    { icon: Settings, label: 'Settings', path: '/superadmin/settings' },
   ];
 
   const menuItems = role === 'admin' ? adminMenuItems : superAdminMenuItems;
