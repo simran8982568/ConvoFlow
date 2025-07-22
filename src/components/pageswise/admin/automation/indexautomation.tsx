@@ -23,26 +23,68 @@ import { useToast } from "@/hooks/use-toast";
 import { mockWorkflows } from "./mockdata";
 import HeaderCards from "./headercards";
 import WorkflowsGrid from "./workflowsgrid";
+import CampaignSelectionModal from "./CampaignSelectionModal";
 import TriggerInfo from "./triggerinfo";
 
 // ActionButtons is used inside WorkflowsGrid
 
 const AdminAutomation: React.FC = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isCampaignSelectionOpen, setIsCampaignSelectionOpen] = useState(false);
+  const [workflows, setWorkflows] = useState(mockWorkflows);
   const { toast } = useToast();
   const [newWorkflow, setNewWorkflow] = useState({
     name: "",
     description: "",
     trigger: "",
+    selectedCampaign: null as any,
   });
 
   const handleCreateWorkflow = () => {
+    if (!newWorkflow.name || !newWorkflow.description || !newWorkflow.trigger) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create new workflow object
+    const newWorkflowObj = {
+      id: Date.now(),
+      name: newWorkflow.name,
+      description: newWorkflow.description,
+      status: "Draft",
+      trigger: newWorkflow.trigger,
+      totalRuns: 0,
+      completionRate: 0,
+      createdAt: new Date().toISOString().split('T')[0],
+      nodes: [
+        {
+          id: "start",
+          type: "trigger",
+          label: newWorkflow.trigger,
+          x: 100,
+          y: 100,
+        },
+      ],
+    };
+
+    // Add to workflows list
+    setWorkflows(prev => [...prev, newWorkflowObj]);
+
     toast({
       title: "Workflow Created",
-      description: "Your automation workflow has been created successfully.",
+      description: `"${newWorkflow.name}" has been created successfully.`,
     });
     setIsCreateDialogOpen(false);
-    setNewWorkflow({ name: "", description: "", trigger: "" });
+    setNewWorkflow({ name: "", description: "", trigger: "", selectedCampaign: null });
+  };
+
+  const handleCampaignSelection = (campaign: any) => {
+    setNewWorkflow({ ...newWorkflow, selectedCampaign: campaign });
+    setIsCampaignSelectionOpen(false);
   };
 
   return (
@@ -123,6 +165,32 @@ const AdminAutomation: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label>Campaign Selection</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsCampaignSelectionOpen(true)}
+                    className="flex-1"
+                  >
+                    {newWorkflow.selectedCampaign
+                      ? `Selected: ${newWorkflow.selectedCampaign.name}`
+                      : "Select Campaign"
+                    }
+                  </Button>
+                  {newWorkflow.selectedCampaign && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setNewWorkflow({ ...newWorkflow, selectedCampaign: null })}
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
+              </div>
               <div className="flex justify-end gap-2">
                 <Button
                   variant="outline"
@@ -143,10 +211,17 @@ const AdminAutomation: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <HeaderCards workflows={mockWorkflows} />
+      <HeaderCards workflows={workflows} />
 
       {/* Workflows Grid */}
-      <WorkflowsGrid workflows={mockWorkflows} />
+      <WorkflowsGrid workflows={workflows} />
+
+      {/* Campaign Selection Modal */}
+      <CampaignSelectionModal
+        isOpen={isCampaignSelectionOpen}
+        onClose={() => setIsCampaignSelectionOpen(false)}
+        onSelectCampaign={handleCampaignSelection}
+      />
     </div>
   );
 };

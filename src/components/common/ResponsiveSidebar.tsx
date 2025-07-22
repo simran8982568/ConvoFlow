@@ -79,8 +79,6 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
     { icon: FileText, label: 'Templates', path: '/admin/templates' },
     { icon: Phone, label: 'Phone Numbers', path: '/admin/phone-numbers' },
     { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
-    { icon: CreditCard, label: 'Billing', path: '/admin/billing' },
-    { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];
 
   const superAdminMenuItems: MenuItem[] = [

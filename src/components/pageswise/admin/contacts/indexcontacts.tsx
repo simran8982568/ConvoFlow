@@ -20,6 +20,7 @@ import Filters from "./filters";
 import ContactGrids from "./contactgrids";
 
 const AdminContacts: React.FC = () => {
+  const [contacts, setContacts] = useState(mockContacts);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTag, setFilterTag] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -32,7 +33,7 @@ const AdminContacts: React.FC = () => {
     company: "",
   });
 
-  const filteredContacts = mockContacts.filter((contact) => {
+  const filteredContacts = contacts.filter((contact) => {
     const matchesSearch =
       contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.phone.includes(searchTerm) ||
@@ -44,9 +45,34 @@ const AdminContacts: React.FC = () => {
   });
 
   const handleAddContact = () => {
+    // Validate required fields
+    if (!newContact.name.trim() || !newContact.phone.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields (Name and Phone).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create new contact object
+    const newContactObj = {
+      id: Date.now(),
+      name: newContact.name.trim(),
+      phone: newContact.phone.trim(),
+      email: newContact.email.trim() || "",
+      company: newContact.company.trim() || "",
+      status: "Active",
+      tags: [],
+      lastActivity: new Date().toISOString().split('T')[0],
+    };
+
+    // Add to contacts list (in a real app, this would be an API call)
+    setContacts(prev => [...prev, newContactObj]);
+
     toast({
       title: "Contact Added",
-      description: "New contact has been added successfully.",
+      description: `${newContact.name} has been added successfully.`,
     });
     setIsAddDialogOpen(false);
     setNewContact({ name: "", phone: "", email: "", company: "" });
@@ -70,12 +96,12 @@ const AdminContacts: React.FC = () => {
             <DialogHeader>
               <DialogTitle>Add New Contact</DialogTitle>
               <DialogDescription>
-                Add a new contact to your WhatsApp list
+                Add a new contact to your WhatsApp list. Fields marked with * are required.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Full Name *</Label>
                 <Input
                   id="name"
                   value={newContact.name}
@@ -83,10 +109,11 @@ const AdminContacts: React.FC = () => {
                     setNewContact({ ...newContact, name: e.target.value })
                   }
                   placeholder="Enter full name"
+                  required
                 />
               </div>
               <div>
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">Phone Number *</Label>
                 <Input
                   id="phone"
                   value={newContact.phone}
@@ -94,10 +121,11 @@ const AdminContacts: React.FC = () => {
                     setNewContact({ ...newContact, phone: e.target.value })
                   }
                   placeholder="+1234567890"
+                  required
                 />
               </div>
               <div>
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">Email Address <span className="text-sm text-gray-500">(optional)</span></Label>
                 <Input
                   id="email"
                   type="email"
@@ -109,7 +137,7 @@ const AdminContacts: React.FC = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="company">Company</Label>
+                <Label htmlFor="company">Company <span className="text-sm text-gray-500">(optional)</span></Label>
                 <Input
                   id="company"
                   value={newContact.company}

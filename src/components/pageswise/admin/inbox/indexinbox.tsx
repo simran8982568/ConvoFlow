@@ -29,9 +29,9 @@ const AdminInbox: React.FC = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex bg-white">
-      {/* Conversations List */}
-      <div className="w-80 border-r border-gray-200 flex flex-col bg-white">
+    <div className="h-[calc(100vh-8rem)] md:h-[calc(100vh-2rem)] flex bg-white w-full">
+      {/* Conversations List - Hidden on mobile, shown on larger screens */}
+      <div className="hidden md:flex w-80 border-r border-gray-200 flex-col bg-white">
         <InboxHeader />
         <div className="relative p-4 pt-0">
           <div className="relative">
@@ -50,8 +50,8 @@ const AdminInbox: React.FC = () => {
           searchTerm={searchTerm}
         />
       </div>
-      {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-gray-50">
+      {/* Chat Area - Full width on mobile, flex-1 on larger screens */}
+      <div className="flex-1 w-full flex flex-col bg-gray-50 min-w-0">
         <ChatHeader conversation={selectedConversation} />
 
         {/* Messages Area with WhatsApp-style background */}
@@ -71,35 +71,35 @@ const AdminInbox: React.FC = () => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-white border-t border-gray-200">
-          <div className="flex items-end space-x-3">
+        <div className="p-3 sm:p-4 bg-white border-t border-gray-200 w-full">
+          <div className="flex items-end space-x-2 sm:space-x-3 w-full">
             {/* Attachment Button */}
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-500 hover:text-gray-700 p-2 rounded-full"
+              className="text-gray-500 hover:text-gray-700 p-2 rounded-full flex-shrink-0"
             >
-              <Paperclip className="w-5 h-5" />
+              <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
 
             {/* Message Input */}
-            <div className="flex-1 relative">
-              <div className="flex items-end bg-white border border-gray-300 rounded-3xl px-4 py-2 focus-within:border-teal-500 transition-colors">
+            <div className="flex-1 relative min-w-0 w-full">
+              <div className="flex items-end bg-white border border-gray-300 rounded-3xl px-3 sm:px-4 py-2 focus-within:border-teal-500 transition-colors w-full">
                 <input
                   type="text"
                   placeholder="Type a message..."
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                  className="flex-1 bg-transparent outline-none text-sm resize-none max-h-20 py-1"
+                  className="flex-1 bg-transparent outline-none text-sm resize-none max-h-20 py-1 min-w-0"
                   style={{ minHeight: '20px' }}
                 />
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-500 hover:text-gray-700 p-1 ml-2"
+                  className="text-gray-500 hover:text-gray-700 p-1 ml-1 sm:ml-2 flex-shrink-0"
                 >
-                  <Smile className="w-5 h-5" />
+                  <Smile className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </div>
             </div>
@@ -108,16 +108,16 @@ const AdminInbox: React.FC = () => {
             <Button
               onClick={handleSendMessage}
               disabled={!messageInput.trim()}
-              className={`p-3 rounded-full transition-all ${
+              className={`p-2 sm:p-3 rounded-full transition-all flex-shrink-0 ${
                 messageInput.trim()
                   ? "bg-teal-500 hover:bg-teal-600 text-white"
                   : "bg-gray-200 hover:bg-gray-300 text-gray-500"
               }`}
             >
               {messageInput.trim() ? (
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4 sm:w-5 sm:h-5" />
               ) : (
-                <Mic className="w-5 h-5" />
+                <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
               )}
             </Button>
           </div>

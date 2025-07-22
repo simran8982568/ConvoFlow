@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BarChart3, TrendingUp, Users, MessageSquare, Send, Eye, RefreshCw, Download } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 const AdminAnalytics: React.FC = () => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
+
   // Mock data for analytics
   const messageVolumeData = [
     { name: 'Jan', messages: 4000, delivered: 3800, opened: 2400 },
@@ -67,8 +72,89 @@ const AdminAnalytics: React.FC = () => {
     return colors[color as keyof typeof colors] || colors.teal;
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Simulate data refresh
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      toast({
+        title: "Data Refreshed",
+        description: "Analytics data has been refreshed successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Refresh Failed",
+        description: "Failed to refresh analytics data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      // Wait a moment for any animations to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Get the analytics container
+      const analyticsContainer = document.getElementById('analytics-container');
+      if (!analyticsContainer) {
+        throw new Error('Analytics container not found');
+      }
+
+      // Take screenshot using html2canvas
+      const canvas = await html2canvas(analyticsContainer, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#f9fafb',
+        width: analyticsContainer.scrollWidth,
+        height: analyticsContainer.scrollHeight,
+      });
+
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Download the PDF
+      const fileName = `analytics-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+
+      toast({
+        title: "Export Successful",
+        description: `Analytics report has been downloaded as ${fileName}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export analytics report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <div className="p-4 md:p-6 space-y-6 min-h-screen bg-gray-50">
+    <div id="analytics-container" className="p-4 md:p-6 space-y-6 min-h-screen bg-gray-50">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -78,13 +164,24 @@ const AdminAnalytics: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="md:size-default">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Refresh</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="md:size-default"
+            onClick={handleRefresh}
+            disabled={isRefreshing || isExporting}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
           </Button>
-          <Button size="sm" className="bg-teal-600 hover:bg-teal-700 md:size-default">
+          <Button
+            size="sm"
+            className="bg-teal-600 hover:bg-teal-700 md:size-default"
+            onClick={handleExport}
+            disabled={isRefreshing || isExporting}
+          >
             <Download className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">{isExporting ? 'Exporting...' : 'Export'}</span>
           </Button>
         </div>
       </div>

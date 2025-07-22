@@ -112,7 +112,7 @@ const ContactsImportExport: React.FC = () => {
         imported: 156,
         errors: [
           "Row 23: Invalid phone number format",
-          "Row 45: Missing email address"
+          "Row 67: Missing required name field"
         ]
       };
       
@@ -170,7 +170,7 @@ const ContactsImportExport: React.FC = () => {
             <Alert>
               <FileText className="h-4 w-4" />
               <AlertDescription>
-                <strong>Required format:</strong> CSV or XLSX with columns: Name, Phone, Email, Company (optional), Tags (optional)
+                <strong>Required format:</strong> CSV or XLSX with columns: Name* (required), Phone* (required), Email (optional), Company (optional), Tags (optional)
               </AlertDescription>
             </Alert>
             

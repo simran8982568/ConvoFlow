@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface CreateTemplateModalProps {
   onClose: () => void;
+  onTemplateCreated: (template: any) => void;
 }
 
 interface MediaFile {
@@ -26,7 +27,7 @@ interface MediaFile {
   preview: string;
 }
 
-const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose }) => {
+const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTemplateCreated }) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -114,16 +115,33 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose }) =>
     }
 
     setIsLoading(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
+      // Create the template object
+      const newTemplate = {
+        name: formData.name,
+        category: formData.category,
+        type: 'custom' as const,
+        status: 'pending' as const,
+        content: {
+          header: formData.header,
+          body: formData.body,
+          footer: formData.footer,
+          buttons: formData.buttons.filter(btn => btn.trim() !== ''),
+        },
+      };
+
+      // Add the template using the callback
+      onTemplateCreated(newTemplate);
+
       toast({
         title: "Template Created",
         description: `Template "${formData.name}" has been created successfully.`,
       });
-      
+
       onClose();
     } catch (error) {
       toast({

@@ -187,6 +187,54 @@ export const useTemplatesData = () => {
     fetchTemplatesData(true);
   };
 
+  const addTemplate = (templateData: Omit<Template, 'id' | 'createdAt' | 'usageCount'>) => {
+    const newTemplate: Template = {
+      ...templateData,
+      id: `custom_${Date.now()}`,
+      createdAt: new Date().toISOString().split('T')[0],
+      usageCount: 0,
+    };
+
+    setState(prev => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        templates: [...prev.data.templates, newTemplate],
+        stats: {
+          ...prev.data.stats,
+          total: prev.data.stats.total + 1,
+          pending: prev.data.stats.pending + 1,
+        }
+      }
+    }));
+
+    return newTemplate;
+  };
+
+  const deleteTemplate = (templateId: string) => {
+    setState(prev => {
+      const templateToDelete = prev.data.templates.find(t => t.id === templateId);
+      if (!templateToDelete) return prev;
+
+      const updatedTemplates = prev.data.templates.filter(t => t.id !== templateId);
+      const updatedStats = { ...prev.data.stats };
+
+      updatedStats.total -= 1;
+      if (templateToDelete.status === 'approved') updatedStats.approved -= 1;
+      if (templateToDelete.status === 'pending') updatedStats.pending -= 1;
+      if (templateToDelete.status === 'rejected') updatedStats.rejected -= 1;
+
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          templates: updatedTemplates,
+          stats: updatedStats
+        }
+      };
+    });
+  };
+
   useEffect(() => {
     fetchTemplatesData();
   }, []);
@@ -198,6 +246,8 @@ export const useTemplatesData = () => {
     updateFilters,
     clearFilters,
     refreshData,
-    refetchData: () => fetchTemplatesData()
+    refetchData: () => fetchTemplatesData(),
+    addTemplate,
+    deleteTemplate
   };
 };

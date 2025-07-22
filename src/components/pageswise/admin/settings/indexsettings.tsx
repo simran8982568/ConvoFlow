@@ -7,7 +7,7 @@ import BusinessProfile from "./businessprofile";
 import WhatsApp from "./whatapp";
 import Notification from "./notification";
 import Security from "./security";
-import DangerZone from "./dangerzone";
+import ResetApiKeys from "./dangerzone";
 
 // Import API hooks and types
 import {
@@ -102,9 +102,7 @@ const AdminSettings: React.FC = () => {
     await securityAPI.resetApiKeys();
   };
 
-  const handleDeleteAccount = async () => {
-    await securityAPI.deleteAccount();
-  };
+
 
   const handleLogoUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -154,9 +152,8 @@ const AdminSettings: React.FC = () => {
             onSave={handleSaveSecurity}
           />
 
-          <DangerZone
+          <ResetApiKeys
             onResetApiKeys={handleResetApiKeys}
-            onDeleteAccount={handleDeleteAccount}
           />
         </div>
       </div>

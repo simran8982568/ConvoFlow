@@ -1,7 +1,7 @@
 // Action buttons component for campaign operations
 
 import React, { useState } from "react";
-import { Play, Pause, Edit, Trash2, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
+import { Edit, Trash2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,18 +27,14 @@ import CampaignAnalyticsChart from "./CampaignAnalyticsChart";
 
 interface CampaignActionButtonsProps {
   campaign: Campaign;
-  isPaused?: boolean;
-  onPauseToggle?: (campaignId: number, isPaused: boolean) => void;
 }
 
 const CampaignActionButtons: React.FC<CampaignActionButtonsProps> = ({
   campaign,
-  isPaused = false,
-  onPauseToggle,
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
 
   const {
     handleCampaignAction,
@@ -47,18 +43,14 @@ const CampaignActionButtons: React.FC<CampaignActionButtonsProps> = ({
     handleViewAnalytics,
   } = useCampaignActions();
 
-  const handlePauseClick = () => {
-    const newPausedState = !isPaused;
-    onPauseToggle?.(campaign.id, newPausedState);
-    handleCampaignAction(newPausedState ? "Pause" : "Resume", campaign.id);
-  };
+
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);
   };
 
   const handleAnalyticsClick = () => {
-    setShowAnalytics(!showAnalytics);
+    setIsAnalyticsModalOpen(true);
   };
 
   const handleDeleteClick = () => {
@@ -73,26 +65,6 @@ const CampaignActionButtons: React.FC<CampaignActionButtonsProps> = ({
   return (
     <>
       <div className="flex gap-2 flex-wrap">
-        {/* Pause/Resume Button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handlePauseClick}
-          className={isPaused ? "bg-red-50 border-red-200 text-red-700 hover:bg-red-100" : ""}
-        >
-          {isPaused ? (
-            <>
-              <Play className="w-4 h-4 mr-1" />
-              Resume
-            </>
-          ) : (
-            <>
-              <Pause className="w-4 h-4 mr-1" />
-              Pause
-            </>
-          )}
-        </Button>
-
         {/* Edit Button */}
         <Button
           variant="outline"
@@ -111,11 +83,6 @@ const CampaignActionButtons: React.FC<CampaignActionButtonsProps> = ({
         >
           <BarChart3 className="w-4 h-4 mr-1" />
           Analytics
-          {showAnalytics ? (
-            <ChevronUp className="w-4 h-4 ml-1" />
-          ) : (
-            <ChevronDown className="w-4 h-4 ml-1" />
-          )}
         </Button>
 
         {/* Delete Button */}
@@ -130,12 +97,18 @@ const CampaignActionButtons: React.FC<CampaignActionButtonsProps> = ({
         </Button>
       </div>
 
-      {/* Analytics Chart - Slides down when toggled */}
-      {showAnalytics && (
-        <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
+      {/* Analytics Modal */}
+      <Dialog open={isAnalyticsModalOpen} onOpenChange={setIsAnalyticsModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Campaign Analytics - {campaign.name}</DialogTitle>
+            <DialogDescription>
+              Detailed analytics and performance metrics for this campaign.
+            </DialogDescription>
+          </DialogHeader>
           <CampaignAnalyticsChart campaign={campaign} />
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
@@ -157,10 +130,9 @@ const CampaignActionButtons: React.FC<CampaignActionButtonsProps> = ({
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Campaign</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure you want to delete this campaign?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{campaign.name}"? This action cannot be undone.
-              All campaign data and analytics will be permanently removed.
+              This action cannot be undone. The campaign "{campaign.name}" and all its data will be permanently removed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

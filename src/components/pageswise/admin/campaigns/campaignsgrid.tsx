@@ -24,19 +24,6 @@ interface CampaignsGridProps {
 }
 
 const CampaignsGrid: React.FC<CampaignsGridProps> = ({ campaigns }) => {
-  const [pausedCampaigns, setPausedCampaigns] = useState<Set<number>>(new Set());
-
-  const handlePauseToggle = (campaignId: number, isPaused: boolean) => {
-    setPausedCampaigns(prev => {
-      const newSet = new Set(prev);
-      if (isPaused) {
-        newSet.add(campaignId);
-      } else {
-        newSet.delete(campaignId);
-      }
-      return newSet;
-    });
-  };
   if (campaigns.length === 0) {
     return (
       <div className="text-center py-12">
@@ -54,25 +41,19 @@ const CampaignsGrid: React.FC<CampaignsGridProps> = ({ campaigns }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
       {campaigns.map((campaign) => {
-        const isPaused = pausedCampaigns.has(campaign.id);
         return (
           <Card
             key={campaign.id}
-            className={`hover:shadow-lg transition-all duration-300 ${
-              isPaused ? 'bg-red-50 border-red-200' : ''
-            }`}
+            className="hover:shadow-lg transition-all duration-300"
           >
             <CardHeader className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className={`text-sm sm:text-base md:text-lg flex items-center gap-1 sm:gap-2 ${
-                    isPaused ? 'text-red-700' : ''
-                  }`}>
-                    <Send className={`w-3 h-3 sm:w-4 sm:h-4 ${isPaused ? 'text-red-600' : 'text-teal-600'}`} />
+                  <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-1 sm:gap-2">
+                    <Send className="w-3 h-3 sm:w-4 sm:h-4 text-teal-600" />
                     <span className="truncate">{campaign.name}</span>
-                    {isPaused && <span className="text-xs sm:text-sm font-normal text-red-600 flex-shrink-0">(Paused)</span>}
                   </CardTitle>
-                  <CardDescription className={`mt-1 text-xs sm:text-sm truncate ${isPaused ? 'text-red-600' : ''}`}>
+                  <CardDescription className="mt-1 text-xs sm:text-sm truncate">
                     Template: {campaign.template} • Audience: {campaign.audience}
                   </CardDescription>
                 </div>
@@ -118,8 +99,6 @@ const CampaignsGrid: React.FC<CampaignsGridProps> = ({ campaigns }) => {
                 {/* Action Buttons */}
                 <CampaignActionButtons
                   campaign={campaign}
-                  isPaused={isPaused}
-                  onPauseToggle={handlePauseToggle}
                 />
               </div>
             </CardContent>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Trash2, Key } from "lucide-react";
+import { Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,44 +9,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-interface DangerZoneProps {
+interface ResetApiKeysProps {
   onResetApiKeys: () => void;
-  onDeleteAccount: () => void;
 }
 
-const DangerZone: React.FC<DangerZoneProps> = ({
+const ResetApiKeys: React.FC<ResetApiKeysProps> = ({
   onResetApiKeys,
-  onDeleteAccount,
 }) => {
   return (
-    <Card className="border-red-200">
+    <Card className="border-orange-200">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-red-600">
-          <Trash2 className="h-5 w-5" />
-          Danger Zone
+        <CardTitle className="flex items-center gap-2 text-orange-600">
+          <Key className="h-5 w-5" />
+          Reset API Keys
         </CardTitle>
-        <CardDescription>Irreversible and destructive actions</CardDescription>
+        <CardDescription>Reset your API keys for enhanced security</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent>
         <Button
           variant="outline"
-          className="w-full text-red-600 border-red-200 hover:bg-red-50"
+          className="w-full text-orange-600 border-orange-200 hover:bg-orange-50"
           onClick={onResetApiKeys}
         >
           <Key className="w-4 h-4 mr-2" />
           Reset API Keys
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full text-red-600 border-red-200 hover:bg-red-50"
-          onClick={onDeleteAccount}
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete Account
         </Button>
       </CardContent>
     </Card>
   );
 };
 
-export default DangerZone;
+export default ResetApiKeys;

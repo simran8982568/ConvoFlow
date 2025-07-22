@@ -51,7 +51,9 @@ const AdminTemplates: React.FC = () => {
     updateFilters,
     clearFilters,
     refreshData,
-    refetchData
+    refetchData,
+    addTemplate,
+    deleteTemplate
   } = useTemplatesData();
 
   const handleRefresh = () => {
@@ -87,6 +89,7 @@ const AdminTemplates: React.FC = () => {
 
   const confirmDeleteTemplate = () => {
     if (templateToDelete) {
+      deleteTemplate(templateToDelete.id);
       toast({
         title: "Template Deleted",
         description: `Template "${templateToDelete.name}" has been deleted.`,
@@ -187,7 +190,10 @@ const AdminTemplates: React.FC = () => {
               Create a new WhatsApp message template with text, images, videos, and GIFs.
             </DialogDescription>
           </DialogHeader>
-          <CreateTemplateModal onClose={() => setIsCreateModalOpen(false)} />
+          <CreateTemplateModal
+            onClose={() => setIsCreateModalOpen(false)}
+            onTemplateCreated={addTemplate}
+          />
         </DialogContent>
       </Dialog>
 
