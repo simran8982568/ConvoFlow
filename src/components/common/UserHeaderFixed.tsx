@@ -45,7 +45,7 @@ const mockAdminData = [
   { id: '5', name: 'Follow-up Template', category: 'follow-up', type: 'template' },
 ];
 
-const UserHeader: React.FC<UserHeaderProps> = ({
+const UserHeaderFixed: React.FC<UserHeaderProps> = ({
   role,
   onRefresh,
   refreshing = false
@@ -63,7 +63,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({
   useEffect(() => {
     if (searchTerm.length > 0) {
       let results: any[] = [];
-
+      
       if (role === 'superadmin') {
         const filteredBusinesses = mockBusinesses.filter(business =>
           business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -164,7 +164,6 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                   if (role === 'superadmin') {
                     return item.type === 'business' ? Building2 : Users;
                   } else {
-                    // Admin icons
                     switch (item.type) {
                       case 'contact': return Users;
                       case 'campaign': return Send;
@@ -174,28 +173,19 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                   }
                 };
 
-                const getItemColor = () => {
+                const getColorClasses = () => {
                   if (role === 'superadmin') {
-                    return item.type === 'business' ? 'blue' : 'green';
+                    return item.type === 'business' 
+                      ? { bg: 'bg-blue-100', text: 'text-blue-600' }
+                      : { bg: 'bg-green-100', text: 'text-green-600' };
                   } else {
                     switch (item.type) {
-                      case 'contact': return 'green';
-                      case 'campaign': return 'purple';
-                      case 'template': return 'orange';
-                      default: return 'gray';
+                      case 'contact': return { bg: 'bg-green-100', text: 'text-green-600' };
+                      case 'campaign': return { bg: 'bg-purple-100', text: 'text-purple-600' };
+                      case 'template': return { bg: 'bg-orange-100', text: 'text-orange-600' };
+                      default: return { bg: 'bg-gray-100', text: 'text-gray-600' };
                     }
                   }
-                };
-
-                const getColorClasses = (color: string) => {
-                  const colorMap = {
-                    blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
-                    green: { bg: 'bg-green-100', text: 'text-green-600' },
-                    purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
-                    orange: { bg: 'bg-orange-100', text: 'text-orange-600' },
-                    gray: { bg: 'bg-gray-100', text: 'text-gray-600' }
-                  };
-                  return colorMap[color as keyof typeof colorMap] || colorMap.gray;
                 };
 
                 const getItemSubtext = () => {
@@ -212,8 +202,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                 };
 
                 const IconComponent = getItemIcon();
-                const color = getItemColor();
-                const colorClasses = getColorClasses(color);
+                const colorClasses = getColorClasses();
 
                 return (
                   <div
@@ -255,8 +244,8 @@ const UserHeader: React.FC<UserHeaderProps> = ({
         <div className="flex items-center gap-4">
           {/* Refresh Button */}
           {onRefresh && (
-            <Button
-              variant="outline"
+            <Button 
+              variant="outline" 
               size="sm"
               onClick={onRefresh}
               disabled={refreshing}
@@ -287,42 +276,42 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                     }`} />
                   )}
                 </div>
-
+                
                 {/* User Info */}
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-medium text-gray-900">
                     {user?.name || 'User'}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {role === 'admin'
-                      ? (user?.company || user?.email || 'Admin')
+                    {role === 'admin' 
+                      ? (user?.company || user?.email || 'Admin') 
                       : 'Super Administrator'
                     }
                   </span>
                 </div>
-
+                
                 <ChevronDown className="h-4 w-4 text-gray-400" />
               </Button>
             </DropdownMenuTrigger>
-
+            
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-1.5">
                 <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
-
+              
               <DropdownMenuSeparator />
-
+              
               <DropdownMenuItem onClick={() => navigate(`/${role}/settings`)}>
                 Settings
               </DropdownMenuItem>
-
+              
               <DropdownMenuItem onClick={() => navigate(`/${role}/${role === 'admin' ? 'billing' : 'plans'}`)}>
                 {role === 'admin' ? 'Billing' : 'Plans'}
               </DropdownMenuItem>
-
+              
               <DropdownMenuSeparator />
-
+              
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 Sign out
               </DropdownMenuItem>
@@ -334,4 +323,4 @@ const UserHeader: React.FC<UserHeaderProps> = ({
   );
 };
 
-export default UserHeader;
+export default UserHeaderFixed;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import ResponsiveSidebar from "@/components/common/ResponsiveSidebar";
-import UserHeader from "@/components/common/UserHeader";
+import UserHeaderFixed from "@/components/common/UserHeaderFixed";
 
 const SuperAdminLayout: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ const SuperAdminLayout: React.FC = () => {
         <div className="h-16 md:h-0 flex-shrink-0" />
 
         {/* User Header */}
-        <UserHeader role="superadmin" />
+        <UserHeaderFixed role="superadmin" />
 
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <div className="min-h-full">

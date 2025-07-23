@@ -2,7 +2,6 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star } from "lucide-react";
 import { mockConversations } from "./mockdata";
 
@@ -26,7 +25,7 @@ const Conversations = ({
       conv.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
   );
   return (
-    <ScrollArea className="flex-1">
+    <div className="flex-1 overflow-y-auto">
       <div className="p-2">
         {filteredConversations.map((conversation) => (
           <div
@@ -84,7 +83,7 @@ const Conversations = ({
           </div>
         ))}
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 

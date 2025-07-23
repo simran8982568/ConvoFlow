@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Send, Paperclip, Smile, Mic, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { mockConversations } from "./mockdata";
 import InboxHeader from "./header";
 import ChatHeader from "./chatheader";
 import Conversations from "./conversations";
 import Messages from "./messages";
-import QuickReplies from "./quickreplies";
+import RouteErrorBoundary from "@/components/common/RouteErrorBoundary";
+import { LoadingSpinner, InlineLoading } from "@/components/common/LoadingStates";
+import useAsyncOperation from "@/hooks/useAsyncOperation";
+import "./inbox.css";
 
 const AdminInbox: React.FC = () => {
   const [selectedConversation, setSelectedConversation] = useState(
@@ -16,20 +19,71 @@ const AdminInbox: React.FC = () => {
   );
   const [messageInput, setMessageInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSendMessage = () => {
-    if (messageInput.trim()) {
-      // TODO: Implement send message functionality
+  // Add loading and error states for message sending
+  const sendMessageOperation = useAsyncOperation({
+    showToast: true,
+    toastTitle: "Message Error",
+    onSuccess: () => {
       setMessageInput("");
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+      setTimeout(scrollToBottom, 100);
+    }
+  });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedConversation.messages]);
+
+  const handleSendMessage = async () => {
+    if (!messageInput.trim()) return;
+
+    // Simulate API call for sending message
+    await sendMessageOperation.execute(async () => {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Simulate potential error (uncomment to test error handling)
+      // if (Math.random() > 0.8) {
+      //   throw new Error('Failed to send message. Please try again.');
+      // }
+
+      // TODO: Replace with actual API call
+      console.log('Message sent:', messageInput);
+
+      return { success: true };
+    });
+  };
+
+
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessageInput(e.target.value);
+
+    // Auto-resize textarea
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
     }
   };
 
-  const handleQuickReply = (reply: string) => {
-    setMessageInput(reply);
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] md:h-[calc(100vh-2rem)] flex bg-white w-full">
+    <div className="h-screen flex bg-white w-full overflow-hidden">
       {/* Conversations List - Hidden on mobile, shown on larger screens */}
       <div className="hidden md:flex w-80 border-r border-gray-200 flex-col bg-white">
         <InboxHeader />
@@ -44,14 +98,16 @@ const AdminInbox: React.FC = () => {
             />
           </div>
         </div>
-        <Conversations
-          selectedId={selectedConversation.id}
-          setSelected={setSelectedConversation}
-          searchTerm={searchTerm}
-        />
+        <div className="flex-1 overflow-hidden">
+          <Conversations
+            selectedId={selectedConversation.id}
+            setSelected={setSelectedConversation}
+            searchTerm={searchTerm}
+          />
+        </div>
       </div>
       {/* Chat Area - Full width on mobile, flex-1 on larger screens */}
-      <div className="flex-1 w-full flex flex-col bg-gray-50 min-w-0">
+      <div className="flex-1 w-full flex flex-col bg-gray-50 min-w-0 overflow-hidden">
         <ChatHeader conversation={selectedConversation} />
 
         {/* Messages Area with WhatsApp-style background */}
@@ -63,12 +119,10 @@ const AdminInbox: React.FC = () => {
           }}
         >
           <Messages messages={selectedConversation.messages} />
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Replies */}
-        <div className="px-4 py-2 bg-white border-t border-gray-100">
-          <QuickReplies onReply={handleQuickReply} />
-        </div>
+
 
         {/* Input Area */}
         <div className="p-3 sm:p-4 bg-white border-t border-gray-200 w-full">
@@ -85,14 +139,18 @@ const AdminInbox: React.FC = () => {
             {/* Message Input */}
             <div className="flex-1 relative min-w-0 w-full">
               <div className="flex items-end bg-white border border-gray-300 rounded-3xl px-3 sm:px-4 py-2 focus-within:border-teal-500 transition-colors w-full">
-                <input
-                  type="text"
+                <Textarea
+                  ref={textareaRef}
                   placeholder="Type a message..."
                   value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                  className="flex-1 bg-transparent outline-none text-sm resize-none max-h-20 py-1 min-w-0"
-                  style={{ minHeight: '20px' }}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyPress}
+                  className="flex-1 bg-transparent outline-none text-sm resize-none border-none p-0 min-h-[20px] max-h-[120px] leading-5 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  style={{
+                    minHeight: '20px',
+                    height: 'auto',
+                    overflow: 'hidden'
+                  }}
                 />
                 <Button
                   variant="ghost"
@@ -107,14 +165,16 @@ const AdminInbox: React.FC = () => {
             {/* Send/Mic Button */}
             <Button
               onClick={handleSendMessage}
-              disabled={!messageInput.trim()}
+              disabled={!messageInput.trim() || sendMessageOperation.loading}
               className={`p-2 sm:p-3 rounded-full transition-all flex-shrink-0 ${
-                messageInput.trim()
+                messageInput.trim() && !sendMessageOperation.loading
                   ? "bg-teal-500 hover:bg-teal-600 text-white"
                   : "bg-gray-200 hover:bg-gray-300 text-gray-500"
               }`}
             >
-              {messageInput.trim() ? (
+              {sendMessageOperation.loading ? (
+                <LoadingSpinner size="sm" />
+              ) : messageInput.trim() ? (
                 <Send className="w-4 h-4 sm:w-5 sm:h-5" />
               ) : (
                 <Mic className="w-4 h-4 sm:w-5 sm:h-5" />

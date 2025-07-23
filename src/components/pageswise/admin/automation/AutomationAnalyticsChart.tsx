@@ -52,10 +52,27 @@ const AutomationAnalyticsChart: React.FC<AutomationAnalyticsChartProps> = ({
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
   return (
-    <div className="space-y-6 p-4 bg-gray-50 rounded-lg border">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Automation Analytics</h3>
-        <span className="text-sm text-gray-500">Workflow: {workflow.name}</span>
+    <div className="space-y-6">
+      {/* Key Metrics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <div className="text-2xl font-bold text-blue-600">{workflow.totalRuns}</div>
+          <div className="text-sm text-blue-700">Total Executions</div>
+        </div>
+        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+          <div className="text-2xl font-bold text-green-600">{workflow.completionRate}%</div>
+          <div className="text-sm text-green-700">Completion Rate</div>
+        </div>
+        <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+          <div className="text-2xl font-bold text-purple-600">{Math.round(workflow.totalRuns * (workflow.completionRate / 100))}</div>
+          <div className="text-sm text-purple-700">Successful Runs</div>
+        </div>
+        <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+          <div className="text-2xl font-bold text-orange-600">
+            {workflow.totalRuns > 0 ? '2 hours ago' : 'Never'}
+          </div>
+          <div className="text-sm text-orange-700">Last Triggered</div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -65,13 +82,26 @@ const AutomationAnalyticsChart: React.FC<AutomationAnalyticsChartProps> = ({
             <CardTitle className="text-base">Performance Overview</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" fill="#0D9488" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="name" stroke="#6b7280" fontSize={12} />
+                <YAxis stroke="#6b7280" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                <Bar
+                  dataKey="value"
+                  fill="#0D9488"
+                  radius={[4, 4, 0, 0]}
+                  animationBegin={0}
+                  animationDuration={1000}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -83,25 +113,40 @@ const AutomationAnalyticsChart: React.FC<AutomationAnalyticsChartProps> = ({
             <CardTitle className="text-base">Weekly Execution Trend</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={executionData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="executions" 
-                  stroke="#0D9488" 
-                  strokeWidth={2}
-                  name="Executions"
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="day" stroke="#6b7280" fontSize={12} />
+                <YAxis stroke="#6b7280" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="completions" 
-                  stroke="#059669" 
-                  strokeWidth={2}
+                <Line
+                  type="monotone"
+                  dataKey="executions"
+                  stroke="#0D9488"
+                  strokeWidth={3}
+                  name="Executions"
+                  dot={{ fill: '#0D9488', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, stroke: '#0D9488', strokeWidth: 2 }}
+                  animationBegin={0}
+                  animationDuration={1500}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="completions"
+                  stroke="#059669"
+                  strokeWidth={3}
                   name="Completions"
+                  dot={{ fill: '#059669', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, stroke: '#059669', strokeWidth: 2 }}
+                  animationBegin={200}
+                  animationDuration={1500}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -109,32 +154,115 @@ const AutomationAnalyticsChart: React.FC<AutomationAnalyticsChartProps> = ({
         </Card>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg border">
-          <div className="text-2xl font-bold text-gray-900">
-            {workflow.totalRuns.toLocaleString()}
-          </div>
-          <div className="text-sm text-gray-600">Total Executions</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border">
-          <div className="text-2xl font-bold text-gray-900">
-            {workflow.completionRate}%
-          </div>
-          <div className="text-sm text-gray-600">Completion Rate</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border">
-          <div className="text-2xl font-bold text-gray-900">
-            {Math.round(workflow.totalRuns * (workflow.completionRate / 100)).toLocaleString()}
-          </div>
-          <div className="text-sm text-gray-600">Successful Runs</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border">
-          <div className="text-2xl font-bold text-gray-900">
-            {Math.round(workflow.totalRuns / 30)}
-          </div>
-          <div className="text-sm text-gray-600">Avg. Daily Runs</div>
-        </div>
+      {/* Success Rate Pie Chart and Additional Metrics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Success Rate Pie Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Success Rate Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={performanceData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  animationBegin={0}
+                  animationDuration={1000}
+                >
+                  {performanceData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color}
+                      stroke="#ffffff"
+                      strokeWidth={2}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Additional Performance Metrics */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Performance Insights</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                <div>
+                  <div className="text-sm text-blue-600 font-medium">Trigger Rate</div>
+                  <div className="text-xl font-bold text-blue-700">
+                    {workflow.totalRuns > 0 ? '98.5%' : '0%'}
+                  </div>
+                </div>
+                <div className="text-blue-500">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div>
+                  <div className="text-sm text-green-600 font-medium">Avg. Completion Time</div>
+                  <div className="text-xl font-bold text-green-700">
+                    {workflow.totalRuns > 0 ? '2.3 min' : 'N/A'}
+                  </div>
+                </div>
+                <div className="text-green-500">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                <div>
+                  <div className="text-sm text-orange-600 font-medium">Error Rate</div>
+                  <div className="text-xl font-bold text-orange-700">
+                    {workflow.totalRuns > 0 ? `${(100 - workflow.completionRate).toFixed(1)}%` : '0%'}
+                  </div>
+                </div>
+                <div className="text-orange-500">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                <div>
+                  <div className="text-sm text-purple-600 font-medium">Avg. Daily Runs</div>
+                  <div className="text-xl font-bold text-purple-700">
+                    {workflow.totalRuns > 0 ? Math.round(workflow.totalRuns / 30) : 0}
+                  </div>
+                </div>
+                <div className="text-purple-500">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Step Performance */}

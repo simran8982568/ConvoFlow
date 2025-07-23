@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Edit, Pause, Play, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
+import { Edit, Pause, Play, BarChart3 } from "lucide-react";
 import AutomationEditModal from "./AutomationEditModal";
 import AutomationAnalyticsChart from "./AutomationAnalyticsChart";
 
@@ -30,7 +30,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   onPauseToggle,
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
 
   const handleEditClick = () => {
     setIsEditModalOpen(true);
@@ -43,7 +43,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   };
 
   const handleAnalyticsClick = () => {
-    setShowAnalytics(!showAnalytics);
+    setIsAnalyticsModalOpen(true);
   };
 
   return (
@@ -85,20 +85,21 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         >
           <BarChart3 className="w-4 h-4 mr-1" />
           Analytics
-          {showAnalytics ? (
-            <ChevronUp className="w-4 h-4 ml-1" />
-          ) : (
-            <ChevronDown className="w-4 h-4 ml-1" />
-          )}
         </Button>
       </div>
 
-      {/* Analytics Chart - Slides down when toggled */}
-      {showAnalytics && (
-        <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
+      {/* Analytics Modal */}
+      <Dialog open={isAnalyticsModalOpen} onOpenChange={setIsAnalyticsModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Workflow Analytics - {workflow.name}</DialogTitle>
+            <DialogDescription>
+              Detailed analytics and performance metrics for this automation workflow.
+            </DialogDescription>
+          </DialogHeader>
           <AutomationAnalyticsChart workflow={workflow} />
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>

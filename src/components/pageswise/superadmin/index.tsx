@@ -5,6 +5,7 @@
 export { default as SuperAdminDashboard } from './dashboard/indexdashboard';
 export { default as SuperAdminBusinesses } from './businesses/indexbusinesses';
 export { default as SuperAdminTemplates } from './templates/indextemplates';
+export { default as SuperAdminRevenue } from './revenue/indexrevenue';
 export { default as SuperAdminAnalytics } from './analytics/indexanalytics';
 export { default as SuperAdminPlans } from './plans/indexplans';
 export { default as SuperAdminSettings } from './settings/indexsettings';

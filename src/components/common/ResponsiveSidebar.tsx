@@ -14,7 +14,8 @@ import {
   ScrollText,
   Shield,
   Menu,
-  X
+  X,
+  DollarSign
 } from 'lucide-react';
 import { authService, UserRole } from '@/utils/auth';
 import { Button } from '@/components/ui/button';
@@ -82,6 +83,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/superadmin/dashboard' },
     { icon: Building2, label: 'Businesses', path: '/superadmin/businesses' },
     { icon: FileText, label: 'Templates', path: '/superadmin/templates' },
+    { icon: DollarSign, label: 'Revenue', path: '/superadmin/revenue' },
     { icon: BarChart3, label: 'Analytics', path: '/superadmin/analytics' },
     { icon: ScrollText, label: 'Logs', path: '/superadmin/logs' },
   ];

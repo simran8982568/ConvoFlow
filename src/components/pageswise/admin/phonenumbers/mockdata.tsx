@@ -18,12 +18,13 @@ export interface PhoneNumber {
 
 export interface NewPhoneNumberData {
   displayName: string;
+  phoneNumber?: string;
   businessId: string;
-  appId: string;
   phoneNumberId: string;
-  accessToken: string;
-  webhookUrl: string;
-  verifyToken: string;
+  appId?: string;
+  accessToken?: string;
+  webhookUrl?: string;
+  verifyToken?: string;
 }
 
 export interface ConnectionTestResult {

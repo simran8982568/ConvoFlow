@@ -17,7 +17,7 @@ const getMessageStatusIcon = (status: string) => {
 };
 
 const Messages = ({ messages }: { messages: any[] }) => (
-  <div className="space-y-3">
+  <div className="space-y-3 pb-4">
     {messages.map((message, index) => {
       const isAgent = message.sender === "agent";
       const showAvatar = !isAgent && (index === 0 || messages[index - 1]?.sender !== message.sender);
@@ -47,7 +47,7 @@ const Messages = ({ messages }: { messages: any[] }) => (
 
           {/* Message Bubble */}
           <div
-            className={`max-w-xs lg:max-w-md px-3 py-2 rounded-2xl relative ${
+            className={`message-bubble max-w-xs sm:max-w-sm lg:max-w-md px-3 py-2 rounded-2xl relative ${
               isAgent
                 ? "bg-teal-500 text-white rounded-br-md"
                 : "bg-white border border-gray-200 text-gray-900 rounded-bl-md shadow-sm"

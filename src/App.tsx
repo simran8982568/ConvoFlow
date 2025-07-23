@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import SuperAdminLayout from "@/layouts/SuperAdminLayout";
 import ProtectedRoute from "@/components/common/ProtectedRoute";
 import GlobalErrorBoundary from "@/components/common/GlobalErrorBoundary";
+import { setupGlobalErrorHandling } from "@/utils/errorHandling";
 
 // Admin Auth Components
 import AdminLoginForm from "@/components/auth/admin/LoginForm";
@@ -29,21 +31,29 @@ import AdminAnalytics from "@/components/pageswise/admin/analytics/indexanalytic
 import SuperAdminDashboard from "@/components/pageswise/superadmin/dashboard/indexdashboard";
 import SuperAdminBusinesses from "@/components/pageswise/superadmin/businesses/indexbusinesses";
 import SuperAdminTemplates from "@/components/pageswise/superadmin/templates/indextemplates";
+import SuperAdminRevenue from "@/components/pageswise/superadmin/revenue/indexrevenue";
 import SuperAdminAnalytics from "@/components/pageswise/superadmin/analytics/indexanalytics";
 import SuperAdminPlans from "@/components/pageswise/superadmin/plans/indexplans";
+import ErrorHandlingTest from "@/components/common/ErrorHandlingTest";
 import SuperAdminLogs from "@/components/pageswise/superadmin/logs/indexlogs";
 import SuperAdminSettings from "@/components/pageswise/superadmin/settings/indexsettings";
 // import NavigationTest from "@/components/common/NavigationTest";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <GlobalErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+const App = () => {
+  // Setup global error handling
+  useEffect(() => {
+    setupGlobalErrorHandling();
+  }, []);
+
+  return (
+    <GlobalErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
         <Routes>
           {/* Root redirect */}
           <Route path="/" element={<Navigate to="/admin/login" replace />} />
@@ -72,6 +82,7 @@ const App = () => (
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="billing" element={<AdminBilling />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="error-test" element={<ErrorHandlingTest />} />
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
 
@@ -88,6 +99,7 @@ const App = () => (
             <Route path="dashboard" element={<SuperAdminDashboard />} />
             <Route path="businesses" element={<SuperAdminBusinesses />} />
             <Route path="templates" element={<SuperAdminTemplates />} />
+            <Route path="revenue" element={<SuperAdminRevenue />} />
             <Route path="analytics" element={<SuperAdminAnalytics />} />
             <Route path="plans" element={<SuperAdminPlans />} />
             <Route path="logs" element={<SuperAdminLogs />} />
@@ -102,9 +114,10 @@ const App = () => (
           <Route path="*" element={<Navigate to="/admin/login" replace />} />
         </Routes>
         </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </GlobalErrorBoundary>
-);
+        </TooltipProvider>
+      </QueryClientProvider>
+    </GlobalErrorBoundary>
+  );
+};
 
 export default App;

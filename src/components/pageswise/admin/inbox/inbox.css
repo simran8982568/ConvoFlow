@@ -1,0 +1,123 @@
+/* WhatsApp-style Chat Interface Styles */
+
+/* Hide scrollbars in textarea */
+.chat-textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.chat-textarea {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth scrolling for messages container */
+.messages-container {
+  scroll-behavior: smooth;
+}
+
+/* Ensure proper mobile layout */
+@media (max-width: 640px) {
+  .chat-input-container {
+    padding: 12px;
+  }
+  
+  .chat-input-wrapper {
+    gap: 8px;
+  }
+  
+  .message-bubble {
+    max-width: calc(100vw - 120px);
+  }
+}
+
+/* Prevent text selection on buttons */
+.chat-button {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Ensure input area is always visible */
+.chat-input-area {
+  position: relative;
+  z-index: 10;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Message container optimizations */
+.messages-wrapper {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for messages container */
+.messages-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.messages-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure proper flex layout */
+.chat-layout {
+  height: 100vh;
+  display: flex;
+  background: white;
+  width: 100%;
+  overflow: hidden;
+}
+
+.chat-content {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f9fafb;
+  min-width: 0;
+  height: 100%;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chat-input-container {
+  padding: 12px 16px;
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .chat-input-container {
+    padding: 16px;
+  }
+
+  .chat-input-wrapper {
+    gap: 16px;
+  }
+}

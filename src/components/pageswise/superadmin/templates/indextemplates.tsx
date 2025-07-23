@@ -7,6 +7,7 @@ import {
   Eye,
   MessageSquare,
   Search,
+  Download,
 } from "lucide-react";
 import {
   Card,
@@ -36,12 +37,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // Import admin template components for inherited functionality
 import WhatsAppPreviewModal from "../../admin/templates/WhatsAppPreviewModal";
 import HeaderCard from "./headercard";
 
-// Mock data
+// Mock data - SuperAdmin templates are auto-approved
 const mockTemplates = [
   {
     id: 1,
@@ -49,7 +52,7 @@ const mockTemplates = [
     businessName: "TechCorp Solutions",
     category: "Marketing",
     submissionDate: "2024-03-15",
-    status: "Pending",
+    status: "Approved", // Auto-approved for SuperAdmin
     content: {
       header: "Welcome to TechCorp! 🎉",
       body: "Hi {{1}}, thank you for choosing our services. We are excited to help you grow your business with our innovative solutions.",
@@ -92,7 +95,7 @@ const mockTemplates = [
     businessName: "StartupXYZ",
     category: "Utility",
     submissionDate: "2024-03-12",
-    status: "Pending",
+    status: "Approved", // Auto-approved for SuperAdmin
     content: {
       header: "📅 Appointment Scheduled",
       body: "Hi {{1}}, your appointment is scheduled for {{2}} at {{3}}. Please arrive 10 minutes early.",
@@ -107,6 +110,7 @@ const SuperAdminTemplates: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [comment, setComment] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   // Admin template functionality states
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -189,6 +193,55 @@ const SuperAdminTemplates: React.FC = () => {
     setComment("");
   };
 
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    try {
+      const tableElement = document.getElementById('templates-table');
+      if (tableElement) {
+        const canvas = await html2canvas(tableElement, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const imgWidth = 280;
+        const pageHeight = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+
+        let position = 10;
+
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight + 10;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        pdf.save('superadmin-templates.pdf');
+
+        toast({
+          title: "Export Successful",
+          description: "Templates table has been exported to PDF successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to export templates table. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -222,6 +275,15 @@ const SuperAdminTemplates: React.FC = () => {
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
           </select>
+
+          <Button
+            onClick={handleExportPDF}
+            disabled={isExporting}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            {isExporting ? 'Exporting...' : 'Export'}
+          </Button>
         </div>
       </div>
       {/* Stats Cards */}
@@ -239,17 +301,17 @@ const SuperAdminTemplates: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Template Name</TableHead>
-                <TableHead>Business</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
+          <div id="templates-table">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Template Name</TableHead>
+                  <TableHead>Business</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Submitted</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
             <TableBody>
               {filteredTemplates.map((template) => (
                 <TableRow
@@ -264,7 +326,6 @@ const SuperAdminTemplates: React.FC = () => {
                   <TableCell className="text-gray-600">
                     {new Date(template.submissionDate).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>{getStatusBadge(template.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button
@@ -281,6 +342,7 @@ const SuperAdminTemplates: React.FC = () => {
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
 

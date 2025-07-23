@@ -22,12 +22,9 @@ const AdminPhoneNumbers: React.FC = () => {
   // Form state for adding new phone number
   const [newPhoneNumber, setNewPhoneNumber] = useState<NewPhoneNumberData>({
     displayName: "",
+    phoneNumber: "",
     businessId: "",
-    appId: "",
     phoneNumberId: "",
-    accessToken: "",
-    webhookUrl: "",
-    verifyToken: "",
   });
 
   const handleAddPhoneNumber = async () => {
@@ -53,12 +50,9 @@ const AdminPhoneNumbers: React.FC = () => {
         setIsAddDialogOpen(false);
         setNewPhoneNumber({
           displayName: "",
+          phoneNumber: "",
           businessId: "",
-          appId: "",
           phoneNumberId: "",
-          accessToken: "",
-          webhookUrl: "",
-          verifyToken: "",
         });
       } else {
         toast({
@@ -83,12 +77,9 @@ const AdminPhoneNumbers: React.FC = () => {
     setErrors([]);
     setNewPhoneNumber({
       displayName: "",
+      phoneNumber: "",
       businessId: "",
-      appId: "",
       phoneNumberId: "",
-      accessToken: "",
-      webhookUrl: "",
-      verifyToken: "",
     });
   };
 

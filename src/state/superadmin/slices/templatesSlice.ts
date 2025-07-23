@@ -70,13 +70,15 @@ export const fetchTemplates = createAsyncThunk(
         name: 'Welcome Message',
         category: 'onboarding',
         type: 'text',
-        status: 'pending',
+        status: 'approved', // SuperAdmin templates are auto-approved
         businessId: '1',
         businessName: 'TechCorp Solutions',
         content: {
           body: 'Welcome to TechCorp! We\'re excited to have you on board.',
         },
         submittedAt: '2024-01-20T10:00:00Z',
+        reviewedAt: '2024-01-20T10:00:00Z', // Auto-approved immediately
+        reviewedBy: 'SuperAdmin',
         usageCount: 0,
         language: 'en',
       },
@@ -99,6 +101,31 @@ export const rejectTemplate = createAsyncThunk(
   async ({ templateId, reason }: { templateId: string; reason: string }) => {
     await new Promise(resolve => setTimeout(resolve, 800));
     return { templateId, reason };
+  }
+);
+
+export const createSuperAdminTemplate = createAsyncThunk(
+  'superadmin/templates/createTemplate',
+  async (templateData: Partial<SuperAdminTemplate>) => {
+    await new Promise(resolve => setTimeout(resolve, 1200));
+
+    const newTemplate: SuperAdminTemplate = {
+      id: Date.now().toString(),
+      name: templateData.name || 'New Template',
+      category: templateData.category || 'general',
+      type: templateData.type || 'text',
+      status: 'approved', // SuperAdmin templates are auto-approved
+      businessId: 'superadmin',
+      businessName: 'SuperAdmin',
+      content: templateData.content || { body: '' },
+      submittedAt: new Date().toISOString(),
+      reviewedAt: new Date().toISOString(), // Auto-approved immediately
+      reviewedBy: 'SuperAdmin',
+      usageCount: 0,
+      language: templateData.language || 'en',
+    };
+
+    return newTemplate;
   }
 );
 
@@ -134,6 +161,10 @@ const superAdminTemplatesSlice = createSlice({
           template.reviewedAt = new Date().toISOString();
           template.rejectionReason = action.payload.reason;
         }
+      })
+      .addCase(createSuperAdminTemplate.fulfilled, (state, action) => {
+        state.templates.unshift(action.payload); // Add to beginning of array
+        // No need to add to pendingTemplates since it's auto-approved
       });
   },
 });

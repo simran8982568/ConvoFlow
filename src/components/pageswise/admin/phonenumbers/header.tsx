@@ -26,7 +26,7 @@ const PhoneNumbersHeader: React.FC<PhoneNumbersHeaderProps> = ({
       </div>
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-teal-600 hover:bg-teal-700">
+          <Button className="bg-green-600 hover:bg-green-700">
             <Plus className="w-4 h-4 mr-2" />
             Add Phone Number
           </Button>

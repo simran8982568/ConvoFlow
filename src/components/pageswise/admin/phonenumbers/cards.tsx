@@ -1,7 +1,6 @@
 // Stats cards component for phone number metrics
 
 import React from "react";
-import { Phone, CheckCircle, Send, MessageCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PhoneNumber, getPhoneNumberStats } from "./mockdata";
 
@@ -26,7 +25,7 @@ const PhoneNumberStatsCards: React.FC<PhoneNumberStatsCardsProps> = ({
                 {stats.totalNumbers}
               </p>
             </div>
-            <Phone className="h-8 w-8 text-teal-600" />
+            <div className="text-3xl">📞</div>
           </div>
         </CardContent>
       </Card>
@@ -41,7 +40,7 @@ const PhoneNumberStatsCards: React.FC<PhoneNumberStatsCardsProps> = ({
                 {stats.connectedNumbers}
               </p>
             </div>
-            <CheckCircle className="h-8 w-8 text-green-600" />
+            <div className="text-3xl">✅</div>
           </div>
         </CardContent>
       </Card>
@@ -56,7 +55,7 @@ const PhoneNumberStatsCards: React.FC<PhoneNumberStatsCardsProps> = ({
                 {stats.totalMessagesSent.toLocaleString()}
               </p>
             </div>
-            <Send className="h-8 w-8 text-blue-600" />
+            <div className="text-3xl">✈️</div>
           </div>
         </CardContent>
       </Card>
@@ -73,7 +72,7 @@ const PhoneNumberStatsCards: React.FC<PhoneNumberStatsCardsProps> = ({
                 {stats.totalMessagesReceived.toLocaleString()}
               </p>
             </div>
-            <MessageCircle className="h-8 w-8 text-purple-600" />
+            <div className="text-3xl">💬</div>
           </div>
         </CardContent>
       </Card>

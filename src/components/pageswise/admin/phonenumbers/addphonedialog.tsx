@@ -52,44 +52,44 @@ const AddPhoneNumberDialog: React.FC<AddPhoneNumberDialogProps> = ({
       )}
 
       <div className="space-y-4">
-        {/* Display Name */}
+        {/* Phone Label */}
         <div>
-          <Label htmlFor="display-name">Display Name *</Label>
+          <Label htmlFor="phone-label">Phone Label *</Label>
           <Input
-            id="display-name"
+            id="phone-label"
             value={newPhoneNumber.displayName}
             onChange={(e) =>
               setNewPhoneNumber({ ...newPhoneNumber, displayName: e.target.value })
             }
-            placeholder="e.g., Main Business Line"
+            placeholder="e.g., Support Line"
+            disabled={isLoading}
+          />
+        </div>
+
+        {/* Phone Number */}
+        <div>
+          <Label htmlFor="phone-number">Phone Number *</Label>
+          <Input
+            id="phone-number"
+            value={newPhoneNumber.phoneNumber || ''}
+            onChange={(e) =>
+              setNewPhoneNumber({ ...newPhoneNumber, phoneNumber: e.target.value })
+            }
+            placeholder="e.g., +1234567890"
             disabled={isLoading}
           />
         </div>
 
         {/* Business ID */}
         <div>
-          <Label htmlFor="business-id">Business Account ID *</Label>
+          <Label htmlFor="business-id">Business ID *</Label>
           <Input
             id="business-id"
             value={newPhoneNumber.businessId}
             onChange={(e) =>
               setNewPhoneNumber({ ...newPhoneNumber, businessId: e.target.value })
             }
-            placeholder="Your WhatsApp Business Account ID"
-            disabled={isLoading}
-          />
-        </div>
-
-        {/* App ID */}
-        <div>
-          <Label htmlFor="app-id">App ID *</Label>
-          <Input
-            id="app-id"
-            value={newPhoneNumber.appId}
-            onChange={(e) =>
-              setNewPhoneNumber({ ...newPhoneNumber, appId: e.target.value })
-            }
-            placeholder="Your WhatsApp App ID"
+            placeholder="Your WhatsApp Business ID"
             disabled={isLoading}
           />
         </div>
@@ -108,56 +108,7 @@ const AddPhoneNumberDialog: React.FC<AddPhoneNumberDialogProps> = ({
           />
         </div>
 
-        {/* Access Token */}
-        <div>
-          <Label htmlFor="access-token">Access Token *</Label>
-          <Input
-            id="access-token"
-            type="password"
-            value={newPhoneNumber.accessToken}
-            onChange={(e) =>
-              setNewPhoneNumber({ ...newPhoneNumber, accessToken: e.target.value })
-            }
-            placeholder="Your WhatsApp Access Token"
-            disabled={isLoading}
-          />
-        </div>
 
-        {/* Webhook URL */}
-        <div>
-          <Label htmlFor="webhook-url">Webhook URL *</Label>
-          <Input
-            id="webhook-url"
-            value={newPhoneNumber.webhookUrl}
-            onChange={(e) =>
-              setNewPhoneNumber({ ...newPhoneNumber, webhookUrl: e.target.value })
-            }
-            placeholder="https://your-domain.com/webhook"
-            disabled={isLoading}
-          />
-        </div>
-
-        {/* Verify Token */}
-        <div>
-          <Label htmlFor="verify-token">Verify Token *</Label>
-          <Input
-            id="verify-token"
-            value={newPhoneNumber.verifyToken}
-            onChange={(e) =>
-              setNewPhoneNumber({ ...newPhoneNumber, verifyToken: e.target.value })
-            }
-            placeholder="Your webhook verify token"
-            disabled={isLoading}
-          />
-        </div>
-
-        {/* Help Text */}
-        <Alert>
-          <AlertDescription>
-            <strong>Need help?</strong> You can find these values in your Meta for Developers dashboard 
-            under your WhatsApp Business App configuration.
-          </AlertDescription>
-        </Alert>
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-2 pt-4">
@@ -170,10 +121,10 @@ const AddPhoneNumberDialog: React.FC<AddPhoneNumberDialogProps> = ({
           </Button>
           <Button
             onClick={onAddPhoneNumber}
-            className="bg-teal-600 hover:bg-teal-700"
+            className="bg-green-600 hover:bg-green-700"
             disabled={isLoading}
           >
-            {isLoading ? "Adding..." : "Add Phone Number"}
+            {isLoading ? "Adding..." : "Add Number"}
           </Button>
         </div>
       </div>
