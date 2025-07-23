@@ -144,11 +144,11 @@ export function useAsyncOperation<T = any>(
 export function useAsyncOperations() {
   const [operations, setOperations] = useState<Record<string, AsyncState<any>>>({});
 
-  const execute = useCallback(async <T>(
+  const execute = useCallback(async (
     key: string,
-    operation: () => Promise<T>,
+    operation: () => Promise<any>,
     options: UseAsyncOperationOptions = {}
-  ): Promise<{ data?: T; error?: any; success: boolean }> => {
+  ): Promise<{ data?: any; error?: any; success: boolean }> => {
     // Set loading state
     setOperations(prev => ({
       ...prev,
