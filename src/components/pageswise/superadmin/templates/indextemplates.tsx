@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FileText,
   Clock,
@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Search,
   Download,
+  X,
 } from "lucide-react";
 import {
   Card,
@@ -44,6 +45,7 @@ import jsPDF from 'jspdf';
 import WhatsAppPreviewModal from "../../admin/templates/WhatsAppPreviewModal";
 import HeaderCard from "./headercard";
 import SuperAdminCreateTemplateModal from "./SuperAdminCreateTemplateModal";
+import TemplateErrorBoundary from "./TemplateErrorBoundary";
 
 // Mock data - Combined SuperAdmin and Admin templates
 const mockSuperAdminTemplates = [
@@ -52,8 +54,10 @@ const mockSuperAdminTemplates = [
     name: "Welcome New Customer",
     businessName: "TechCorp Solutions",
     category: "Marketing",
-    submissionDate: "2024-03-15",
+    submittedAt: "2024-03-15",
     status: "Approved", // Auto-approved for SuperAdmin
+    createdBy: "SuperAdmin",
+    creatorType: "superadmin",
     content: {
       header: "Welcome to TechCorp! 🎉",
       body: "Hi {{1}}, thank you for choosing our services. We are excited to help you grow your business with our innovative solutions.",
@@ -66,8 +70,10 @@ const mockSuperAdminTemplates = [
     name: "Order Confirmation",
     businessName: "Global Retail Co",
     category: "Transactional",
-    submissionDate: "2024-03-14",
+    submittedAt: "2024-03-14",
     status: "Approved",
+    createdBy: "SuperAdmin",
+    creatorType: "superadmin",
     content: {
       header: "Order Confirmed ✅",
       body: "Your order #{{1}} has been confirmed and will be delivered by {{2}}. Track your order using the link below.",
@@ -80,8 +86,10 @@ const mockSuperAdminTemplates = [
     name: "Payment Reminder",
     businessName: "Digital Marketing Pro",
     category: "Utility",
-    submissionDate: "2024-03-13",
+    submittedAt: "2024-03-13",
     status: "Rejected",
+    createdBy: "SuperAdmin",
+    creatorType: "superadmin",
     content: {
       header: "⚠️ Payment Due",
       body: "Dear {{1}}, your payment of ₹{{2}} is due on {{3}}. Please make the payment to avoid service interruption.",
@@ -95,8 +103,10 @@ const mockSuperAdminTemplates = [
     name: "Appointment Booking",
     businessName: "StartupXYZ",
     category: "Utility",
-    submissionDate: "2024-03-12",
+    submittedAt: "2024-03-12",
     status: "Approved", // Auto-approved for SuperAdmin
+    createdBy: "SuperAdmin",
+    creatorType: "superadmin",
     content: {
       header: "📅 Appointment Scheduled",
       body: "Hi {{1}}, your appointment is scheduled for {{2}} at {{3}}. Please arrive 10 minutes early.",
@@ -178,15 +188,23 @@ const SuperAdminTemplates: React.FC = () => {
   const { toast } = useToast();
 
   const filteredTemplates = templates.filter((template) => {
-    const matchesStatus = filterStatus === "all" || template.status.toLowerCase() === filterStatus;
+    // Ensure template has required properties
+    if (!template || !template.name || !template.status) {
+      return false;
+    }
+
+    const matchesStatus = filterStatus === "all" ||
+      (template.status && template.status.toLowerCase() === filterStatus);
+
     const matchesCreator = creatorFilter === "all" ||
       (creatorFilter === "superadmin" && template.creatorType === "superadmin") ||
       (creatorFilter === "admin" && template.creatorType === "admin");
+
     const matchesSearch = searchTerm === "" ||
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.createdBy.toLowerCase().includes(searchTerm.toLowerCase());
+      (template.name && template.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (template.businessName && template.businessName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (template.category && template.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (template.createdBy && template.createdBy.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return matchesStatus && matchesCreator && matchesSearch;
   });
@@ -385,10 +403,11 @@ const SuperAdminTemplates: React.FC = () => {
         </div>
       </div>
       {/* Stats Cards */}
-      <HeaderCard mockTemplates={mockTemplates} />
+      <HeaderCard mockTemplates={allTemplates} />
 
       {/* Templates Table */}
-      <Card>
+      <TemplateErrorBoundary>
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
@@ -413,59 +432,76 @@ const SuperAdminTemplates: React.FC = () => {
                 </TableRow>
               </TableHeader>
             <TableBody>
-              {filteredTemplates.map((template) => (
-                <TableRow
-                  key={template.id}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer"
-                  onClick={() => handleRowClick(template)}
-                >
-                  <TableCell className="font-medium">{template.name}</TableCell>
-                  <TableCell className="text-gray-600">
-                    {template.businessName}
-                  </TableCell>
-                  <TableCell>{getCategoryBadge(template.category)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">{template.createdBy}</span>
-                      <Badge
-                        variant="secondary"
-                        className={
-                          template.creatorType === 'superadmin'
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-blue-100 text-blue-700'
-                        }
-                      >
-                        {template.creatorType === 'superadmin' ? 'SuperAdmin' : 'Admin'}
-                      </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getStatusBadge(template.status)}</TableCell>
-                  <TableCell className="text-gray-600">
-                    {template.submittedAt}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click
-                          setSelectedTemplate(template);
-                          setIsPreviewModalOpen(true);
-                        }}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        Preview
-                      </Button>
-                    </div>
+              {filteredTemplates && filteredTemplates.length > 0 ? (
+                filteredTemplates.map((template) => (
+                  <TableRow
+                    key={template.id || `template-${Math.random()}`}
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => handleRowClick(template)}
+                  >
+                    <TableCell className="font-medium">
+                      {template.name || 'Unnamed Template'}
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {template.businessName || 'Unknown Business'}
+                    </TableCell>
+                    <TableCell>
+                      {getCategoryBadge(template.category || 'Other')}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">
+                          {template.createdBy || 'Unknown'}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className={
+                            template.creatorType === 'superadmin'
+                              ? 'bg-purple-100 text-purple-700'
+                              : 'bg-blue-100 text-blue-700'
+                          }
+                        >
+                          {template.creatorType === 'superadmin' ? 'SuperAdmin' : 'Admin'}
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(template.status || 'Pending')}
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {template.submittedAt || 'Unknown Date'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            setSelectedTemplate(template);
+                            setIsPreviewModalOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Preview
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                    No templates found matching your criteria
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </TemplateErrorBoundary>
 
       {/* WhatsApp Preview Modal */}
       <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
@@ -572,10 +608,16 @@ const SuperAdminTemplates: React.FC = () => {
 
                 {/* WhatsApp Preview */}
                 <div className="bg-white border rounded-lg overflow-hidden">
-                  <WhatsAppPreviewModal
-                    template={selectedTemplate}
-                    onClose={() => {}} // Empty function since we handle close differently
-                  />
+                  <TemplateErrorBoundary fallback={
+                    <div className="p-4 text-center text-gray-500">
+                      <p>Unable to load template preview</p>
+                    </div>
+                  }>
+                    <WhatsAppPreviewModal
+                      template={selectedTemplate}
+                      onClose={() => {}} // Empty function since we handle close differently
+                    />
+                  </TemplateErrorBoundary>
                 </div>
               </div>
             )}

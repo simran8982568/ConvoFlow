@@ -56,6 +56,7 @@ const SuperAdminBusinesses: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isAddBusinessModalOpen, setIsAddBusinessModalOpen] = useState(false);
   const [newBusinessForm, setNewBusinessForm] = useState({
+    businessName: '',
     name: '',
     email: '',
     type: 'business' as 'business' | 'person'
@@ -87,7 +88,17 @@ const SuperAdminBusinesses: React.FC = () => {
     if (!newBusinessForm.name.trim() || !newBusinessForm.email.trim()) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields (Name and Email).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate business name for business accounts
+    if (newBusinessForm.type === 'business' && !newBusinessForm.businessName.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Business Name is required for Business accounts.",
         variant: "destructive",
       });
       return;
@@ -111,17 +122,17 @@ const SuperAdminBusinesses: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       toast({
-        title: "Invitation Sent",
-        description: `An invitation has been sent to ${newBusinessForm.email} to create their ${newBusinessForm.type} account.`,
+        title: "Success",
+        description: "Invite email will be sent once backend is integrated.",
       });
 
       // Reset form and close modal
-      setNewBusinessForm({ name: '', email: '', type: 'business' });
+      setNewBusinessForm({ businessName: '', name: '', email: '', type: 'business' });
       setIsAddBusinessModalOpen(false);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to send invitation. Please try again.",
+        description: "Failed to process request. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -255,14 +266,6 @@ const SuperAdminBusinesses: React.FC = () => {
           </div>
 
           <Button
-            onClick={() => setIsAddBusinessModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Add Business Account / Person Account
-          </Button>
-
-          <Button
             variant="outline"
             onClick={handleExportCSV}
             disabled={isExporting || allBusinesses.length === 0}
@@ -303,6 +306,17 @@ const SuperAdminBusinesses: React.FC = () => {
             Refresh
           </Button>
         </div>
+      </div>
+
+      {/* Add Business Account Section */}
+      <div className="flex justify-center">
+        <Button
+          onClick={() => setIsAddBusinessModalOpen(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200"
+        >
+          <Plus className="h-5 w-5" />
+          Add Business Account / Person Account
+        </Button>
       </div>
 
       {/* Loading State */}
@@ -358,43 +372,12 @@ const SuperAdminBusinesses: React.FC = () => {
               Add Business Account / Person Account
             </DialogTitle>
             <DialogDescription>
-              Send an invitation to create a new business or person account. They will receive an email with signup instructions.
+              Fill in the details below to create a new account invitation. The user will receive an email with signup instructions.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            {/* Name Field */}
-            <div className="space-y-2">
-              <Label htmlFor="business-name" className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                Name *
-              </Label>
-              <Input
-                id="business-name"
-                placeholder="Enter business or person name"
-                value={newBusinessForm.name}
-                onChange={(e) => setNewBusinessForm(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full"
-              />
-            </div>
-
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="business-email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Email Address *
-              </Label>
-              <Input
-                id="business-email"
-                type="email"
-                placeholder="Enter email address for invitation"
-                value={newBusinessForm.email}
-                onChange={(e) => setNewBusinessForm(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full"
-              />
-            </div>
-
-            {/* Type Selection */}
+            {/* Account Type Selection - First to determine other field requirements */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -410,10 +393,58 @@ const SuperAdminBusinesses: React.FC = () => {
                   <SelectValue placeholder="Select account type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="business">Business Account</SelectItem>
-                  <SelectItem value="person">Person Account</SelectItem>
+                  <SelectItem value="business">Business</SelectItem>
+                  <SelectItem value="person">Personal</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Business Name Field - Only for business accounts */}
+            {newBusinessForm.type === 'business' && (
+              <div className="space-y-2">
+                <Label htmlFor="business-name" className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  Business Name *
+                </Label>
+                <Input
+                  id="business-name"
+                  placeholder="Enter business name"
+                  value={newBusinessForm.businessName}
+                  onChange={(e) => setNewBusinessForm(prev => ({ ...prev, businessName: e.target.value }))}
+                  className="w-full"
+                />
+              </div>
+            )}
+
+            {/* Name Field */}
+            <div className="space-y-2">
+              <Label htmlFor="person-name" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Name *
+              </Label>
+              <Input
+                id="person-name"
+                placeholder={newBusinessForm.type === 'business' ? "Enter contact person name" : "Enter person name"}
+                value={newBusinessForm.name}
+                onChange={(e) => setNewBusinessForm(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full"
+              />
+            </div>
+
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email-address" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Email Address *
+              </Label>
+              <Input
+                id="email-address"
+                type="email"
+                placeholder="Enter email address for invitation"
+                value={newBusinessForm.email}
+                onChange={(e) => setNewBusinessForm(prev => ({ ...prev, email: e.target.value }))}
+                className="w-full"
+              />
             </div>
           </div>
 
@@ -422,7 +453,7 @@ const SuperAdminBusinesses: React.FC = () => {
               variant="outline"
               onClick={() => {
                 setIsAddBusinessModalOpen(false);
-                setNewBusinessForm({ name: '', email: '', type: 'business' });
+                setNewBusinessForm({ businessName: '', name: '', email: '', type: 'business' });
               }}
               disabled={isSubmitting}
             >
@@ -430,10 +461,11 @@ const SuperAdminBusinesses: React.FC = () => {
             </Button>
             <Button
               onClick={handleAddBusiness}
-              disabled={isSubmitting || !newBusinessForm.name.trim() || !newBusinessForm.email.trim()}
+              disabled={isSubmitting || !newBusinessForm.name.trim() || !newBusinessForm.email.trim() ||
+                (newBusinessForm.type === 'business' && !newBusinessForm.businessName.trim())}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {isSubmitting ? 'Sending Invitation...' : 'Send Invitation'}
+              {isSubmitting ? 'Processing...' : 'Create Invitation'}
             </Button>
           </div>
         </DialogContent>

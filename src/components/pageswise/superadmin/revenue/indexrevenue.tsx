@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, Users, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // Import modular components
 import SummaryCard from './summarycard';
 import RevenueAnalytics from './revenueanalytics';
 import TransactionDetails from './transactiondetails';
 import RevenueFilters from './RevenueFilters';
+import RevenueErrorBoundary from './RevenueErrorBoundary';
 import { summaryMetrics, transactionData, revenueData, paymentTypeData } from './dummydata';
 import { filterRevenueData, exportRevenueDataToCSV, exportRevenueToPDF } from '../../../../utils/exportUtils';
 
@@ -21,68 +23,102 @@ const SuperAdminRevenue: React.FC = () => {
     search: ''
   });
   const [isExporting, setIsExporting] = useState(false);
-  const [filteredData, setFilteredData] = useState(transactionData);
+  const [filteredData, setFilteredData] = useState(transactionData || []);
 
   // Update filtered data when filters change
   useEffect(() => {
-    const filtered = filterRevenueData(transactionData, filters);
-    setFilteredData(filtered);
+    try {
+      const filtered = filterRevenueData(transactionData || [], filters);
+      setFilteredData(Array.isArray(filtered) ? filtered : []);
+    } catch (error) {
+      console.error('Error filtering revenue data:', error);
+      setFilteredData([]);
+    }
   }, [filters]);
 
-  // Calculate filtered metrics for charts
-  const filteredRevenueData = filteredData.reduce((acc, transaction) => {
-    const month = new Date(transaction.paymentDate).toLocaleDateString('en-US', { month: 'short' });
-    if (!acc[month]) {
-      acc[month] = 0;
+  // Calculate filtered metrics for charts with error handling
+  const filteredRevenueData = React.useMemo(() => {
+    if (!Array.isArray(filteredData) || filteredData.length === 0) {
+      return {};
     }
-    acc[month] += transaction.amount;
-    return acc;
-  }, {});
 
-  const chartRevenueData = Object.entries(filteredRevenueData).map(([month, revenue]) => ({
-    month,
-    revenue
-  }));
+    return filteredData.reduce((acc, transaction) => {
+      if (!transaction || !transaction.paymentDate || typeof transaction.amount !== 'number') {
+        return acc;
+      }
 
-  const filteredPaymentTypeData = [
-    {
-      name: 'Subscriptions',
-      value: filteredData
-        .filter(t => t.paymentType === 'Subscription')
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: '#0D9488'
-    },
-    {
-      name: 'Campaign Boosts',
-      value: filteredData
-        .filter(t => t.paymentType === 'Campaign Boost')
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: '#059669'
-    },
-    {
-      name: 'Add-ons',
-      value: filteredData
-        .filter(t => t.paymentType === 'Add-on')
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: '#10B981'
-    },
-  ].filter(item => item.value > 0);
+      try {
+        const month = new Date(transaction.paymentDate).toLocaleDateString('en-US', { month: 'short' });
+        if (!acc[month]) {
+          acc[month] = 0;
+        }
+        acc[month] += transaction.amount;
+      } catch (error) {
+        console.error('Error processing transaction date:', error);
+      }
+      return acc;
+    }, {});
+  }, [filteredData]);
+
+  const chartRevenueData = React.useMemo(() => {
+    return Object.entries(filteredRevenueData).map(([month, revenue]) => ({
+      month,
+      revenue: Number(revenue) || 0
+    }));
+  }, [filteredRevenueData]);
+
+  const filteredPaymentTypeData = React.useMemo(() => {
+    if (!Array.isArray(filteredData) || filteredData.length === 0) {
+      return [];
+    }
+
+    const paymentTypes = [
+      {
+        name: 'Subscriptions',
+        value: filteredData
+          .filter(t => t && t.paymentType === 'Subscription' && typeof t.amount === 'number')
+          .reduce((sum, t) => sum + t.amount, 0),
+        color: '#0D9488'
+      },
+      {
+        name: 'Campaign Boosts',
+        value: filteredData
+          .filter(t => t && t.paymentType === 'Campaign Boost' && typeof t.amount === 'number')
+          .reduce((sum, t) => sum + t.amount, 0),
+        color: '#059669'
+      },
+      {
+        name: 'Add-ons',
+        value: filteredData
+          .filter(t => t && t.paymentType === 'Add-on' && typeof t.amount === 'number')
+          .reduce((sum, t) => sum + t.amount, 0),
+        color: '#10B981'
+      },
+    ];
+
+    return paymentTypes.filter(item => item.value > 0);
+  }, [filteredData]);
 
   // Filter handlers
-  const handleDateRangeChange = (dateRange) => {
+  const handleDateRangeChange = (dateRange: { from: string; to: string }) => {
     setFilters(prev => ({ ...prev, dateRange }));
   };
 
-  const handleCategoryChange = (category) => {
+  const handleCategoryChange = (category: string) => {
     setFilters(prev => ({ ...prev, category }));
   };
 
-  const handleSearchChange = (search) => {
+  const handleSearchChange = (search: string) => {
     setFilters(prev => ({ ...prev, search }));
   };
 
   // Export handlers
   const handleExportCSV = async () => {
+    if (!Array.isArray(filteredData) || filteredData.length === 0) {
+      console.warn('No data available for CSV export');
+      return;
+    }
+
     setIsExporting(true);
     try {
       exportRevenueDataToCSV(filteredData, filters);
@@ -94,6 +130,11 @@ const SuperAdminRevenue: React.FC = () => {
   };
 
   const handleExportPDF = async () => {
+    if (!Array.isArray(filteredData) || filteredData.length === 0) {
+      console.warn('No data available for PDF export');
+      return;
+    }
+
     setIsExporting(true);
     try {
       await exportRevenueToPDF(filters);
@@ -162,10 +203,12 @@ const SuperAdminRevenue: React.FC = () => {
       </div>
 
       {/* Revenue Analytics Chart */}
-      <RevenueAnalytics
-        filteredRevenueData={chartRevenueData}
-        filteredPaymentTypeData={filteredPaymentTypeData}
-      />
+      <RevenueErrorBoundary>
+        <RevenueAnalytics
+          filteredRevenueData={chartRevenueData}
+          filteredPaymentTypeData={filteredPaymentTypeData}
+        />
+      </RevenueErrorBoundary>
 
       {/* Enhanced Filters & Search Block */}
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
@@ -303,10 +346,12 @@ const SuperAdminRevenue: React.FC = () => {
       </div>
 
       {/* Transaction Details */}
-      <TransactionDetails
-        filteredTransactionData={filteredData}
-        searchTerm={filters.search}
-      />
+      <RevenueErrorBoundary>
+        <TransactionDetails
+          filteredTransactionData={filteredData}
+          searchTerm={filters.search}
+        />
+      </RevenueErrorBoundary>
     </div>
   );
 };

@@ -18,10 +18,14 @@ const RevenueAnalytics = ({ filteredRevenueData, filteredPaymentTypeData }) => {
   const [activeChart, setActiveChart] = useState('monthly');
   const [animationKey, setAnimationKey] = useState(0);
 
+  // Ensure data is valid arrays
+  const safeRevenueData = Array.isArray(filteredRevenueData) ? filteredRevenueData : [];
+  const safePaymentTypeData = Array.isArray(filteredPaymentTypeData) ? filteredPaymentTypeData : [];
+
   // Trigger animation when chart changes
   useEffect(() => {
     setAnimationKey(prev => prev + 1);
-  }, [activeChart, filteredRevenueData, filteredPaymentTypeData]);
+  }, [activeChart, safeRevenueData, safePaymentTypeData]);
 
   // Custom tooltip for better formatting
   const CustomTooltip = ({ active, payload, label }) => {
@@ -84,12 +88,13 @@ const RevenueAnalytics = ({ filteredRevenueData, filteredPaymentTypeData }) => {
         {activeChart === 'monthly' && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Monthly Revenue (Last 12 Months)</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart
-                key={`monthly-${animationKey}`}
-                data={filteredRevenueData.length > 0 ? filteredRevenueData : revenueData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              >
+            {safeRevenueData.length > 0 || revenueData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart
+                  key={`monthly-${animationKey}`}
+                  data={safeRevenueData.length > 0 ? safeRevenueData : revenueData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                >
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="#f0f0f0"
@@ -132,19 +137,25 @@ const RevenueAnalytics = ({ filteredRevenueData, filteredPaymentTypeData }) => {
                 />
               </LineChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-500">
+                <p>No revenue data available</p>
+              </div>
+            )}
           </div>
         )}
 
         {activeChart === 'payment-types' && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Payment Type Breakdown</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                key={`payment-${animationKey}`}
-                data={filteredPaymentTypeData.length > 0 ? filteredPaymentTypeData : paymentTypeData}
-                layout="horizontal"
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              >
+            {safePaymentTypeData.length > 0 || paymentTypeData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart
+                  key={`payment-${animationKey}`}
+                  data={safePaymentTypeData.length > 0 ? safePaymentTypeData : paymentTypeData}
+                  layout="horizontal"
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                >
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="#f0f0f0"
@@ -198,6 +209,11 @@ const RevenueAnalytics = ({ filteredRevenueData, filteredPaymentTypeData }) => {
                 />
               </BarChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-500">
+                <p>No payment type data available</p>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

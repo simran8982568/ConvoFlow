@@ -6,46 +6,66 @@ import { Check, X } from 'lucide-react';
 import { transactionData } from './dummydata';
 
 const TransactionDetails = ({ filteredTransactionData, searchTerm = '' }) => {
-  const [transactions, setTransactions] = useState(
-    filteredTransactionData.length > 0 ? filteredTransactionData : transactionData
-  );
+  const [transactions, setTransactions] = useState(() => {
+    const safeFilteredData = Array.isArray(filteredTransactionData) ? filteredTransactionData : [];
+    const safeTransactionData = Array.isArray(transactionData) ? transactionData : [];
+    return safeFilteredData.length > 0 ? safeFilteredData : safeTransactionData;
+  });
 
   // Update transactions when filtered data changes
   React.useEffect(() => {
-    if (filteredTransactionData.length > 0) {
-      setTransactions(filteredTransactionData);
+    const safeFilteredData = Array.isArray(filteredTransactionData) ? filteredTransactionData : [];
+    const safeTransactionData = Array.isArray(transactionData) ? transactionData : [];
+
+    if (safeFilteredData.length > 0) {
+      setTransactions(safeFilteredData);
     } else {
-      setTransactions(transactionData);
+      setTransactions(safeTransactionData);
     }
   }, [filteredTransactionData]);
 
-  // Filter transactions based on search term
-  const filteredBySearch = transactions.filter((transaction) => {
-    if (!searchTerm) return true;
+  // Filter transactions based on search term with null checks
+  const filteredBySearch = React.useMemo(() => {
+    if (!Array.isArray(transactions)) {
+      return [];
+    }
 
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      transaction.businessName.toLowerCase().includes(searchLower) ||
-      transaction.id.toLowerCase().includes(searchLower) ||
-      transaction.email.toLowerCase().includes(searchLower) ||
-      transaction.amount.toString().includes(searchLower)
-    );
-  });
+    return transactions.filter((transaction) => {
+      if (!transaction) return false;
+      if (!searchTerm) return true;
+
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        (transaction.businessName && transaction.businessName.toLowerCase().includes(searchLower)) ||
+        (transaction.id && transaction.id.toLowerCase().includes(searchLower)) ||
+        (transaction.email && transaction.email.toLowerCase().includes(searchLower)) ||
+        (transaction.amount && transaction.amount.toString().includes(searchLower))
+      );
+    });
+  }, [transactions, searchTerm]);
 
   // Handle status toggle with backend sync simulation
   const handleStatusToggle = async (transactionId) => {
-    const transaction = transactions.find(t => t.id === transactionId);
-    if (!transaction) return;
+    if (!transactionId || !Array.isArray(transactions)) {
+      console.error('Invalid transaction ID or transactions array');
+      return;
+    }
+
+    const transaction = transactions.find(t => t && t.id === transactionId);
+    if (!transaction) {
+      console.error('Transaction not found:', transactionId);
+      return;
+    }
 
     const newStatus = transaction.status === 'Complete' ? 'Incomplete' : 'Complete';
 
     // Optimistic update - update UI immediately
     setTransactions(prevTransactions =>
-      prevTransactions.map(t =>
-        t.id === transactionId
+      Array.isArray(prevTransactions) ? prevTransactions.map(t =>
+        t && t.id === transactionId
           ? { ...t, status: newStatus, isUpdating: true }
           : t
-      )
+      ) : []
     );
 
     try {
