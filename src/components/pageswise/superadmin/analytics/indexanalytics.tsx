@@ -22,7 +22,7 @@ import ErrorBoundary from "./errorboundary";
 import { useAnalyticsData, exportAnalyticsReport } from "./analyticsdata";
 
 const SuperAdminAnalytics: React.FC = () => {
-  const [timeRange, setTimeRange] = useState("3months");
+  const [timeRange, setTimeRange] = useState("1month");
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
@@ -71,52 +71,77 @@ const SuperAdminAnalytics: React.FC = () => {
   const handleExportReport = async () => {
     setIsExporting(true);
     try {
-      // Create CSV content with filtered data
-      const filteredMessageVolumeData = getFilteredData(messageVolumeData);
-      const filteredBusinessGrowthData = getFilteredData(businessGrowthData);
+      // Dynamic import for better code splitting
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas')
+      ]);
 
-      // Create comprehensive CSV export
-      const csvData = [
-        // KPI Data
-        ['KPI Metrics'],
-        ['Metric', 'Value', 'Trend'],
-        ['Monthly Active Users', kpiData?.monthlyActiveUsers.value || 0, `${kpiData?.monthlyActiveUsers.trend || 0}%`],
-        ['Messages Sent', kpiData?.messagesSent.value || 0, `${kpiData?.messagesSent.trend || 0}%`],
-        ['Template Approvals', kpiData?.templateApprovals.value || 0, `${kpiData?.templateApprovals.trend || 0}%`],
-        ['Automation Runs', kpiData?.automationRuns.value || 0, `${kpiData?.automationRuns.trend || 0}%`],
-        [''],
+      // Create a temporary container for PDF export
+      const tempContainer = document.createElement('div');
+      tempContainer.id = 'analytics-export-container';
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.width = '1200px';
+      tempContainer.style.backgroundColor = 'white';
+      tempContainer.style.padding = '20px';
 
-        // Message Volume Data
-        ['Message Volume Data'],
-        ['Month', 'Messages', 'Businesses'],
-        ...filteredMessageVolumeData.map(item => [item.month, item.messages, item.businesses]),
-        [''],
+      // Clone the analytics content
+      const analyticsContent = document.querySelector('.p-6.space-y-6');
+      if (analyticsContent) {
+        tempContainer.innerHTML = analyticsContent.innerHTML;
 
-        // Business Growth Data
-        ['Business Growth Data'],
-        ['Month', 'New Businesses', 'Total Businesses'],
-        ...filteredBusinessGrowthData.map(item => [item.month, item.new, item.total]),
-        [''],
+        // Remove buttons and interactive elements from the clone
+        const buttons = tempContainer.querySelectorAll('button, select');
+        buttons.forEach(button => button.remove());
+      }
 
-        // Top Templates Data
-        ['Top Templates'],
-        ['Template Name', 'Usage Count', 'Category'],
-        ...topTemplatesData.map(item => [item.name, item.usage, item.category || 'N/A']),
-      ];
+      document.body.appendChild(tempContainer);
 
-      const csvContent = csvData.map(row => row.join(',')).join('\n');
+      // Generate PDF
+      const canvas = await html2canvas(tempContainer, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      });
 
-      // Create and download file
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      const monthLabel = selectedMonth === "all" ? "all-months" : selectedMonth;
-      link.setAttribute('download', `analytics-report-${monthLabel}-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+
+      // Add title and metadata
+      pdf.setFontSize(20);
+      pdf.text('Platform Analytics Report', 20, 20);
+
+      pdf.setFontSize(12);
+      const monthLabel = selectedMonth === "all" ? "All Months" : monthOptions.find(m => m.value === selectedMonth)?.label;
+      pdf.text(`Period: ${monthLabel}`, 20, 30);
+      pdf.text(`Generated: ${new Date().toLocaleString()}`, 20, 40);
+
+      // Add the chart image
+      const imgWidth = 260;
+      const pageHeight = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 50;
+
+      pdf.addImage(imgData, 'PNG', 20, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight + 50;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 20, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Save the PDF
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `analytics-report-${selectedMonth}-${timestamp}.pdf`;
+      pdf.save(filename);
+
+      // Clean up
+      document.body.removeChild(tempContainer);
 
       toast({
         title: "Export Successful",
@@ -198,7 +223,6 @@ const SuperAdminAnalytics: React.FC = () => {
               disabled={loading}
             >
               <option value="1month">Last Month</option>
-              <option value="3months">Last 3 Months</option>
               <option value="1year">Last Year</option>
             </select>
 

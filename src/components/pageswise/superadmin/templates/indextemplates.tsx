@@ -43,9 +43,10 @@ import jsPDF from 'jspdf';
 // Import admin template components for inherited functionality
 import WhatsAppPreviewModal from "../../admin/templates/WhatsAppPreviewModal";
 import HeaderCard from "./headercard";
+import SuperAdminCreateTemplateModal from "./SuperAdminCreateTemplateModal";
 
-// Mock data - SuperAdmin templates are auto-approved
-const mockTemplates = [
+// Mock data - Combined SuperAdmin and Admin templates
+const mockSuperAdminTemplates = [
   {
     id: 1,
     name: "Welcome New Customer",
@@ -105,26 +106,89 @@ const mockTemplates = [
   },
 ];
 
+// Mock data for Admin-created templates
+const mockAdminTemplates = [
+  {
+    id: 101,
+    name: "Order Confirmation",
+    businessName: "E-commerce Store",
+    category: "Transactional",
+    status: "Approved",
+    submittedAt: "2024-07-19",
+    createdBy: "Admin",
+    creatorType: "admin",
+    content: {
+      header: "✅ Order Confirmed",
+      body: "Thank you {{1}}! Your order #{{2}} has been confirmed and will be delivered by {{3}}.",
+      footer: "E-commerce Store",
+      buttons: ["Track Order", "Contact Support"],
+    },
+  },
+  {
+    id: 102,
+    name: "Payment Reminder",
+    businessName: "Financial Services",
+    category: "Utility",
+    status: "Pending",
+    submittedAt: "2024-07-18",
+    createdBy: "Admin",
+    creatorType: "admin",
+    content: {
+      header: "💳 Payment Due",
+      body: "Hi {{1}}, your payment of ${{2}} is due on {{3}}. Please make the payment to avoid late fees.",
+      footer: "Financial Services",
+      buttons: ["Pay Now", "View Details"],
+    },
+  },
+  {
+    id: 103,
+    name: "Welcome Message",
+    businessName: "Tech Solutions Inc.",
+    category: "Marketing",
+    status: "Approved",
+    submittedAt: "2024-07-17",
+    createdBy: "Admin",
+    creatorType: "admin",
+    content: {
+      header: "🎉 Welcome!",
+      body: "Welcome to {{1}}, {{2}}! We're excited to have you on board. Get started with our platform today.",
+      footer: "Tech Solutions Inc.",
+      buttons: ["Get Started", "Learn More"],
+    },
+  },
+];
+
+// Combine all templates
+const allTemplates = [...mockSuperAdminTemplates, ...mockAdminTemplates];
+
 const SuperAdminTemplates: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [comment, setComment] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isExporting, setIsExporting] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [templates, setTemplates] = useState(allTemplates);
+  const [creatorFilter, setCreatorFilter] = useState("all"); // New filter for creator type
+  const [isSlidePreviewOpen, setIsSlidePreviewOpen] = useState(false); // Side-slide preview
 
   // Admin template functionality states
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const { toast } = useToast();
 
-  const filteredTemplates = mockTemplates.filter((template) => {
+  const filteredTemplates = templates.filter((template) => {
     const matchesStatus = filterStatus === "all" || template.status.toLowerCase() === filterStatus;
+    const matchesCreator = creatorFilter === "all" ||
+      (creatorFilter === "superadmin" && template.creatorType === "superadmin") ||
+      (creatorFilter === "admin" && template.creatorType === "admin");
     const matchesSearch = searchTerm === "" ||
       template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       template.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchTerm.toLowerCase());
+      template.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.createdBy.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesStatus && matchesSearch;
+    return matchesStatus && matchesCreator && matchesSearch;
   });
 
   const getStatusBadge = (status: string) => {
@@ -242,6 +306,22 @@ const SuperAdminTemplates: React.FC = () => {
     }
   };
 
+  const handleTemplateCreated = (newTemplate: any) => {
+    // Add the new template to the list
+    setTemplates(prev => [newTemplate, ...prev]);
+
+    toast({
+      title: "Template Created",
+      description: `Template "${newTemplate.name}" has been created and is now available to all admins.`,
+    });
+  };
+
+  // Handle row click for side-slide preview
+  const handleRowClick = (template: any) => {
+    setSelectedTemplate(template);
+    setIsSlidePreviewOpen(true);
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -254,7 +334,15 @@ const SuperAdminTemplates: React.FC = () => {
             Create, review and approve WhatsApp templates for businesses
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <Button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-teal-600 hover:bg-teal-700"
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Create Template
+          </Button>
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -264,6 +352,16 @@ const SuperAdminTemplates: React.FC = () => {
               className="pl-10 w-64"
             />
           </div>
+
+          <select
+            value={creatorFilter}
+            onChange={(e) => setCreatorFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+          >
+            <option value="all">All Creators</option>
+            <option value="superadmin">SuperAdmin</option>
+            <option value="admin">Admin</option>
+          </select>
 
           <select
             value={filterStatus}
@@ -308,6 +406,8 @@ const SuperAdminTemplates: React.FC = () => {
                   <TableHead>Template Name</TableHead>
                   <TableHead>Business</TableHead>
                   <TableHead>Category</TableHead>
+                  <TableHead>Created By</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Submitted</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -316,22 +416,43 @@ const SuperAdminTemplates: React.FC = () => {
               {filteredTemplates.map((template) => (
                 <TableRow
                   key={template.id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => handleRowClick(template)}
                 >
                   <TableCell className="font-medium">{template.name}</TableCell>
                   <TableCell className="text-gray-600">
                     {template.businessName}
                   </TableCell>
                   <TableCell>{getCategoryBadge(template.category)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">{template.createdBy}</span>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          template.creatorType === 'superadmin'
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-blue-100 text-blue-700'
+                        }
+                      >
+                        {template.creatorType === 'superadmin' ? 'SuperAdmin' : 'Admin'}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell>{getStatusBadge(template.status)}</TableCell>
                   <TableCell className="text-gray-600">
-                    {new Date(template.submissionDate).toLocaleDateString()}
+                    {template.submittedAt}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handlePreviewTemplate(template)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click
+                          setSelectedTemplate(template);
+                          setIsPreviewModalOpen(true);
+                        }}
                       >
                         <Eye className="h-4 w-4 mr-1" />
                         Preview
@@ -363,6 +484,112 @@ const SuperAdminTemplates: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Create Template Modal - Using SuperAdmin Modal */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Template</DialogTitle>
+            <DialogDescription>
+              Create a new WhatsApp template that will be available to all admins.
+            </DialogDescription>
+          </DialogHeader>
+
+          <SuperAdminCreateTemplateModal
+            onClose={() => setShowCreateModal(false)}
+            onTemplateCreated={handleTemplateCreated}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Side-Slide Preview Panel */}
+      <div className={`fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
+        isSlidePreviewOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
+        <div className="h-full flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <h3 className="text-lg font-semibold">Template Preview</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsSlidePreviewOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {selectedTemplate && (
+              <div className="space-y-4">
+                {/* Template Info */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">{selectedTemplate.name}</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-500">Category:</span>
+                      <span className="ml-1 font-medium">{selectedTemplate.category}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Status:</span>
+                      <span className="ml-1">{getStatusBadge(selectedTemplate.status)}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Created by:</span>
+                      <span className="ml-1 font-medium">{selectedTemplate.createdBy}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Date:</span>
+                      <span className="ml-1">{selectedTemplate.submittedAt}</span>
+                    </div>
+                  </div>
+
+                  {/* URL if available */}
+                  {selectedTemplate.content?.url && (
+                    <div className="mt-3 pt-3 border-t">
+                      <span className="text-gray-500 text-sm">Reference URL:</span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <a
+                          href={selectedTemplate.content.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm truncate flex-1"
+                        >
+                          {selectedTemplate.content.url}
+                        </a>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(selectedTemplate.content.url, '_blank')}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* WhatsApp Preview */}
+                <div className="bg-white border rounded-lg overflow-hidden">
+                  <WhatsAppPreviewModal
+                    template={selectedTemplate}
+                    onClose={() => {}} // Empty function since we handle close differently
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Overlay for side-slide */}
+      {isSlidePreviewOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsSlidePreviewOpen(false)}
+        />
+      )}
     </div>
   );
 };

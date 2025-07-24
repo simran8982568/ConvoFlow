@@ -9,6 +9,9 @@ import {
   MessageSquare,
   RefreshCw,
   Download,
+  Plus,
+  User,
+  Mail,
 } from "lucide-react";
 import {
   Card,
@@ -20,6 +23,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import HeaderCard from "./headercard";
 import BusinessDirectory from "./businessdirectory";
@@ -49,6 +54,13 @@ const SuperAdminBusinesses: React.FC = () => {
     null
   );
   const [isExporting, setIsExporting] = useState(false);
+  const [isAddBusinessModalOpen, setIsAddBusinessModalOpen] = useState(false);
+  const [newBusinessForm, setNewBusinessForm] = useState({
+    name: '',
+    email: '',
+    type: 'business' as 'business' | 'person'
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -69,6 +81,53 @@ const SuperAdminBusinesses: React.FC = () => {
     activeCount,
     inactiveCount,
   } = useBusinessData();
+
+  // Handle adding new business account
+  const handleAddBusiness = async () => {
+    if (!newBusinessForm.name.trim() || !newBusinessForm.email.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newBusinessForm.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Simulate API call to send invitation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      toast({
+        title: "Invitation Sent",
+        description: `An invitation has been sent to ${newBusinessForm.email} to create their ${newBusinessForm.type} account.`,
+      });
+
+      // Reset form and close modal
+      setNewBusinessForm({ name: '', email: '', type: 'business' });
+      setIsAddBusinessModalOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send invitation. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleExportCSV = async () => {
     setIsExporting(true);
@@ -196,6 +255,14 @@ const SuperAdminBusinesses: React.FC = () => {
           </div>
 
           <Button
+            onClick={() => setIsAddBusinessModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Business Account / Person Account
+          </Button>
+
+          <Button
             variant="outline"
             onClick={handleExportCSV}
             disabled={isExporting || allBusinesses.length === 0}
@@ -281,6 +348,96 @@ const SuperAdminBusinesses: React.FC = () => {
           deleteBusiness={deleteBusiness}
         />
       )}
+
+      {/* Add Business Account Modal */}
+      <Dialog open={isAddBusinessModalOpen} onOpenChange={setIsAddBusinessModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5" />
+              Add Business Account / Person Account
+            </DialogTitle>
+            <DialogDescription>
+              Send an invitation to create a new business or person account. They will receive an email with signup instructions.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Name Field */}
+            <div className="space-y-2">
+              <Label htmlFor="business-name" className="flex items-center gap-2">
+                <Building2 className="h-4 w-4" />
+                Name *
+              </Label>
+              <Input
+                id="business-name"
+                placeholder="Enter business or person name"
+                value={newBusinessForm.name}
+                onChange={(e) => setNewBusinessForm(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full"
+              />
+            </div>
+
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="business-email" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Email Address *
+              </Label>
+              <Input
+                id="business-email"
+                type="email"
+                placeholder="Enter email address for invitation"
+                value={newBusinessForm.email}
+                onChange={(e) => setNewBusinessForm(prev => ({ ...prev, email: e.target.value }))}
+                className="w-full"
+              />
+            </div>
+
+            {/* Type Selection */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Account Type *
+              </Label>
+              <Select
+                value={newBusinessForm.type}
+                onValueChange={(value: 'business' | 'person') =>
+                  setNewBusinessForm(prev => ({ ...prev, type: value }))
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select account type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="business">Business Account</SelectItem>
+                  <SelectItem value="person">Person Account</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsAddBusinessModalOpen(false);
+                setNewBusinessForm({ name: '', email: '', type: 'business' });
+              }}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddBusiness}
+              disabled={isSubmitting || !newBusinessForm.name.trim() || !newBusinessForm.email.trim()}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {isSubmitting ? 'Sending Invitation...' : 'Send Invitation'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

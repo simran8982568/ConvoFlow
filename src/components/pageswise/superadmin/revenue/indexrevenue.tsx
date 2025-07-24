@@ -1,254 +1,102 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import {
-  Search,
-  Filter,
-  Calendar,
-  Download,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  CreditCard,
-  Users,
-  Clock,
-} from 'lucide-react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import React, { useState, useEffect } from 'react';
+import { DollarSign, TrendingUp, Users, Clock } from 'lucide-react';
 
-// Mock data for revenue analytics
-const revenueData = [
-  { month: 'Jan', revenue: 85000 },
-  { month: 'Feb', revenue: 92000 },
-  { month: 'Mar', revenue: 78000 },
-  { month: 'Apr', revenue: 105000 },
-  { month: 'May', revenue: 125000 },
-  { month: 'Jun', revenue: 120000 },
-];
+// Import modular components
+import SummaryCard from './summarycard';
+import RevenueAnalytics from './revenueanalytics';
+import TransactionDetails from './transactiondetails';
+import RevenueFilters from './RevenueFilters';
+import { summaryMetrics, transactionData, revenueData, paymentTypeData } from './dummydata';
+import { filterRevenueData, exportRevenueDataToCSV, exportRevenueToPDF } from '../../../../utils/exportUtils';
 
-const paymentTypeData = [
-  { name: 'Subscriptions', value: 750000, color: '#0D9488' },
-  { name: 'Campaign Boosts', value: 350000, color: '#059669' },
-  { name: 'Add-ons', value: 150000, color: '#10B981' },
-];
-
-const transactionData = [
-  {
-    id: 'TXN1234',
-    businessName: 'Sophia Carter',
-    email: 'sophia.carter@email.com',
-    paymentDate: '2024-07-18',
-    amount: 500,
-    paymentType: 'Subscription',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN1890',
-    businessName: 'Tech Solutions Inc.',
-    email: 'contact@techsolutions.com',
-    paymentDate: '2024-07-18',
-    amount: 1200,
-    paymentType: 'Campaign Boost',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN1223',
-    businessName: 'Liam Bennett',
-    email: 'liam.bennett@email.com',
-    paymentDate: '2024-07-17',
-    amount: 750,
-    paymentType: 'Add-on',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN4556',
-    businessName: 'Global Marketing Ltd.',
-    email: 'info@globalmarketing.com',
-    paymentDate: '2024-07-17',
-    amount: 2500,
-    paymentType: 'Subscription',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN7889',
-    businessName: 'Olivia Harper',
-    email: 'olivia.harper@email.com',
-    paymentDate: '2024-07-16',
-    amount: 300,
-    paymentType: 'Add-on',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN8901',
-    businessName: 'Creative Solutions',
-    email: 'support@creativesolutions.com',
-    paymentDate: '2024-07-16',
-    amount: 800,
-    paymentType: 'Campaign Boost',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN2334',
-    businessName: 'Ethan Walker',
-    email: 'ethan.walker@email.com',
-    paymentDate: '2024-07-15',
-    amount: 1500,
-    paymentType: 'Add-on',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN8890',
-    businessName: 'Innovative Solutions LLC',
-    email: 'sales@innovativesolutions.com',
-    paymentDate: '2024-07-15',
-    amount: 500,
-    paymentType: 'Add-on',
-    status: 'Complete',
-  },
-  {
-    id: 'TXN1224',
-    businessName: 'Dynamic Enterprises',
-    email: 'contact@dynamicenterprises.com',
-    paymentDate: '2024-07-14',
-    amount: 1000,
-    paymentType: 'Campaign Boost',
-    status: 'Complete',
-  },
-];
+// Clean exports for maintainability
+export { default as SummaryCard } from './summarycard';
+export { default as RevenueAnalytics } from './revenueanalytics';
+export { default as TransactionDetails } from './transactiondetails';
 
 const SuperAdminRevenue: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isExporting, setIsExporting] = useState(false);
-  const [dateFilter, setDateFilter] = useState('all');
-  const [paymentTypeFilter, setPaymentTypeFilter] = useState('all');
-
-  const filteredTransactions = transactionData.filter((transaction) => {
-    // Search filter
-    const matchesSearch = searchTerm === '' ||
-      transaction.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.id.toLowerCase().includes(searchTerm.toLowerCase());
-
-    // Date filter
-    const transactionDate = new Date(transaction.paymentDate);
-    const today = new Date();
-    let matchesDate = true;
-
-    if (dateFilter === 'today') {
-      matchesDate = transactionDate.toDateString() === today.toDateString();
-    } else if (dateFilter === 'week') {
-      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-      matchesDate = transactionDate >= weekAgo;
-    } else if (dateFilter === 'month') {
-      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-      matchesDate = transactionDate >= monthAgo;
-    }
-
-    // Payment type filter
-    const matchesPaymentType = paymentTypeFilter === 'all' ||
-      transaction.paymentType === paymentTypeFilter;
-
-    return matchesSearch && matchesDate && matchesPaymentType;
+  const [filters, setFilters] = useState({
+    dateRange: { from: '', to: '' },
+    category: 'all',
+    search: ''
   });
+  const [isExporting, setIsExporting] = useState(false);
+  const [filteredData, setFilteredData] = useState(transactionData);
 
-  // Calculate filtered metrics
-  const filteredRevenue = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
-  const filteredTransactionCount = filteredTransactions.length;
+  // Update filtered data when filters change
+  useEffect(() => {
+    const filtered = filterRevenueData(transactionData, filters);
+    setFilteredData(filtered);
+  }, [filters]);
 
-  // Calculate filtered payment type breakdown
-  const filteredPaymentTypeData = [
-    {
-      name: 'Subscriptions',
-      value: filteredTransactions
-        .filter(t => t.paymentType === 'Subscription')
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: '#0D9488'
-    },
-    {
-      name: 'Campaign Boosts',
-      value: filteredTransactions
-        .filter(t => t.paymentType === 'Campaign Boost')
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: '#059669'
-    },
-    {
-      name: 'Add-ons',
-      value: filteredTransactions
-        .filter(t => t.paymentType === 'Add-on')
-        .reduce((sum, t) => sum + t.amount, 0),
-      color: '#10B981'
-    },
-  ].filter(item => item.value > 0); // Only show categories with data
-
-  // Calculate filtered monthly revenue (group by month)
-  const filteredMonthlyRevenue = filteredTransactions.reduce((acc, transaction) => {
+  // Calculate filtered metrics for charts
+  const filteredRevenueData = filteredData.reduce((acc, transaction) => {
     const month = new Date(transaction.paymentDate).toLocaleDateString('en-US', { month: 'short' });
     if (!acc[month]) {
       acc[month] = 0;
     }
     acc[month] += transaction.amount;
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
 
-  const filteredRevenueData = Object.entries(filteredMonthlyRevenue).map(([month, revenue]) => ({
+  const chartRevenueData = Object.entries(filteredRevenueData).map(([month, revenue]) => ({
     month,
     revenue
   }));
 
+  const filteredPaymentTypeData = [
+    {
+      name: 'Subscriptions',
+      value: filteredData
+        .filter(t => t.paymentType === 'Subscription')
+        .reduce((sum, t) => sum + t.amount, 0),
+      color: '#0D9488'
+    },
+    {
+      name: 'Campaign Boosts',
+      value: filteredData
+        .filter(t => t.paymentType === 'Campaign Boost')
+        .reduce((sum, t) => sum + t.amount, 0),
+      color: '#059669'
+    },
+    {
+      name: 'Add-ons',
+      value: filteredData
+        .filter(t => t.paymentType === 'Add-on')
+        .reduce((sum, t) => sum + t.amount, 0),
+      color: '#10B981'
+    },
+  ].filter(item => item.value > 0);
+
+  // Filter handlers
+  const handleDateRangeChange = (dateRange) => {
+    setFilters(prev => ({ ...prev, dateRange }));
+  };
+
+  const handleCategoryChange = (category) => {
+    setFilters(prev => ({ ...prev, category }));
+  };
+
+  const handleSearchChange = (search) => {
+    setFilters(prev => ({ ...prev, search }));
+  };
+
+  // Export handlers
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    try {
+      exportRevenueDataToCSV(filteredData, filters);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      const tableElement = document.getElementById('transaction-table');
-      if (tableElement) {
-        const canvas = await html2canvas(tableElement, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-        });
-        
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('l', 'mm', 'a4');
-        const imgWidth = 280;
-        const pageHeight = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        
-        let position = 10;
-        
-        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-        
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight + 10;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-        
-        pdf.save('revenue-transactions.pdf');
-      }
+      await exportRevenueToPDF(filters);
     } catch (error) {
       console.error('Error exporting PDF:', error);
     } finally {
@@ -258,264 +106,207 @@ const SuperAdminRevenue: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Revenue Overview</h1>
-        <p className="text-gray-600 mt-1">
-          Monitor platform revenue and transaction analytics.
-        </p>
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Revenue Analytics</h1>
+          <p className="text-gray-600 mt-1">Track revenue performance and transaction details</p>
+        </div>
       </div>
 
-      {/* Revenue Summary Cards */}
+      {/* Filters Section */}
+      <RevenueFilters
+        onDateRangeChange={handleDateRangeChange}
+        onCategoryChange={handleCategoryChange}
+        onSearchChange={handleSearchChange}
+        onExportCSV={handleExportCSV}
+        onExportPDF={handleExportPDF}
+        isExporting={isExporting}
+      />
+
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {dateFilter === 'all' ? 'Total Revenue' :
-                   dateFilter === 'today' ? 'Today\'s Revenue' :
-                   dateFilter === 'week' ? 'Week\'s Revenue' :
-                   'Month\'s Revenue'}
-                </p>
-                <p className="text-2xl font-bold text-gray-900">₹{filteredRevenue.toLocaleString()}</p>
-                <div className="flex items-center mt-1">
-                  <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                  <span className="text-sm text-green-600 font-medium">+10%</span>
-                </div>
-              </div>
-              <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">This Month's Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">₹120,000</p>
-                <div className="flex items-center mt-1">
-                  <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                  <span className="text-sm text-green-600 font-medium">+5%</span>
-                </div>
-              </div>
-              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CreditCard className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {dateFilter === 'all' ? 'Total Transactions' :
-                   dateFilter === 'today' ? 'Today\'s Transactions' :
-                   dateFilter === 'week' ? 'Week\'s Transactions' :
-                   'Month\'s Transactions'}
-                </p>
-                <p className="text-2xl font-bold text-gray-900">{filteredTransactionCount.toLocaleString()}</p>
-                <div className="flex items-center mt-1">
-                  <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                  <span className="text-sm text-green-600 font-medium">+8%</span>
-                </div>
-              </div>
-              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Users className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending Settlements</p>
-                <p className="text-2xl font-bold text-gray-900">₹15,000</p>
-                <div className="flex items-center mt-1">
-                  <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-                  <span className="text-sm text-red-600 font-medium">-2%</span>
-                </div>
-              </div>
-              <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Clock className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <SummaryCard
+          title="Total Revenue"
+          value={summaryMetrics.totalRevenue}
+          growth={summaryMetrics.growthRates.revenue}
+          icon={DollarSign}
+          iconColor="text-blue-600"
+          iconBgColor="bg-blue-100"
+        />
+        <SummaryCard
+          title="Monthly Revenue"
+          value={summaryMetrics.monthlyRevenue}
+          growth={summaryMetrics.growthRates.monthly}
+          icon={TrendingUp}
+          iconColor="text-green-600"
+          iconBgColor="bg-green-100"
+        />
+        <SummaryCard
+          title="Total Transactions"
+          value={summaryMetrics.totalTransactions}
+          growth={summaryMetrics.growthRates.transactions}
+          icon={Users}
+          iconColor="text-purple-600"
+          iconBgColor="bg-purple-100"
+          currency={false}
+        />
+        <SummaryCard
+          title="Pending Settlements"
+          value={summaryMetrics.pendingSettlements}
+          growth={summaryMetrics.growthRates.settlements}
+          icon={Clock}
+          iconColor="text-orange-600"
+          iconBgColor="bg-orange-100"
+        />
       </div>
 
-      {/* Revenue Analytics */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Revenue Analytics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="monthly" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="monthly">Monthly Revenue</TabsTrigger>
-              <TabsTrigger value="payment-types">Payment Type Breakdown</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="monthly" className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Monthly Revenue (Last 6 Months)</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={filteredRevenueData.length > 0 ? filteredRevenueData : revenueData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
-                    <YAxis stroke="#6b7280" fontSize={12} />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      }}
-                      formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="revenue" 
-                      stroke="#0D9488" 
-                      strokeWidth={3}
-                      dot={{ fill: '#0D9488', strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, stroke: '#0D9488', strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="payment-types" className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Payment Type Breakdown</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={filteredPaymentTypeData.length > 0 ? filteredPaymentTypeData : paymentTypeData} layout="horizontal">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis type="number" stroke="#6b7280" fontSize={12} />
-                    <YAxis dataKey="name" type="category" stroke="#6b7280" fontSize={12} />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      }}
-                      formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
-                    />
-                    <Bar dataKey="value" fill="#0D9488" radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+      {/* Revenue Analytics Chart */}
+      <RevenueAnalytics
+        filteredRevenueData={chartRevenueData}
+        filteredPaymentTypeData={filteredPaymentTypeData}
+      />
 
-      {/* Transaction Details */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <CardTitle>Transaction Details</CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
+      {/* Enhanced Filters & Search Block */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Filters & Search</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setFilters({ dateRange: { from: '', to: '' }, category: 'all', search: '' });
+            }}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            Clear All
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          {/* Date Range Selector */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Date Range</label>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <input
+                  type="date"
+                  value={filters.dateRange.from}
+                  onChange={(e) => setFilters(prev => ({
+                    ...prev,
+                    dateRange: { ...prev.dateRange, from: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="mm/dd/yyyy"
                 />
+                <span className="text-xs text-gray-500">Start Date</span>
               </div>
-              <select
-                value={paymentTypeFilter}
-                onChange={(e) => setPaymentTypeFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+              <div>
+                <input
+                  type="date"
+                  value={filters.dateRange.to}
+                  onChange={(e) => setFilters(prev => ({
+                    ...prev,
+                    dateRange: { ...prev.dateRange, to: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="mm/dd/yyyy"
+                />
+                <span className="text-xs text-gray-500">End Date</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Category Dropdown */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Category</label>
+            <select
+              value={filters.category}
+              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+            >
+              <option value="all">All Categories</option>
+              <option value="subscription">Subscriptions</option>
+              <option value="marketing">Marketing</option>
+              <option value="campaign-boost">Campaign Boost</option>
+              <option value="add-on">Add-on</option>
+            </select>
+          </div>
+
+          {/* Search Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Search</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={filters.search}
+                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                placeholder="Search transactions..."
+                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Export Buttons */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Export Data</label>
+            <div className="flex gap-2">
+              <button
+                onClick={handleExportCSV}
+                disabled={isExporting}
+                className="flex-1 px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <option value="all">All Types</option>
-                <option value="Subscription">Subscription</option>
-                <option value="Campaign Boost">Campaign Boost</option>
-                <option value="Add-on">Add-on</option>
-              </select>
-              <select
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-              >
-                <option value="all">All Time</option>
-                <option value="today">Today</option>
-                <option value="week">Last Week</option>
-                <option value="month">Last Month</option>
-              </select>
-              <Button
+                {isExporting ? 'Exporting...' : 'CSV'}
+              </button>
+              <button
                 onClick={handleExportPDF}
                 disabled={isExporting}
-                className="bg-teal-600 hover:bg-teal-700"
+                className="flex-1 px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <Download className="h-4 w-4 mr-2" />
-                {isExporting ? 'Exporting...' : 'Export'}
-              </Button>
+                {isExporting ? 'Exporting...' : 'PDF'}
+              </button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div id="transaction-table" className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Transaction ID</TableHead>
-                  <TableHead>User/Business Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Payment Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Payment Type</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTransactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-medium">{transaction.id}</TableCell>
-                    <TableCell>{transaction.businessName}</TableCell>
-                    <TableCell className="text-gray-600">{transaction.email}</TableCell>
-                    <TableCell>{transaction.paymentDate}</TableCell>
-                    <TableCell className="font-semibold">₹{transaction.amount.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={
-                          transaction.paymentType === 'Subscription'
-                            ? 'bg-blue-100 text-blue-800'
-                            : transaction.paymentType === 'Campaign Boost'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-purple-100 text-purple-800'
-                        }
-                      >
-                        {transaction.paymentType}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className="bg-green-100 text-green-800"
-                      >
-                        {transaction.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        </div>
+
+        {/* Active Filters Display */}
+        {(filters.dateRange.from || filters.dateRange.to || filters.category !== 'all' || filters.search) && (
+          <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+            <span className="text-sm text-gray-600">Active filters:</span>
+            {filters.dateRange.from && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-teal-100 text-teal-800">
+                From: {filters.dateRange.from}
+              </span>
+            )}
+            {filters.dateRange.to && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-teal-100 text-teal-800">
+                To: {filters.dateRange.to}
+              </span>
+            )}
+            {filters.category !== 'all' && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                Category: {filters.category}
+              </span>
+            )}
+            {filters.search && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
+                Search: "{filters.search}"
+              </span>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
+
+      {/* Transaction Details */}
+      <TransactionDetails
+        filteredTransactionData={filteredData}
+        searchTerm={filters.search}
+      />
     </div>
   );
 };

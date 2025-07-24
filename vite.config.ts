@@ -22,6 +22,9 @@ export default defineConfig(({ mode }) => ({
     },
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
   },
+  define: {
+    'process.env.NODE_ENV': '"production"',
+  },
   esbuild: {
     loader: 'tsx',
     include: /src\/.*\.[tj]sx?$/,
@@ -33,14 +36,14 @@ export default defineConfig(({ mode }) => ({
     assetsDir: 'assets',
     sourcemap: false,
     minify: 'esbuild',
-    chunkSizeWarningLimit: 1000, // increases warning limit to 1000 kB
+    chunkSizeWarningLimit: 1500, // increases warning limit to 1500 kB
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-        }
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          charts: ['recharts'],
+          ui: ['@/components/ui'],
+        },
       }
     },
   },
