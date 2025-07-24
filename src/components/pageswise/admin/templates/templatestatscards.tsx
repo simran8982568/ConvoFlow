@@ -1,6 +1,6 @@
-import React from 'react';
-import { FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from "react";
+import { FileText, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface TemplateStats {
   total: number;
@@ -18,7 +18,7 @@ interface TemplateStatsCardsProps {
 const TemplateStatsCards: React.FC<TemplateStatsCardsProps> = ({
   stats,
   loading = false,
-  error
+  error,
 }) => {
   if (error) {
     return (
@@ -52,33 +52,33 @@ const TemplateStatsCards: React.FC<TemplateStatsCardsProps> = ({
 
   const statsConfig = [
     {
-      title: 'Total Templates',
+      title: "Total Templates",
       value: stats.total,
       icon: FileText,
-      color: 'text-gray-900',
-      bgColor: 'bg-gray-50'
+      color: "text-gray-900",
+      bgColor: "bg-gray-50",
     },
     {
-      title: 'Approved',
+      title: "Approved",
       value: stats.approved,
       icon: CheckCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      color: "text-green-600",
+      bgColor: "bg-green-50",
     },
     {
-      title: 'Pending Review',
+      title: "Pending Review",
       value: stats.pending,
       icon: Clock,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50'
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-50",
     },
     {
-      title: 'Rejected',
+      title: "Rejected",
       value: stats.rejected,
       icon: AlertCircle,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50'
-    }
+      color: "text-red-600",
+      bgColor: "bg-red-50",
+    },
   ];
 
   return (
@@ -86,15 +86,22 @@ const TemplateStatsCards: React.FC<TemplateStatsCardsProps> = ({
       {statsConfig.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
-          <Card key={index} className={`border-l-4 ${stat.color.replace('text-', 'border-')}`}>
+          <Card
+            key={index}
+            className={`border-l-4 ${stat.color.replace("text-", "border-")}`}
+          >
             <CardHeader className="p-3 sm:p-4 md:p-6 pb-2">
-              <CardTitle className={`text-xs sm:text-sm font-medium ${stat.color} flex items-center gap-1 sm:gap-2`}>
+              <CardTitle
+                className={`text-xs sm:text-sm font-medium ${stat.color} flex items-center gap-1 sm:gap-2`}
+              >
                 <IconComponent className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="truncate">{stat.title}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
-              <div className={`text-lg sm:text-xl md:text-2xl font-bold ${stat.color}`}>
+              <div
+                className={`text-lg sm:text-xl md:text-2xl font-bold ${stat.color}`}
+              >
                 {stat.value}
               </div>
             </CardContent>

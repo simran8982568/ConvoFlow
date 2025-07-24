@@ -1,15 +1,28 @@
-import React from 'react';
-import { Eye, Edit, Trash2, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React from "react";
+import {
+  Eye,
+  Edit,
+  Trash2,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Template {
   id: string;
   name: string;
   category: string;
-  type: 'system' | 'custom';
-  status: 'approved' | 'pending' | 'rejected';
+  type: "system" | "custom";
+  status: "approved" | "pending" | "rejected";
   content: {
     header: string;
     body: string;
@@ -35,25 +48,25 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
   error,
   onPreview,
   onEdit,
-  onDelete
+  onDelete,
 }) => {
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'approved':
+      case "approved":
         return (
           <Badge className="bg-green-100 text-green-800 border-green-200">
             <CheckCircle className="w-3 h-3 mr-1" />
             Approved
           </Badge>
         );
-      case 'pending':
+      case "pending":
         return (
           <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
         );
-      case 'rejected':
+      case "rejected":
         return (
           <Badge className="bg-red-100 text-red-800 border-red-200">
             <AlertCircle className="w-3 h-3 mr-1" />
@@ -67,12 +80,13 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'Marketing': 'bg-blue-100 text-blue-800',
-      'Transactional': 'bg-green-100 text-green-800',
-      'Utility': 'bg-purple-100 text-purple-800',
-      'Authentication': 'bg-orange-100 text-orange-800'
+      Marketing: "bg-blue-100 text-blue-800",
+      Utility: "bg-purple-100 text-purple-800",
+      Authentication: "bg-orange-100 text-orange-800",
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return (
+      colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
+    );
   };
 
   if (error) {
@@ -113,8 +127,12 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
         <div className="text-gray-400 mb-4">
           <Eye className="h-12 w-12 mx-auto" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Templates Found</h3>
-        <p className="text-gray-600">Create your first template to get started.</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          No Templates Found
+        </h3>
+        <p className="text-gray-600">
+          Create your first template to get started.
+        </p>
       </div>
     );
   }
@@ -126,13 +144,20 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
           <CardHeader className="p-3 sm:p-4 md:p-6">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-sm sm:text-base md:text-lg truncate">{template.name}</CardTitle>
+                <CardTitle className="text-sm sm:text-base md:text-lg truncate">
+                  {template.name}
+                </CardTitle>
                 <div className="mt-1 sm:mt-2 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
-                  <Badge variant="secondary" className={`text-xs ${getCategoryColor(template.category)}`}>
+                  <Badge
+                    variant="secondary"
+                    className={`text-xs ${getCategoryColor(template.category)}`}
+                  >
                     {template.category}
                   </Badge>
-                  {template.type === 'system' && (
-                    <Badge variant="outline" className="text-xs">System</Badge>
+                  {template.type === "system" && (
+                    <Badge variant="outline" className="text-xs">
+                      System
+                    </Badge>
                   )}
                 </div>
               </div>
@@ -164,7 +189,7 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
                   <span className="hidden sm:inline">Preview</span>
                   <span className="sm:hidden">View</span>
                 </Button>
-                {template.type === 'custom' && (
+                {template.type === "custom" && (
                   <>
                     <Button
                       variant="outline"

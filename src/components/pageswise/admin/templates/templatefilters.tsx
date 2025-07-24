@@ -1,8 +1,8 @@
-import React from 'react';
-import { Search, Filter, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import React from "react";
+import { Search, Filter, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface TemplateFiltersProps {
   searchTerm: string;
@@ -27,23 +27,23 @@ const TemplateFilters: React.FC<TemplateFiltersProps> = ({
   onClearFilters,
   loading = false,
   filteredCount,
-  totalCount
+  totalCount,
 }) => {
   const categoryOptions = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'Marketing', label: 'Marketing' },
-    { value: 'Transactional', label: 'Transactional' },
-    { value: 'Utility', label: 'Utility' },
-    { value: 'Authentication', label: 'Authentication' }
+    { value: "all", label: "All Categories" },
+    { value: "Marketing", label: "Marketing" },
+    { value: "Utility", label: "Utility" },
+    { value: "Authentication", label: "Authentication" },
   ];
 
   const typeOptions = [
-    { value: 'all', label: 'All Types' },
-    { value: 'system', label: 'System Templates' },
-    { value: 'custom', label: 'Custom Templates' }
+    { value: "all", label: "All Types" },
+    { value: "system", label: "System Templates" },
+    { value: "custom", label: "Custom Templates" },
   ];
 
-  const hasActiveFilters = searchTerm || filterCategory !== 'all' || filterType !== 'all';
+  const hasActiveFilters =
+    searchTerm || filterCategory !== "all" || filterType !== "all";
 
   if (loading) {
     return (
@@ -69,7 +69,7 @@ const TemplateFilters: React.FC<TemplateFiltersProps> = ({
             disabled={loading}
           />
         </div>
-        
+
         <select
           value={filterCategory}
           onChange={(e) => onCategoryChange(e.target.value)}
@@ -82,7 +82,7 @@ const TemplateFilters: React.FC<TemplateFiltersProps> = ({
             </option>
           ))}
         </select>
-        
+
         <select
           value={filterType}
           onChange={(e) => onTypeChange(e.target.value)}
@@ -127,14 +127,18 @@ const TemplateFilters: React.FC<TemplateFiltersProps> = ({
                   Search: "{searchTerm}"
                 </Badge>
               )}
-              {filterCategory !== 'all' && (
+              {filterCategory !== "all" && (
                 <Badge variant="secondary" className="text-xs">
-                  Category: {categoryOptions.find(c => c.value === filterCategory)?.label}
+                  Category:{" "}
+                  {
+                    categoryOptions.find((c) => c.value === filterCategory)
+                      ?.label
+                  }
                 </Badge>
               )}
-              {filterType !== 'all' && (
+              {filterType !== "all" && (
                 <Badge variant="secondary" className="text-xs">
-                  Type: {typeOptions.find(t => t.value === filterType)?.label}
+                  Type: {typeOptions.find((t) => t.value === filterType)?.label}
                 </Badge>
               )}
             </div>
@@ -146,7 +150,9 @@ const TemplateFilters: React.FC<TemplateFiltersProps> = ({
         <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
           <Filter className="h-8 w-8 mx-auto mb-2 opacity-50" />
           <p className="font-medium">No templates match your current filters</p>
-          <p className="text-sm">Try adjusting your search criteria or clearing filters</p>
+          <p className="text-sm">
+            Try adjusting your search criteria or clearing filters
+          </p>
         </div>
       )}
     </div>

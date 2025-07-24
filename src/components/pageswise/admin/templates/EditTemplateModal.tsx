@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { Template } from './templatesdata';
-import { X } from 'lucide-react';
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Template } from "./templatesdata";
+import { X } from "lucide-react";
 
 interface EditTemplateModalProps {
   template: Template;
@@ -32,11 +32,12 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
     header: template.content.header,
     body: template.content.body,
     footer: template.content.footer,
-    buttons: template.content.buttons.length > 0 ? template.content.buttons : [''],
+    buttons:
+      template.content.buttons.length > 0 ? template.content.buttons : [""],
   });
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -45,7 +46,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
   const handleButtonChange = (index: number, value: string) => {
     const newButtons = [...formData.buttons];
     newButtons[index] = value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       buttons: newButtons,
     }));
@@ -53,9 +54,9 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
 
   const addButton = () => {
     if (formData.buttons.length < 3) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        buttons: [...prev.buttons, ''],
+        buttons: [...prev.buttons, ""],
       }));
     }
   };
@@ -63,7 +64,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
   const removeButton = (index: number) => {
     if (formData.buttons.length > 1) {
       const newButtons = formData.buttons.filter((_, i) => i !== index);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         buttons: newButtons,
       }));
@@ -81,16 +82,16 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
     }
 
     setIsLoading(true);
-    
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       toast({
         title: "Template Updated",
         description: `Template "${formData.name}" has been updated successfully.`,
       });
-      
+
       onClose();
     } catch (error) {
       toast({
@@ -111,7 +112,8 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
           <div>
             <h3 className="font-medium text-blue-900">Editing Template</h3>
             <p className="text-sm text-blue-700 mt-1">
-              ID: {template.id} • Created: {new Date(template.createdAt).toLocaleDateString()}
+              ID: {template.id} • Created:{" "}
+              {new Date(template.createdAt).toLocaleDateString()}
             </p>
           </div>
           <div className="text-right">
@@ -134,7 +136,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
           <Input
             id="template-name"
             value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={(e) => handleInputChange("name", e.target.value)}
             placeholder="Enter template name"
           />
         </div>
@@ -142,14 +144,13 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
           <Label htmlFor="category">Category *</Label>
           <Select
             value={formData.category}
-            onValueChange={(value) => handleInputChange('category', value)}
+            onValueChange={(value) => handleInputChange("category", value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Marketing">Marketing</SelectItem>
-              <SelectItem value="Transactional">Transactional</SelectItem>
               <SelectItem value="Utility">Utility</SelectItem>
               <SelectItem value="Authentication">Authentication</SelectItem>
             </SelectContent>
@@ -164,7 +165,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
           <Input
             id="header"
             value={formData.header}
-            onChange={(e) => handleInputChange('header', e.target.value)}
+            onChange={(e) => handleInputChange("header", e.target.value)}
             placeholder="Template header text"
           />
         </div>
@@ -174,7 +175,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
           <Textarea
             id="body"
             value={formData.body}
-            onChange={(e) => handleInputChange('body', e.target.value)}
+            onChange={(e) => handleInputChange("body", e.target.value)}
             placeholder="Enter your message body..."
             rows={4}
           />
@@ -185,7 +186,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
           <Input
             id="footer"
             value={formData.footer}
-            onChange={(e) => handleInputChange('footer', e.target.value)}
+            onChange={(e) => handleInputChange("footer", e.target.value)}
             placeholder="Footer text"
           />
         </div>
@@ -231,14 +232,15 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
       </Card>
 
       {/* Warning for System Templates */}
-      {template.type === 'system' && (
+      {template.type === "system" && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="text-yellow-600">⚠️</div>
             <div>
               <h4 className="font-medium text-yellow-900">System Template</h4>
               <p className="text-sm text-yellow-700 mt-1">
-                This is a system template. Changes may affect multiple campaigns and require approval.
+                This is a system template. Changes may affect multiple campaigns
+                and require approval.
               </p>
             </div>
           </div>
@@ -247,11 +249,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-3 pt-4">
-        <Button
-          variant="outline"
-          onClick={onClose}
-          disabled={isLoading}
-        >
+        <Button variant="outline" onClick={onClose} disabled={isLoading}>
           Cancel
         </Button>
         <Button
@@ -259,7 +257,7 @@ const EditTemplateModal: React.FC<EditTemplateModalProps> = ({
           disabled={isLoading}
           className="bg-teal-600 hover:bg-teal-700"
         >
-          {isLoading ? 'Saving...' : 'Save Changes'}
+          {isLoading ? "Saving..." : "Save Changes"}
         </Button>
       </div>
     </div>

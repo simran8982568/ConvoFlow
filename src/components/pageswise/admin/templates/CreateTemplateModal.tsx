@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { Upload, X, Image, Video, FileText, Smile } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useState } from "react";
+import { Upload, X, Image, Video, FileText, Smile } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 interface CreateTemplateModalProps {
   onClose: () => void;
@@ -23,25 +23,28 @@ interface CreateTemplateModalProps {
 interface MediaFile {
   id: string;
   file: File;
-  type: 'image' | 'video' | 'gif';
+  type: "image" | "video" | "gif";
   preview: string;
 }
 
-const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTemplateCreated }) => {
+const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({
+  onClose,
+  onTemplateCreated,
+}) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    header: '',
-    body: '',
-    footer: '',
-    buttons: [''],
+    name: "",
+    category: "",
+    header: "",
+    body: "",
+    footer: "",
+    buttons: [""],
   });
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -50,7 +53,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
   const handleButtonChange = (index: number, value: string) => {
     const newButtons = [...formData.buttons];
     newButtons[index] = value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       buttons: newButtons,
     }));
@@ -58,9 +61,9 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
 
   const addButton = () => {
     if (formData.buttons.length < 3) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        buttons: [...prev.buttons, ''],
+        buttons: [...prev.buttons, ""],
       }));
     }
   };
@@ -68,7 +71,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
   const removeButton = (index: number) => {
     if (formData.buttons.length > 1) {
       const newButtons = formData.buttons.filter((_, i) => i !== index);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         buttons: newButtons,
       }));
@@ -79,10 +82,14 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
     const files = event.target.files;
     if (!files) return;
 
-    Array.from(files).forEach(file => {
-      const fileType = file.type.startsWith('image/') 
-        ? file.type.includes('gif') ? 'gif' : 'image'
-        : file.type.startsWith('video/') ? 'video' : null;
+    Array.from(files).forEach((file) => {
+      const fileType = file.type.startsWith("image/")
+        ? file.type.includes("gif")
+          ? "gif"
+          : "image"
+        : file.type.startsWith("video/")
+        ? "video"
+        : null;
 
       if (fileType) {
         const reader = new FileReader();
@@ -90,10 +97,10 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
           const newMedia: MediaFile = {
             id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
             file,
-            type: fileType as 'image' | 'video' | 'gif',
+            type: fileType as "image" | "video" | "gif",
             preview: e.target?.result as string,
           };
-          setMediaFiles(prev => [...prev, newMedia]);
+          setMediaFiles((prev) => [...prev, newMedia]);
         };
         reader.readAsDataURL(file);
       }
@@ -101,7 +108,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
   };
 
   const removeMedia = (id: string) => {
-    setMediaFiles(prev => prev.filter(media => media.id !== id));
+    setMediaFiles((prev) => prev.filter((media) => media.id !== id));
   };
 
   const handleSave = async () => {
@@ -118,19 +125,19 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Create the template object
       const newTemplate = {
         name: formData.name,
         category: formData.category,
-        type: 'custom' as const,
-        status: 'pending' as const,
+        type: "custom" as const,
+        status: "pending" as const,
         content: {
           header: formData.header,
           body: formData.body,
           footer: formData.footer,
-          buttons: formData.buttons.filter(btn => btn.trim() !== ''),
+          buttons: formData.buttons.filter((btn) => btn.trim() !== ""),
         },
       };
 
@@ -163,7 +170,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
           <Input
             id="template-name"
             value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={(e) => handleInputChange("name", e.target.value)}
             placeholder="Enter template name"
           />
         </div>
@@ -171,14 +178,13 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
           <Label htmlFor="category">Category *</Label>
           <Select
             value={formData.category}
-            onValueChange={(value) => handleInputChange('category', value)}
+            onValueChange={(value) => handleInputChange("category", value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Marketing">Marketing</SelectItem>
-              <SelectItem value="Transactional">Transactional</SelectItem>
               <SelectItem value="Utility">Utility</SelectItem>
               <SelectItem value="Authentication">Authentication</SelectItem>
             </SelectContent>
@@ -222,7 +228,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
                 {mediaFiles.map((media) => (
                   <div key={media.id} className="relative group">
                     <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                      {media.type === 'video' ? (
+                      {media.type === "video" ? (
                         <video
                           src={media.preview}
                           className="w-full h-full object-cover"
@@ -265,7 +271,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
           <Input
             id="header"
             value={formData.header}
-            onChange={(e) => handleInputChange('header', e.target.value)}
+            onChange={(e) => handleInputChange("header", e.target.value)}
             placeholder="Template header text"
           />
         </div>
@@ -275,7 +281,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
           <Textarea
             id="body"
             value={formData.body}
-            onChange={(e) => handleInputChange('body', e.target.value)}
+            onChange={(e) => handleInputChange("body", e.target.value)}
             placeholder="Enter your message body..."
             rows={4}
           />
@@ -286,7 +292,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
           <Input
             id="footer"
             value={formData.footer}
-            onChange={(e) => handleInputChange('footer', e.target.value)}
+            onChange={(e) => handleInputChange("footer", e.target.value)}
             placeholder="Footer text"
           />
         </div>
@@ -333,11 +339,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-3 pt-4">
-        <Button
-          variant="outline"
-          onClick={onClose}
-          disabled={isLoading}
-        >
+        <Button variant="outline" onClick={onClose} disabled={isLoading}>
           Cancel
         </Button>
         <Button
@@ -345,7 +347,7 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ onClose, onTe
           disabled={isLoading}
           className="bg-teal-600 hover:bg-teal-700"
         >
-          {isLoading ? 'Creating...' : 'Create Template'}
+          {isLoading ? "Creating..." : "Create Template"}
         </Button>
       </div>
     </div>
