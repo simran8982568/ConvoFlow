@@ -31,7 +31,7 @@ const SuperAdminSidebar: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+    <div className="flex flex-col h-full  bg-white border-r border-gray-200">
       {/* Logo */}
       <div className="flex items-center px-6 py-4 border-b border-gray-200">
         <div className="flex items-center space-x-2">

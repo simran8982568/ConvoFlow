@@ -37,8 +37,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 // Import admin template components for inherited functionality
 import WhatsAppPreviewModal from "../../admin/templates/WhatsAppPreviewModal";
@@ -111,6 +111,7 @@ const SuperAdminTemplates: React.FC = () => {
   const [comment, setComment] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isExporting, setIsExporting] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   // Admin template functionality states
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -118,14 +119,20 @@ const SuperAdminTemplates: React.FC = () => {
   const { toast } = useToast();
 
   const filteredTemplates = mockTemplates.filter((template) => {
-    const matchesStatus = filterStatus === "all" || template.status.toLowerCase() === filterStatus;
-    const matchesSearch = searchTerm === "" ||
+    const matchesStatus =
+      filterStatus === "all" || template.status.toLowerCase() === filterStatus;
+    const matchesSearch =
+      searchTerm === "" ||
       template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       template.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       template.category.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesStatus && matchesSearch;
   });
+
+  const templatesToShow = showAll
+    ? filteredTemplates
+    : filteredTemplates.slice(0, 5);
 
   const getStatusBadge = (status: string) => {
     const colors = {
@@ -187,7 +194,8 @@ const SuperAdminTemplates: React.FC = () => {
   const handleReject = (templateId: number) => {
     toast({
       title: "Template Rejected",
-      description: "Template has been rejected and the business has been notified.",
+      description:
+        "Template has been rejected and the business has been notified.",
       variant: "destructive",
     });
     setComment("");
@@ -196,16 +204,15 @@ const SuperAdminTemplates: React.FC = () => {
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      const tableElement = document.getElementById('templates-table');
+      const tableElement = document.getElementById("templates-table");
       if (tableElement) {
         const canvas = await html2canvas(tableElement, {
-          scale: 2,
           useCORS: true,
           allowTaint: true,
         });
 
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('l', 'mm', 'a4');
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("l", "mm", "a4");
         const imgWidth = 280;
         const pageHeight = 210;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -213,17 +220,17 @@ const SuperAdminTemplates: React.FC = () => {
 
         let position = 10;
 
-        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight + 10;
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+          pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
 
-        pdf.save('superadmin-templates.pdf');
+        pdf.save("superadmin-templates.pdf");
 
         toast({
           title: "Export Successful",
@@ -231,7 +238,7 @@ const SuperAdminTemplates: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error('Error exporting PDF:', error);
+      console.error("Error exporting PDF:", error);
       toast({
         title: "Export Failed",
         description: "Failed to export templates table. Please try again.",
@@ -254,36 +261,37 @@ const SuperAdminTemplates: React.FC = () => {
             Create, review and approve WhatsApp templates for businesses
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <div className="flex flex-col gap-2 w-full md:flex-row md:items-center md:gap-3">
+          <div className="relative flex-shrink-0 w-full md:w-auto max-w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-64"
+              className="pl-10 pr-3 h-10 w-full md:w-64 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-purple-500 transition-all duration-150 shadow-sm"
+              style={{ minWidth: 0 }}
             />
           </div>
-
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-          >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-
-          <Button
-            onClick={handleExportPDF}
-            disabled={isExporting}
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            {isExporting ? 'Exporting...' : 'Export'}
-          </Button>
+          <div className="flex flex-row gap-2 w-full md:w-auto">
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-2 py-1 h-10 border border-gray-300 rounded-md text-xs md:text-sm w-full md:w-auto"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <Button
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="bg-purple-600 hover:bg-purple-700 px-3 h-10 text-sm flex items-center gap-1 w-full md:w-auto"
+            >
+              <Download className="h-5 w-5 mr-1" />
+              {isExporting ? "Exporting..." : "Export"}
+            </Button>
+          </div>
         </div>
       </div>
       {/* Stats Cards */}
@@ -291,14 +299,26 @@ const SuperAdminTemplates: React.FC = () => {
 
       {/* Templates Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Template Queue
-          </CardTitle>
-          <CardDescription>
-            Review templates for WhatsApp Business API compliance
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Template Queue
+            </CardTitle>
+            <CardDescription>
+              Review templates for WhatsApp Business API compliance
+            </CardDescription>
+          </div>
+          {filteredTemplates.length > 5 && !showAll && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto whitespace-nowrap border-gray-300 text-gray-700 hover:bg-gray-100"
+              onClick={() => setShowAll(true)}
+            >
+              View All
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
           <div id="templates-table">
@@ -312,37 +332,52 @@ const SuperAdminTemplates: React.FC = () => {
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
-            <TableBody>
-              {filteredTemplates.map((template) => (
-                <TableRow
-                  key={template.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <TableCell className="font-medium">{template.name}</TableCell>
-                  <TableCell className="text-gray-600">
-                    {template.businessName}
-                  </TableCell>
-                  <TableCell>{getCategoryBadge(template.category)}</TableCell>
-                  <TableCell className="text-gray-600">
-                    {new Date(template.submissionDate).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handlePreviewTemplate(template)}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        Preview
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              <TableBody>
+                {templatesToShow.map((template) => (
+                  <TableRow
+                    key={template.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <TableCell className="font-medium">
+                      {template.name}
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {template.businessName}
+                    </TableCell>
+                    <TableCell>{getCategoryBadge(template.category)}</TableCell>
+                    <TableCell className="text-gray-600">
+                      {new Date(template.submissionDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handlePreviewTemplate(template)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Preview
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
+          {/* Show 'Show Less' if all are visible and more than 5 exist */}
+          {filteredTemplates.length > 5 && showAll && (
+            <div className="flex justify-center mt-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                onClick={() => setShowAll(false)}
+              >
+                Show Less
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 

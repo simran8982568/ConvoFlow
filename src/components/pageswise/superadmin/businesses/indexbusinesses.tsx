@@ -76,49 +76,52 @@ const SuperAdminBusinesses: React.FC = () => {
     try {
       // Create CSV content
       const headers = [
-        'Business Name',
-        'Email',
-        'Phone',
-        'Industry',
-        'Plan',
-        'Status',
-        'Signup Date',
-        'Last Active',
-        'Campaigns',
-        'Messages',
-        'Automations',
-        'Usage %',
-        'Website'
+        "Business Name",
+        "Email",
+        "Phone",
+        "Industry",
+        "Plan",
+        "Status",
+        "Signup Date",
+        "Last Active",
+        "Campaigns",
+        "Messages",
+        "Automations",
+        "Usage %",
+        "Website",
       ];
 
-      const csvData = allBusinesses.map(business => [
+      const csvData = allBusinesses.map((business) => [
         business.name,
-        business.email || 'N/A',
-        business.phone || 'N/A',
-        business.industry || 'N/A',
+        business.email || "N/A",
+        business.phone || "N/A",
+        business.industry || "N/A",
         business.plan,
         business.status,
         business.signupDate,
-        business.lastActive || 'N/A',
+        business.lastActive || "N/A",
         business.campaigns,
         business.messages,
         business.automations,
         business.usage,
-        business.website || 'N/A'
+        business.website || "N/A",
       ]);
 
       const csvContent = [
-        headers.join(','),
-        ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
-      ].join('\n');
+        headers.join(","),
+        ...csvData.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+      ].join("\n");
 
       // Create and download file
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `businesses-export-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `businesses-export-${new Date().toISOString().split("T")[0]}.csv`
+      );
+      link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -184,14 +187,14 @@ const SuperAdminBusinesses: React.FC = () => {
             Monitor and manage all businesses on the platform
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="relative w-40 sm:w-64">
+            <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-4 sm:w-4" />
             <Input
               placeholder="Search businesses..."
               value={filters.searchTerm}
               onChange={(e) => updateFilters({ searchTerm: e.target.value })}
-              className="pl-10 w-64"
+              className="pl-8 pr-2 py-2 w-full text-sm sm:pl-10 sm:w-64 sm:text-base"
             />
           </div>
 
@@ -199,15 +202,17 @@ const SuperAdminBusinesses: React.FC = () => {
             variant="outline"
             onClick={handleExportCSV}
             disabled={isExporting || allBusinesses.length === 0}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1 px-2 py-1 text-xs sm:gap-2 sm:px-4 sm:py-2 sm:text-sm min-w-[36px]"
           >
             <Download className="h-4 w-4" />
-            {isExporting ? 'Exporting...' : 'Export CSV'}
+            <span className="hidden sm:inline">
+              {isExporting ? "Exporting..." : "Export CSV"}
+            </span>
           </Button>
           <select
             value={filters.planFilter}
             onChange={(e) => updateFilters({ planFilter: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-2 py-1 border border-gray-300 rounded-md text-xs sm:px-3 sm:py-2 sm:text-sm min-w-[80px]"
           >
             <option value="all">All Plans</option>
             <option value="free">Free</option>
@@ -218,7 +223,7 @@ const SuperAdminBusinesses: React.FC = () => {
           <select
             value={filters.statusFilter}
             onChange={(e) => updateFilters({ statusFilter: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-2 py-1 border border-gray-300 rounded-md text-xs sm:px-3 sm:py-2 sm:text-sm min-w-[80px]"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -229,11 +234,14 @@ const SuperAdminBusinesses: React.FC = () => {
             size="sm"
             onClick={() => loadBusinesses()}
             disabled={loading}
+            className="px-2 py-1 text-xs sm:px-4 sm:py-2 sm:text-sm min-w-[36px] flex items-center"
           >
             <RefreshCw
-              className={`h-4 w-4 mr-1 ${loading ? "animate-spin" : ""}`}
+              className={`h-4 w-4 mr-0 sm:mr-1 ${
+                loading ? "animate-spin" : ""
+              }`}
             />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
         </div>
       </div>

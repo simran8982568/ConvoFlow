@@ -148,14 +148,22 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
                   {template.name}
                 </CardTitle>
                 <div className="mt-1 sm:mt-2 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
-                  <Badge
-                    variant="secondary"
-                    className={`text-xs ${getCategoryColor(template.category)}`}
-                  >
-                    {template.category}
-                  </Badge>
+                  {/* Category badge hidden on mobile, visible on sm+ */}
+                  <span className="hidden sm:inline">
+                    <Badge
+                      variant="secondary"
+                      className={`text-xs ${getCategoryColor(
+                        template.category
+                      )}`}
+                    >
+                      {template.category}
+                    </Badge>
+                  </span>
                   {template.type === "system" && (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-2 py-0.5"
+                    >
                       System
                     </Badge>
                   )}
@@ -190,24 +198,9 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
                   <span className="sm:hidden">View</span>
                 </Button>
                 {template.type === "custom" && (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onEdit(template)}
-                      className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3"
-                    >
-                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onDelete(template)}
-                      className="text-red-600 hover:text-red-700 text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3"
-                    >
-                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
-                  </>
+                  <Badge variant="outline" className="text-[10px] px-2 py-0.5">
+                    Custom
+                  </Badge>
                 )}
               </div>
             </div>

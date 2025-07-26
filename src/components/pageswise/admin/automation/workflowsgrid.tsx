@@ -51,7 +51,9 @@ const WorkflowsGrid: React.FC<WorkflowsGridProps> = ({ workflows }) => {
     null
   );
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
-  const [pausedWorkflows, setPausedWorkflows] = useState<Set<number>>(new Set());
+  const [pausedWorkflows, setPausedWorkflows] = useState<Set<number>>(
+    new Set()
+  );
 
   const handleWorkflowAction = (action: string, workflowId: number) => {
     // You can add toast or logic here if needed
@@ -60,7 +62,7 @@ const WorkflowsGrid: React.FC<WorkflowsGridProps> = ({ workflows }) => {
   };
 
   const handlePauseToggle = (workflowId: number, isPaused: boolean) => {
-    setPausedWorkflows(prev => {
+    setPausedWorkflows((prev) => {
       const newSet = new Set(prev);
       if (isPaused) {
         newSet.add(workflowId);
@@ -76,68 +78,173 @@ const WorkflowsGrid: React.FC<WorkflowsGridProps> = ({ workflows }) => {
     setIsBuilderOpen(true);
   };
 
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-      {workflows.map((workflow) => {
+      {workflows.map((workflow, idx) => {
         const isPaused = pausedWorkflows.has(workflow.id);
+        const isLast = idx === workflows.length - 1;
+        // Mobile: compact card, expand on click
         return (
-          <Card
-            key={workflow.id}
-            className={`hover:shadow-lg transition-all duration-300 ${
-              isPaused ? 'bg-red-50 border-red-200' : ''
-            }`}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className={`text-lg flex items-center gap-2 ${
-                    isPaused ? 'text-red-700' : ''
-                  }`}>
-                    {workflow.name}
-                    {isPaused && <span className="text-sm font-normal text-red-600">(Paused)</span>}
-                  </CardTitle>
-                  <CardDescription className={`mt-1 ${isPaused ? 'text-red-600' : ''}`}>
+          <div key={workflow.id} className="xl:block">
+            <div className="block lg:hidden">
+              {expandedId === workflow.id ? (
+                <Card
+                  className={`hover:shadow-lg transition-all duration-300 ${
+                    isPaused ? "bg-red-50 border-red-200" : ""
+                  } ${isLast ? "min-h-[120px] sm:min-h-0" : ""}`}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle
+                          className={`text-lg flex items-center gap-2 ${
+                            isPaused ? "text-red-700" : ""
+                          }`}
+                        >
+                          {workflow.name}
+                          {isPaused && (
+                            <span className="text-sm font-normal text-red-600">
+                              (Paused)
+                            </span>
+                          )}
+                        </CardTitle>
+                        <CardDescription
+                          className={`mt-1 ${isPaused ? "text-red-600" : ""}`}
+                        >
+                          {workflow.description}
+                        </CardDescription>
+                      </div>
+                      {getStatusBadge(workflow.status)}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center p-3 bg-gray-50 rounded-lg">
+                          <p className="text-lg font-bold text-gray-900">
+                            {workflow.totalRuns}
+                          </p>
+                          <p className="text-sm text-gray-600">Total Runs</p>
+                        </div>
+                        <div className="text-center p-3 bg-gray-50 rounded-lg">
+                          <p className="text-lg font-bold text-green-600">
+                            {workflow.completionRate}%
+                          </p>
+                          <p className="text-sm text-gray-600">Completion</p>
+                        </div>
+                      </div>
+                      <TriggerInfo
+                        trigger={workflow.trigger}
+                        createdAt={workflow.createdAt}
+                      />
+                      <ActionButtons
+                        workflow={workflow}
+                        onEdit={openWorkflowBuilder}
+                        onAction={handleWorkflowAction}
+                        isPaused={isPaused}
+                        onPauseToggle={handlePauseToggle}
+                      />
+                      <button
+                        className="mt-2 text-xs text-teal-600 underline"
+                        onClick={() => setExpandedId(null)}
+                      >
+                        Hide Details
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card
+                  className={`cursor-pointer hover:bg-gray-50 transition-all duration-200 p-3 flex items-center ${
+                    isPaused ? "bg-red-50 border-red-200" : ""
+                  } ${isLast ? "min-h-[64px] sm:min-h-0" : ""}`}
+                  onClick={() => setExpandedId(workflow.id)}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <span
+                      className={`font-medium text-sm truncate ${
+                        isPaused ? "text-red-700" : ""
+                      }`}
+                    >
+                      {workflow.name}
+                    </span>
+                    {getStatusBadge(workflow.status)}
+                  </div>
+                  <div
+                    className={`text-xs text-gray-600 ml-2 truncate ${
+                      isPaused ? "text-red-600" : ""
+                    }`}
+                  >
                     {workflow.description}
-                  </CardDescription>
-                </div>
-                {getStatusBadge(workflow.status)}
-              </div>
-            </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* Workflow Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-lg font-bold text-gray-900">
-                    {workflow.totalRuns}
-                  </p>
-                  <p className="text-sm text-gray-600">Total Runs</p>
-                </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-lg font-bold text-green-600">
-                    {workflow.completionRate}%
-                  </p>
-                  <p className="text-sm text-gray-600">Completion</p>
-                </div>
-              </div>
-
-              {/* Trigger Info */}
-              <TriggerInfo
-                trigger={workflow.trigger}
-                createdAt={workflow.createdAt}
-              />
-
-              {/* Action Buttons */}
-              <ActionButtons
-                workflow={workflow}
-                onEdit={openWorkflowBuilder}
-                onAction={handleWorkflowAction}
-                isPaused={isPaused}
-                onPauseToggle={handlePauseToggle}
-              />
+                  </div>
+                </Card>
+              )}
             </div>
-          </CardContent>
-        </Card>
+            {/* Desktop: always show full card */}
+            <div className="hidden lg:block">
+              <Card
+                className={`hover:shadow-lg transition-all duration-300 ${
+                  isPaused ? "bg-red-50 border-red-200" : ""
+                }`}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle
+                        className={`text-lg flex items-center gap-2 ${
+                          isPaused ? "text-red-700" : ""
+                        }`}
+                      >
+                        {workflow.name}
+                        {isPaused && (
+                          <span className="text-sm font-normal text-red-600">
+                            (Paused)
+                          </span>
+                        )}
+                      </CardTitle>
+                      <CardDescription
+                        className={`mt-1 ${isPaused ? "text-red-600" : ""}`}
+                      >
+                        {workflow.description}
+                      </CardDescription>
+                    </div>
+                    {getStatusBadge(workflow.status)}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <p className="text-lg font-bold text-gray-900">
+                          {workflow.totalRuns}
+                        </p>
+                        <p className="text-sm text-gray-600">Total Runs</p>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <p className="text-lg font-bold text-green-600">
+                          {workflow.completionRate}%
+                        </p>
+                        <p className="text-sm text-gray-600">Completion</p>
+                      </div>
+                    </div>
+                    <TriggerInfo
+                      trigger={workflow.trigger}
+                      createdAt={workflow.createdAt}
+                    />
+                    <ActionButtons
+                      workflow={workflow}
+                      onEdit={openWorkflowBuilder}
+                      onAction={handleWorkflowAction}
+                      isPaused={isPaused}
+                      onPauseToggle={handlePauseToggle}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         );
       })}
     </div>

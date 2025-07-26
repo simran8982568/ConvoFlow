@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { Copy, Check, Eye, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
+import React, { useState } from "react";
+import { Copy, Check, Eye, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 interface LogEntry {
   id: number;
@@ -34,22 +34,29 @@ interface LogsTableProps {
   error?: string | null;
 }
 
-const LogsTable: React.FC<LogsTableProps> = ({ 
-  logs, 
-  loading = false, 
-  error 
+const LogsTable: React.FC<LogsTableProps> = ({
+  logs,
+  loading = false,
+  error,
 }) => {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const getStatusBadge = (status: string) => {
-    return status === 'Success' ? (
-      <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">
+    return status === "Success" ? (
+      <Badge
+        variant="default"
+        className="bg-green-100 text-green-700 border-green-200"
+      >
         <Check className="h-3 w-3 mr-1" />
         Success
       </Badge>
     ) : (
-      <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-200">
+      <Badge
+        variant="destructive"
+        className="bg-red-100 text-red-700 border-red-200"
+      >
         <AlertCircle className="h-3 w-3 mr-1" />
         Failed
       </Badge>
@@ -58,17 +65,40 @@ const LogsTable: React.FC<LogsTableProps> = ({
 
   const getModuleBadge = (module: string) => {
     const moduleConfig = {
-      'Authentication': { color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '🔐' },
-      'Campaigns': { color: 'bg-purple-100 text-purple-700 border-purple-200', icon: '📢' },
-      'Templates': { color: 'bg-teal-100 text-teal-700 border-teal-200', icon: '📝' },
-      'WhatsApp': { color: 'bg-green-100 text-green-700 border-green-200', icon: '💬' },
-      'Billing': { color: 'bg-orange-100 text-orange-700 border-orange-200', icon: '💳' },
-      'Automation': { color: 'bg-pink-100 text-pink-700 border-pink-200', icon: '⚡' },
-      'Contacts': { color: 'bg-indigo-100 text-indigo-700 border-indigo-200', icon: '👥' }
+      Authentication: {
+        color: "bg-blue-100 text-blue-700 border-blue-200",
+        icon: "🔐",
+      },
+      Campaigns: {
+        color: "bg-purple-100 text-purple-700 border-purple-200",
+        icon: "📢",
+      },
+      Templates: {
+        color: "bg-teal-100 text-teal-700 border-teal-200",
+        icon: "📝",
+      },
+      WhatsApp: {
+        color: "bg-green-100 text-green-700 border-green-200",
+        icon: "💬",
+      },
+      Billing: {
+        color: "bg-orange-100 text-orange-700 border-orange-200",
+        icon: "💳",
+      },
+      Automation: {
+        color: "bg-pink-100 text-pink-700 border-pink-200",
+        icon: "⚡",
+      },
+      Contacts: {
+        color: "bg-indigo-100 text-indigo-700 border-indigo-200",
+        icon: "👥",
+      },
     };
 
-    const config = moduleConfig[module as keyof typeof moduleConfig] || 
-                  { color: 'bg-gray-100 text-gray-700 border-gray-200', icon: '📋' };
+    const config = moduleConfig[module as keyof typeof moduleConfig] || {
+      color: "bg-gray-100 text-gray-700 border-gray-200",
+      icon: "📋",
+    };
 
     return (
       <Badge variant="secondary" className={`${config.color} text-xs`}>
@@ -85,7 +115,7 @@ const LogsTable: React.FC<LogsTableProps> = ({
       setCopiedId(log.id);
       setTimeout(() => setCopiedId(null), 2000);
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
+      console.error("Failed to copy to clipboard:", error);
     }
   };
 
@@ -93,7 +123,7 @@ const LogsTable: React.FC<LogsTableProps> = ({
     const date = new Date(timestamp);
     return {
       date: date.toLocaleDateString(),
-      time: date.toLocaleTimeString()
+      time: date.toLocaleTimeString(),
     };
   };
 
@@ -101,7 +131,9 @@ const LogsTable: React.FC<LogsTableProps> = ({
     return (
       <div className="border rounded-lg p-8 text-center">
         <AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-red-900 mb-2">Error Loading Logs</h3>
+        <h3 className="text-lg font-semibold text-red-900 mb-2">
+          Error Loading Logs
+        </h3>
         <p className="text-red-700">{error}</p>
       </div>
     );
@@ -156,8 +188,12 @@ const LogsTable: React.FC<LogsTableProps> = ({
         <div className="text-gray-400 mb-4">
           <Eye className="h-12 w-12 mx-auto" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Logs Available</h3>
-        <p className="text-gray-600">There are no logs to display at the moment.</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          No Logs Available
+        </h3>
+        <p className="text-gray-600">
+          There are no logs to display at the moment.
+        </p>
       </div>
     );
   }
@@ -173,15 +209,17 @@ const LogsTable: React.FC<LogsTableProps> = ({
               <TableHead className="font-semibold">Module</TableHead>
               <TableHead className="font-semibold">Status</TableHead>
               <TableHead className="font-semibold">Message</TableHead>
-              <TableHead className="font-semibold text-center">Actions</TableHead>
+              <TableHead className="font-semibold text-center">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs.map((log) => {
+            {(showAll ? logs : logs.slice(0, 5)).map((log) => {
               const { date, time } = formatTimestamp(log.timestamp);
               return (
-                <TableRow 
-                  key={log.id} 
+                <TableRow
+                  key={log.id}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => setSelectedLog(log)}
                 >
@@ -239,6 +277,29 @@ const LogsTable: React.FC<LogsTableProps> = ({
             })}
           </TableBody>
         </Table>
+        {/* View All Button */}
+        {logs.length > 5 && !showAll && (
+          <div className="flex justify-center py-3">
+            <Button
+              variant="outline"
+              className="px-4 py-2 text-xs md:text-sm rounded-full shadow-sm"
+              onClick={() => setShowAll(true)}
+            >
+              View All Activity
+            </Button>
+          </div>
+        )}
+        {logs.length > 5 && showAll && (
+          <div className="flex justify-center py-3">
+            <Button
+              variant="ghost"
+              className="px-4 py-2 text-xs md:text-sm rounded-full"
+              onClick={() => setShowAll(false)}
+            >
+              Show Less
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Log Details Dialog */}
@@ -253,43 +314,61 @@ const LogsTable: React.FC<LogsTableProps> = ({
               Detailed information about this log entry
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedLog && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Timestamp</label>
-                  <p className="text-sm text-gray-900 font-mono">{selectedLog.timestamp}</p>
+                  <label className="text-sm font-medium text-gray-700">
+                    Timestamp
+                  </label>
+                  <p className="text-sm text-gray-900 font-mono">
+                    {selectedLog.timestamp}
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">IP Address</label>
-                  <p className="text-sm text-gray-900 font-mono">{selectedLog.ip}</p>
+                  <label className="text-sm font-medium text-gray-700">
+                    IP Address
+                  </label>
+                  <p className="text-sm text-gray-900 font-mono">
+                    {selectedLog.ip}
+                  </p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Action</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Action
+                  </label>
                   <p className="text-sm text-gray-900">{selectedLog.action}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Module</label>
-                  <div className="mt-1">{getModuleBadge(selectedLog.module)}</div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Module
+                  </label>
+                  <div className="mt-1">
+                    {getModuleBadge(selectedLog.module)}
+                  </div>
                 </div>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium text-gray-700">Status</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Status
+                </label>
                 <div className="mt-1">{getStatusBadge(selectedLog.status)}</div>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium text-gray-700">Message</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Message
+                </label>
                 <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg mt-1">
                   {selectedLog.message}
                 </p>
               </div>
-              
+
               <div className="flex justify-end">
                 <Button
                   variant="outline"
