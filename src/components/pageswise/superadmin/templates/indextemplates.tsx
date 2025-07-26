@@ -177,49 +177,45 @@ const SuperAdminTemplates: React.FC = () => {
   const [comment, setComment] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isExporting, setIsExporting] = useState(false);
-<<<<<<< HEAD
   const [showAll, setShowAll] = useState(false);
-=======
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [templates, setTemplates] = useState(allTemplates);
   const [creatorFilter, setCreatorFilter] = useState("all"); // New filter for creator type
   const [isSlidePreviewOpen, setIsSlidePreviewOpen] = useState(false); // Side-slide preview
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
 
   // Admin template functionality states
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const { toast } = useToast();
 
-<<<<<<< HEAD
-  const filteredTemplates = mockTemplates.filter((template) => {
-    const matchesStatus =
-      filterStatus === "all" || template.status.toLowerCase() === filterStatus;
-    const matchesSearch =
-      searchTerm === "" ||
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchTerm.toLowerCase());
-=======
   const filteredTemplates = templates.filter((template) => {
     // Ensure template has required properties
     if (!template || !template.name || !template.status) {
       return false;
     }
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
 
-    const matchesStatus = filterStatus === "all" ||
+    const matchesStatus =
+      filterStatus === "all" ||
       (template.status && template.status.toLowerCase() === filterStatus);
 
-    const matchesCreator = creatorFilter === "all" ||
-      (creatorFilter === "superadmin" && template.creatorType === "superadmin") ||
+    const matchesCreator =
+      creatorFilter === "all" ||
+      (creatorFilter === "superadmin" &&
+        template.creatorType === "superadmin") ||
       (creatorFilter === "admin" && template.creatorType === "admin");
 
-    const matchesSearch = searchTerm === "" ||
-      (template.name && template.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (template.businessName && template.businessName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (template.category && template.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (template.createdBy && template.createdBy.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesSearch =
+      searchTerm === "" ||
+      (template.name &&
+        template.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (template.businessName &&
+        template.businessName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())) ||
+      (template.category &&
+        template.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (template.createdBy &&
+        template.createdBy.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return matchesStatus && matchesCreator && matchesSearch;
   });
@@ -345,7 +341,7 @@ const SuperAdminTemplates: React.FC = () => {
 
   const handleTemplateCreated = (newTemplate: any) => {
     // Add the new template to the list
-    setTemplates(prev => [newTemplate, ...prev]);
+    setTemplates((prev) => [newTemplate, ...prev]);
 
     toast({
       title: "Template Created",
@@ -371,12 +367,7 @@ const SuperAdminTemplates: React.FC = () => {
             Create, review and approve WhatsApp templates for businesses
           </p>
         </div>
-<<<<<<< HEAD
         <div className="flex flex-col gap-2 w-full md:flex-row md:items-center md:gap-3">
-          <div className="relative flex-shrink-0 w-full md:w-auto max-w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-=======
-        <div className="flex items-center gap-3 flex-wrap">
           <Button
             onClick={() => setShowCreateModal(true)}
             className="bg-teal-600 hover:bg-teal-700"
@@ -384,10 +375,8 @@ const SuperAdminTemplates: React.FC = () => {
             <FileText className="h-4 w-4 mr-2" />
             Create Template
           </Button>
-
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
+          <div className="relative flex-shrink-0 w-full md:w-auto max-w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               placeholder="Search templates..."
               value={searchTerm}
@@ -396,8 +385,16 @@ const SuperAdminTemplates: React.FC = () => {
               style={{ minWidth: 0 }}
             />
           </div>
-<<<<<<< HEAD
           <div className="flex flex-row gap-2 w-full md:w-auto">
+            <select
+              value={creatorFilter}
+              onChange={(e) => setCreatorFilter(e.target.value)}
+              className="px-2 py-1 h-10 border border-gray-300 rounded-md text-xs md:text-sm w-full md:w-auto"
+            >
+              <option value="all">All Creators</option>
+              <option value="superadmin">SuperAdmin</option>
+              <option value="admin">Admin</option>
+            </select>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
@@ -417,45 +414,12 @@ const SuperAdminTemplates: React.FC = () => {
               {isExporting ? "Exporting..." : "Export"}
             </Button>
           </div>
-=======
-
-          <select
-            value={creatorFilter}
-            onChange={(e) => setCreatorFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-          >
-            <option value="all">All Creators</option>
-            <option value="superadmin">SuperAdmin</option>
-            <option value="admin">Admin</option>
-          </select>
-
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-          >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-
-          <Button
-            onClick={handleExportPDF}
-            disabled={isExporting}
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            {isExporting ? 'Exporting...' : 'Export'}
-          </Button>
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
         </div>
       </div>
       {/* Stats Cards */}
       <HeaderCard mockTemplates={allTemplates} />
 
       {/* Templates Table */}
-<<<<<<< HEAD
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -477,18 +441,6 @@ const SuperAdminTemplates: React.FC = () => {
               View All
             </Button>
           )}
-=======
-      <TemplateErrorBoundary>
-        <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Template Queue
-          </CardTitle>
-          <CardDescription>
-            Review templates for WhatsApp Business API compliance
-          </CardDescription>
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
         </CardHeader>
         <CardContent>
           <div id="templates-table">
@@ -504,101 +456,78 @@ const SuperAdminTemplates: React.FC = () => {
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
-<<<<<<< HEAD
               <TableBody>
-                {templatesToShow.map((template) => (
-                  <TableRow
-                    key={template.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <TableCell className="font-medium">
-                      {template.name}
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {template.businessName}
-                    </TableCell>
-                    <TableCell>{getCategoryBadge(template.category)}</TableCell>
-                    <TableCell className="text-gray-600">
-                      {new Date(template.submissionDate).toLocaleDateString()}
-=======
-            <TableBody>
-              {filteredTemplates && filteredTemplates.length > 0 ? (
-                filteredTemplates.map((template) => (
-                  <TableRow
-                    key={template.id || `template-${Math.random()}`}
-                    className="hover:bg-gray-50 transition-colors cursor-pointer"
-                    onClick={() => handleRowClick(template)}
-                  >
-                    <TableCell className="font-medium">
-                      {template.name || 'Unnamed Template'}
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {template.businessName || 'Unknown Business'}
-                    </TableCell>
-                    <TableCell>
-                      {getCategoryBadge(template.category || 'Other')}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">
-                          {template.createdBy || 'Unknown'}
-                        </span>
-                        <Badge
-                          variant="secondary"
-                          className={
-                            template.creatorType === 'superadmin'
-                              ? 'bg-purple-100 text-purple-700'
-                              : 'bg-blue-100 text-blue-700'
-                          }
-                        >
-                          {template.creatorType === 'superadmin' ? 'SuperAdmin' : 'Admin'}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(template.status || 'Pending')}
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {template.submittedAt || 'Unknown Date'}
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-<<<<<<< HEAD
-                          onClick={() => handlePreviewTemplate(template)}
-=======
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent row click
-                            setSelectedTemplate(template);
-                            setIsPreviewModalOpen(true);
-                          }}
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Preview
-                        </Button>
-                      </div>
+                {templatesToShow.length > 0 ? (
+                  templatesToShow.map((template) => (
+                    <TableRow
+                      key={template.id}
+                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => handleRowClick(template)}
+                    >
+                      <TableCell className="font-medium">
+                        {template.name || "Unnamed Template"}
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {template.businessName || "Unknown Business"}
+                      </TableCell>
+                      <TableCell>
+                        {getCategoryBadge(template.category || "Other")}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">
+                            {template.createdBy || "Unknown"}
+                          </span>
+                          <Badge
+                            variant="secondary"
+                            className={
+                              template.creatorType === "superadmin"
+                                ? "bg-purple-100 text-purple-700"
+                                : "bg-blue-100 text-blue-700"
+                            }
+                          >
+                            {template.creatorType === "superadmin"
+                              ? "SuperAdmin"
+                              : "Admin"}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {getStatusBadge(template.status || "Pending")}
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {template.submittedAt || "Unknown Date"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent row click
+                              setSelectedTemplate(template);
+                              setIsPreviewModalOpen(true);
+                            }}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            Preview
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="text-center py-8 text-gray-500"
+                    >
+                      No templates found matching your criteria
                     </TableCell>
                   </TableRow>
-<<<<<<< HEAD
-                ))}
+                )}
               </TableBody>
             </Table>
-=======
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                    No templates found matching your criteria
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
->>>>>>> c591cc176e8eb96dd81ab2c2d2406aa8971e0132
           </div>
           {/* Show 'Show Less' if all are visible and more than 5 exist */}
           {filteredTemplates.length > 5 && showAll && (
@@ -614,8 +543,7 @@ const SuperAdminTemplates: React.FC = () => {
             </div>
           )}
         </CardContent>
-        </Card>
-      </TemplateErrorBoundary>
+      </Card>
 
       {/* WhatsApp Preview Modal */}
       <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
@@ -641,7 +569,8 @@ const SuperAdminTemplates: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Create New Template</DialogTitle>
             <DialogDescription>
-              Create a new WhatsApp template that will be available to all admins.
+              Create a new WhatsApp template that will be available to all
+              admins.
             </DialogDescription>
           </DialogHeader>
 
@@ -653,9 +582,11 @@ const SuperAdminTemplates: React.FC = () => {
       </Dialog>
 
       {/* Side-Slide Preview Panel */}
-      <div className={`fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
-        isSlidePreviewOpen ? 'translate-x-0' : 'translate-x-full'
-      }`}>
+      <div
+        className={`fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
+          isSlidePreviewOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
         <div className="h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -675,30 +606,42 @@ const SuperAdminTemplates: React.FC = () => {
               <div className="space-y-4">
                 {/* Template Info */}
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">{selectedTemplate.name}</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    {selectedTemplate.name}
+                  </h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="text-gray-500">Category:</span>
-                      <span className="ml-1 font-medium">{selectedTemplate.category}</span>
+                      <span className="ml-1 font-medium">
+                        {selectedTemplate.category}
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-500">Status:</span>
-                      <span className="ml-1">{getStatusBadge(selectedTemplate.status)}</span>
+                      <span className="ml-1">
+                        {getStatusBadge(selectedTemplate.status)}
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-500">Created by:</span>
-                      <span className="ml-1 font-medium">{selectedTemplate.createdBy}</span>
+                      <span className="ml-1 font-medium">
+                        {selectedTemplate.createdBy}
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-500">Date:</span>
-                      <span className="ml-1">{selectedTemplate.submittedAt}</span>
+                      <span className="ml-1">
+                        {selectedTemplate.submittedAt}
+                      </span>
                     </div>
                   </div>
 
                   {/* URL if available */}
                   {selectedTemplate.content?.url && (
                     <div className="mt-3 pt-3 border-t">
-                      <span className="text-gray-500 text-sm">Reference URL:</span>
+                      <span className="text-gray-500 text-sm">
+                        Reference URL:
+                      </span>
                       <div className="flex items-center gap-2 mt-1">
                         <a
                           href={selectedTemplate.content.url}
@@ -711,7 +654,9 @@ const SuperAdminTemplates: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => window.open(selectedTemplate.content.url, '_blank')}
+                          onClick={() =>
+                            window.open(selectedTemplate.content.url, "_blank")
+                          }
                         >
                           <ExternalLink className="h-3 w-3" />
                         </Button>
@@ -722,11 +667,13 @@ const SuperAdminTemplates: React.FC = () => {
 
                 {/* WhatsApp Preview */}
                 <div className="bg-white border rounded-lg overflow-hidden">
-                  <TemplateErrorBoundary fallback={
-                    <div className="p-4 text-center text-gray-500">
-                      <p>Unable to load template preview</p>
-                    </div>
-                  }>
+                  <TemplateErrorBoundary
+                    fallback={
+                      <div className="p-4 text-center text-gray-500">
+                        <p>Unable to load template preview</p>
+                      </div>
+                    }
+                  >
                     <WhatsAppPreviewModal
                       template={selectedTemplate}
                       onClose={() => {}} // Empty function since we handle close differently

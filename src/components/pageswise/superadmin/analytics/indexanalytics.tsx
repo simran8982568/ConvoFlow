@@ -99,7 +99,7 @@ const SuperAdminAnalytics: React.FC = () => {
         // Message Volume Data
         ["Message Volume Data"],
         ["Month", "Messages", "Businesses"],
-        ...filteredMessageVolumeData.map((item) => [
+        ...getFilteredData(messageVolumeData).map((item) => [
           item.month,
           item.messages,
           item.businesses,
@@ -109,7 +109,7 @@ const SuperAdminAnalytics: React.FC = () => {
         // Business Growth Data
         ["Business Growth Data"],
         ["Month", "New Businesses", "Total Businesses"],
-        ...filteredBusinessGrowthData.map((item) => [
+        ...getFilteredData(businessGrowthData).map((item) => [
           item.month,
           item.new,
           item.total,
