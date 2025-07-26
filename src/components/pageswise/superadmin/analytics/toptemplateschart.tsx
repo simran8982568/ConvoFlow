@@ -20,6 +20,8 @@ const TopTemplatesChart: React.FC<TopTemplatesChartProps> = ({
   error
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+
   if (error) {
     return (
       <Card>
@@ -140,16 +142,18 @@ const TopTemplatesChart: React.FC<TopTemplatesChartProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          Top 5 Used Templates
-        </CardTitle>
-        <CardDescription>
-          Most popular templates across all businesses
-        </CardDescription>
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Top 5 Used Templates
+          </CardTitle>
+          <CardDescription>
+            Most popular templates across all businesses
+          </CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="relative">
+        <div className="relative" data-testid="top-templates-chart">
           <ResponsiveContainer width="100%" height={320}>
             <BarChart
               data={data}

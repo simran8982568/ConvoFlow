@@ -15,7 +15,7 @@ import ErrorBoundary from "./errorboundary";
 import { useAnalyticsData, exportAnalyticsReport } from "./analyticsdata";
 
 const SuperAdminAnalytics: React.FC = () => {
-  const [timeRange, setTimeRange] = useState("3months");
+  const [timeRange, setTimeRange] = useState("1month");
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
@@ -63,9 +63,11 @@ const SuperAdminAnalytics: React.FC = () => {
   const handleExportReport = async () => {
     setIsExporting(true);
     try {
-      // Create CSV content with filtered data
-      const filteredMessageVolumeData = getFilteredData(messageVolumeData);
-      const filteredBusinessGrowthData = getFilteredData(businessGrowthData);
+      // Dynamic import for better code splitting
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas')
+      ]);
 
       // Create comprehensive CSV export
       const csvData = [
