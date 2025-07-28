@@ -9,6 +9,7 @@ import {
   Search,
   Download,
   X,
+  ExternalLink,
 } from "lucide-react";
 import {
   Card,
@@ -35,7 +36,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import html2canvas from "html2canvas";
@@ -87,7 +87,7 @@ const mockSuperAdminTemplates = [
     businessName: "Digital Marketing Pro",
     category: "Utility",
     submittedAt: "2024-03-13",
-    status: "Rejected",
+    status: "Approved", // SuperAdmin templates auto-approved
     createdBy: "SuperAdmin",
     creatorType: "superadmin",
     content: {
@@ -96,7 +96,6 @@ const mockSuperAdminTemplates = [
       footer: "Digital Marketing Pro",
       buttons: ["Pay Now", "Contact Us"],
     },
-    rejectionReason: "Template content too aggressive for payment reminders",
   },
   {
     id: 4,
@@ -178,18 +177,15 @@ const SuperAdminTemplates: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isExporting, setIsExporting] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false); // NEW: Create modal state
   const [templates, setTemplates] = useState(allTemplates);
-  const [creatorFilter, setCreatorFilter] = useState("all"); // New filter for creator type
-  const [isSlidePreviewOpen, setIsSlidePreviewOpen] = useState(false); // Side-slide preview
-
-  // Admin template functionality states
+  const [creatorFilter, setCreatorFilter] = useState("all");
+  const [isSlidePreviewOpen, setIsSlidePreviewOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const { toast } = useToast();
 
   const filteredTemplates = templates.filter((template) => {
-    // Ensure template has required properties
     if (!template || !template.name || !template.status) {
       return false;
     }
@@ -266,13 +262,11 @@ const SuperAdminTemplates: React.FC = () => {
     );
   };
 
-  // Admin template functionality handlers
   const handlePreviewTemplate = (template: any) => {
     setSelectedTemplate(template);
     setIsPreviewModalOpen(true);
   };
 
-  // SuperAdmin specific handlers
   const handleApprove = (templateId: number) => {
     toast({
       title: "Template Approved",
@@ -339,8 +333,8 @@ const SuperAdminTemplates: React.FC = () => {
     }
   };
 
+  // NEW: Handle template creation
   const handleTemplateCreated = (newTemplate: any) => {
-    // Add the new template to the list
     setTemplates((prev) => [newTemplate, ...prev]);
 
     toast({
@@ -349,7 +343,6 @@ const SuperAdminTemplates: React.FC = () => {
     });
   };
 
-  // Handle row click for side-slide preview
   const handleRowClick = (template: any) => {
     setSelectedTemplate(template);
     setIsSlidePreviewOpen(true);
@@ -368,6 +361,7 @@ const SuperAdminTemplates: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-col gap-2 w-full md:flex-row md:items-center md:gap-3">
+          {/* NEW: Create Template Button */}
           <Button
             onClick={() => setShowCreateModal(true)}
             className="bg-teal-600 hover:bg-teal-700"
@@ -375,6 +369,7 @@ const SuperAdminTemplates: React.FC = () => {
             <FileText className="h-4 w-4 mr-2" />
             Create Template
           </Button>
+          
           <div className="relative flex-shrink-0 w-full md:w-auto max-w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
@@ -416,8 +411,9 @@ const SuperAdminTemplates: React.FC = () => {
           </div>
         </div>
       </div>
+      
       {/* Stats Cards */}
-      <HeaderCard mockTemplates={allTemplates} />
+      <HeaderCard mockTemplates={templates} />
 
       {/* Templates Table */}
       <Card>
@@ -504,7 +500,7 @@ const SuperAdminTemplates: React.FC = () => {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => {
-                              e.stopPropagation(); // Prevent row click
+                              e.stopPropagation();
                               setSelectedTemplate(template);
                               setIsPreviewModalOpen(true);
                             }}
@@ -529,7 +525,6 @@ const SuperAdminTemplates: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-          {/* Show 'Show Less' if all are visible and more than 5 exist */}
           {filteredTemplates.length > 5 && showAll && (
             <div className="flex justify-center mt-4">
               <Button
@@ -563,7 +558,7 @@ const SuperAdminTemplates: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Create Template Modal - Using SuperAdmin Modal */}
+      {/* NEW: Create Template Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -588,7 +583,6 @@ const SuperAdminTemplates: React.FC = () => {
         }`}
       >
         <div className="h-full flex flex-col">
-          {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <h3 className="text-lg font-semibold">Template Preview</h3>
             <Button
@@ -600,11 +594,9 @@ const SuperAdminTemplates: React.FC = () => {
             </Button>
           </div>
 
-          {/* Content */}
           <div className="flex-1 overflow-y-auto p-4">
             {selectedTemplate && (
               <div className="space-y-4">
-                {/* Template Info */}
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-medium text-gray-900 mb-2">
                     {selectedTemplate.name}
@@ -636,7 +628,6 @@ const SuperAdminTemplates: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* URL if available */}
                   {selectedTemplate.content?.url && (
                     <div className="mt-3 pt-3 border-t">
                       <span className="text-gray-500 text-sm">
@@ -665,7 +656,6 @@ const SuperAdminTemplates: React.FC = () => {
                   )}
                 </div>
 
-                {/* WhatsApp Preview */}
                 <div className="bg-white border rounded-lg overflow-hidden">
                   <TemplateErrorBoundary
                     fallback={
@@ -676,7 +666,7 @@ const SuperAdminTemplates: React.FC = () => {
                   >
                     <WhatsAppPreviewModal
                       template={selectedTemplate}
-                      onClose={() => {}} // Empty function since we handle close differently
+                      onClose={() => {}}
                     />
                   </TemplateErrorBoundary>
                 </div>
@@ -686,7 +676,6 @@ const SuperAdminTemplates: React.FC = () => {
         </div>
       </div>
 
-      {/* Overlay for side-slide */}
       {isSlidePreviewOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"

@@ -1,4 +1,3 @@
-// header.tsx
 import React from "react";
 
 const InboxHeader: React.FC = () => (

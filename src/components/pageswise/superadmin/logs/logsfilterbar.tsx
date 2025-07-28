@@ -61,55 +61,54 @@ const LogsFilterBar: React.FC<LogsFilterBarProps> = ({
   return (
     <div className="space-y-4">
       {/* Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative sm:w-64">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search logs..."
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10"
-            disabled={loading}
-          />
-        </div>
-        
-        <select
-          value={filterModule}
-          onChange={(e) => onModuleChange(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-          disabled={loading}
-        >
-          {moduleOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        
-        <select
-          value={filterStatus}
-          onChange={(e) => onStatusChange(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-          disabled={loading}
-        >
-          {statusOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        {hasActiveFilters && (
-          <Button
-            variant="outline"
-            onClick={onClearFilters}
-            className="flex items-center gap-2"
+      <div className="flex flex-wrap gap-2 w-full items-center">
+        <div className="flex flex-row flex-wrap gap-2 w-full items-center">
+          <div className="relative flex-1 min-w-[140px] max-w-xs">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search logs..."
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="pl-10"
+              disabled={loading}
+            />
+          </div>
+          <select
+            value={filterModule}
+            onChange={(e) => onModuleChange(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 min-w-[120px]"
             disabled={loading}
           >
-            <X className="h-4 w-4" />
-            Clear Filters
-          </Button>
-        )}
+            {moduleOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => onStatusChange(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 min-w-[120px]"
+            disabled={loading}
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              onClick={onClearFilters}
+              className="flex items-center gap-2"
+              disabled={loading}
+            >
+              <X className="h-4 w-4" />
+              Clear Filters
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filter Summary */}

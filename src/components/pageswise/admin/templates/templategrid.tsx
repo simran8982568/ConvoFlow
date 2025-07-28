@@ -167,6 +167,14 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
                       System
                     </Badge>
                   )}
+                  {template.type === "custom" && (
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-2 py-0.5"
+                    >
+                      Custom
+                    </Badge>
+                  )}
                 </div>
               </div>
               <div className="flex-shrink-0 ml-2">
@@ -197,11 +205,6 @@ const TemplateGrid: React.FC<TemplateGridProps> = ({
                   <span className="hidden sm:inline">Preview</span>
                   <span className="sm:hidden">View</span>
                 </Button>
-                {template.type === "custom" && (
-                  <Badge variant="outline" className="text-[10px] px-2 py-0.5">
-                    Custom
-                  </Badge>
-                )}
               </div>
             </div>
           </CardContent>

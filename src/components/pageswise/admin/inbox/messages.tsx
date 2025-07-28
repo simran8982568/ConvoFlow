@@ -1,4 +1,3 @@
-// messages.tsx
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Check, CheckCheck } from "lucide-react";
@@ -97,4 +96,4 @@ const Messages = ({ messages }: { messages: any[] }) => (
   </div>
 );
 
-export default Messages;
+export default Messages;// mockdata.tsx

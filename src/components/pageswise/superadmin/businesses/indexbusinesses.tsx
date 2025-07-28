@@ -9,6 +9,7 @@ import {
   MessageSquare,
   RefreshCw,
   Download,
+  Mail,
 } from "lucide-react";
 import {
   Card,
@@ -21,6 +22,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import HeaderCard from "./headercard";
 import BusinessDirectory from "./businessdirectory";
 import { useBusinessData } from "../../../../api/apicall/superadmin/businesses/data/businessdata";
@@ -34,22 +44,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-// Business type is now imported from API
 
 const SuperAdminBusinesses: React.FC = () => {
-  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(
-    null
-  );
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [isInviting, setIsInviting] = useState(false);
   const { toast } = useToast();
+
+  const [inviteForm, setInviteForm] = useState({
+    name: '',
+    email: '',
+    description: `Hi {{name}},
+
+We're excited to invite you to join AyuChat - our comprehensive WhatsApp automation platform designed to help businesses like yours streamline communication and boost engagement.
+
+AyuChat Features:
+✅ WhatsApp Business API Integration
+✅ Automated Message Campaigns
+✅ Smart Template Management
+✅ Real-time Analytics & Reports
+✅ Multi-user Team Collaboration
+✅ Advanced Customer Segmentation
+
+Transform your customer communication with our powerful automation tools. Get started today and experience the difference!
+
+Best regards,
+AyuChat Team
+
+Ready to get started? Click the link below to begin your journey with AyuChat.`
+  });
 
   const {
     businesses,
@@ -70,11 +94,90 @@ const SuperAdminBusinesses: React.FC = () => {
     inactiveCount,
   } = useBusinessData();
 
+  const handleInviteFormChange = (field: string, value: string) => {
+    setInviteForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSendInvite = async () => {
+    if (!inviteForm.name.trim() || !inviteForm.email.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in both name and email fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteForm.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsInviting(true);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const personalizedDescription = inviteForm.description.replace(/\{\{name\}\}/g, inviteForm.name);
+
+      console.log('Sending invite:', {
+        name: inviteForm.name,
+        email: inviteForm.email,
+        description: personalizedDescription
+      });
+
+      toast({
+        title: "Invite Sent Successfully!",
+        description: `Invitation has been sent to ${inviteForm.email}`,
+      });
+
+      setInviteForm({
+        name: '',
+        email: '',
+        description: `Hi {{name}},
+
+We're excited to invite you to join AyuChat - our comprehensive WhatsApp automation platform designed to help businesses like yours streamline communication and boost engagement.
+
+AyuChat Features:
+✅ WhatsApp Business API Integration
+✅ Automated Message Campaigns
+✅ Smart Template Management
+✅ Real-time Analytics & Reports
+✅ Multi-user Team Collaboration
+✅ Advanced Customer Segmentation
+
+Transform your customer communication with our powerful automation tools. Get started today and experience the difference!
+
+Best regards,
+AyuChat Team
+
+Ready to get started? Click the link below to begin your journey with AyuChat.`
+      });
+
+      setShowInviteModal(false);
+    } catch (error) {
+      toast({
+        title: "Invite Failed",
+        description: "Failed to send invitation. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsInviting(false);
+    }
+  };
+
   const handleExportCSV = async () => {
     setIsExporting(true);
 
     try {
-      // Create CSV content
       const headers = [
         "Business Name",
         "Email",
@@ -112,7 +215,6 @@ const SuperAdminBusinesses: React.FC = () => {
         ...csvData.map((row) => row.map((cell) => `"${cell}"`).join(",")),
       ].join("\n");
 
-      // Create and download file
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
@@ -188,6 +290,15 @@ const SuperAdminBusinesses: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* NEW: Invite Button */}
+          <Button
+            onClick={() => setShowInviteModal(true)}
+            className="bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-2 px-3 py-2 text-sm"
+          >
+            <Mail className="h-4 w-4" />
+            Invite
+          </Button>
+
           <div className="relative w-40 sm:w-64">
             <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-4 sm:w-4" />
             <Input
@@ -289,6 +400,110 @@ const SuperAdminBusinesses: React.FC = () => {
           deleteBusiness={deleteBusiness}
         />
       )}
+
+      {/* NEW: Invite Business Modal */}
+      <Dialog open={showInviteModal} onOpenChange={setShowInviteModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-teal-600" />
+              Invite Business to AyuChat
+            </DialogTitle>
+            <DialogDescription>
+              Send an invitation email to a business to join our WhatsApp automation platform.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="business-name">Business Name *</Label>
+                <Input
+                  id="business-name"
+                  value={inviteForm.name}
+                  onChange={(e) => handleInviteFormChange('name', e.target.value)}
+                  placeholder="Enter business name"
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="business-email">Email Address *</Label>
+                <Input
+                  id="business-email"
+                  type="email"
+                  value={inviteForm.email}
+                  onChange={(e) => handleInviteFormChange('email', e.target.value)}
+                  placeholder="Enter email address"
+                  className="w-full"
+                />
+              </div>
+            </div>
+
+            {/* Invitation Message */}
+            <div className="space-y-2">
+              <Label htmlFor="invitation-message">Invitation Message</Label>
+              <Textarea
+                id="invitation-message"
+                value={inviteForm.description}
+                onChange={(e) => handleInviteFormChange('description', e.target.value)}
+                placeholder="Customize your invitation message..."
+                className="min-h-[200px] resize-none"
+                rows={8}
+              />
+              <p className="text-xs text-gray-500">
+                Use <code>{'{{name}}'}</code> to personalize the message with the business name.
+              </p>
+            </div>
+
+            {/* Preview Section */}
+            <div className="bg-gray-50 p-4 rounded-lg border">
+              <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                Email Preview
+              </h4>
+              <div className="bg-white p-4 rounded border text-sm">
+                <div className="font-semibold text-gray-900 mb-2">
+                  Subject: Invitation to Join AyuChat - WhatsApp Automation Platform
+                </div>
+                <div className="whitespace-pre-wrap text-gray-700">
+                  {inviteForm.description.replace(/\{\{name\}\}/g, inviteForm.name || '[Business Name]')}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Modal Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowInviteModal(false)}
+              disabled={isInviting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSendInvite}
+              disabled={isInviting}
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              {isInviting ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Send Invite
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

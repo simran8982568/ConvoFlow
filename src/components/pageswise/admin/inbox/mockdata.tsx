@@ -1,4 +1,3 @@
-// mockdata.tsx
 export const mockConversations = [
   {
     id: 1,
@@ -11,7 +10,6 @@ export const mockConversations = [
     lastMessage: "Thank you for the quick response!",
     timestamp: "2 min ago",
     unreadCount: 0,
-    isStarred: false,
     messages: [
       {
         id: 1,
@@ -63,7 +61,6 @@ export const mockConversations = [
     lastMessage: "When will the sale start?",
     timestamp: "15 min ago",
     unreadCount: 2,
-    isStarred: true,
     messages: [
       {
         id: 1,
@@ -92,7 +89,6 @@ export const mockConversations = [
     lastMessage: "Great, thanks!",
     timestamp: "1 hour ago",
     unreadCount: 0,
-    isStarred: false,
     messages: [
       {
         id: 1,

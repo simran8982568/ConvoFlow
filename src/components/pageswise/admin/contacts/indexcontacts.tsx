@@ -64,11 +64,11 @@ const AdminContacts: React.FC = () => {
       company: newContact.company.trim() || "",
       status: "Active",
       tags: [],
-      lastActivity: new Date().toISOString().split('T')[0],
+      lastActivity: new Date().toISOString().split("T")[0],
     };
 
     // Add to contacts list (in a real app, this would be an API call)
-    setContacts(prev => [...prev, newContactObj]);
+    setContacts((prev) => [...prev, newContactObj]);
 
     toast({
       title: "Contact Added",
@@ -87,8 +87,8 @@ const AdminContacts: React.FC = () => {
 
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-teal-600 hover:bg-teal-700">
-              <Plus className="w-4 h-4 mr-2" />
+            <Button className="bg-teal-600 hover:bg-teal-700 px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm">
+              <Plus className="w-3 h-3 mr-1" />
               Add Contact
             </Button>
           </DialogTrigger>
@@ -96,7 +96,8 @@ const AdminContacts: React.FC = () => {
             <DialogHeader>
               <DialogTitle>Add New Contact</DialogTitle>
               <DialogDescription>
-                Add a new contact to your WhatsApp list. Fields marked with * are required.
+                Add a new contact to your WhatsApp list. Fields marked with *
+                are required.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -125,7 +126,10 @@ const AdminContacts: React.FC = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="email">Email Address <span className="text-sm text-gray-500">(optional)</span></Label>
+                <Label htmlFor="email">
+                  Email Address{" "}
+                  <span className="text-sm text-gray-500">(optional)</span>
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -137,7 +141,10 @@ const AdminContacts: React.FC = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="company">Company <span className="text-sm text-gray-500">(optional)</span></Label>
+                <Label htmlFor="company">
+                  Company{" "}
+                  <span className="text-sm text-gray-500">(optional)</span>
+                </Label>
                 <Input
                   id="company"
                   value={newContact.company}

@@ -1,29 +1,29 @@
-// conversations.tsx
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Star } from "lucide-react";
-import { mockConversations } from "./mockdata";
 
 const getStatusColor = (status: string) => {
   return status === "online" ? "bg-green-500" : "bg-gray-400";
 };
 
 const Conversations = ({
+  conversations,
   selectedId,
   setSelected,
   searchTerm,
 }: {
+  conversations: any[];
   selectedId: number;
   setSelected: (c: any) => void;
   searchTerm: string;
 }) => {
-  const filteredConversations = mockConversations.filter(
+  const filteredConversations = conversations.filter(
     (conv) =>
       conv.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       conv.contact.phone.includes(searchTerm) ||
       conv.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-2">
@@ -59,14 +59,9 @@ const Conversations = ({
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {conversation.contact.name}
                   </p>
-                  <div className="flex items-center space-x-1">
-                    {conversation.isStarred && (
-                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    )}
-                    <span className="text-xs text-gray-500">
-                      {conversation.timestamp}
-                    </span>
-                  </div>
+                  <span className="text-xs text-gray-500">
+                    {conversation.timestamp}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between mt-1">
                   <p className="text-sm text-gray-600 truncate">

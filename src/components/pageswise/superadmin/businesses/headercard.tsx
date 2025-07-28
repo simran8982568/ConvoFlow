@@ -28,9 +28,6 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import type { Business } from "../../../../api/apicall/superadmin/businesses/businessapi";
 
-/**
- * Props for HeaderCard component
- */
 interface HeaderCardProps {
   filteredBusinesses: Business[];
   getPlanBadge: (plan: string) => React.ReactNode;
@@ -43,9 +40,6 @@ interface HeaderCardProps {
   deleteBusiness?: (businessId: number) => Promise<boolean>;
 }
 
-/**
- * Table component for displaying filtered businesses and details dialog
- */
 const HeaderCard: React.FC<HeaderCardProps> = ({
   filteredBusinesses,
   getPlanBadge,

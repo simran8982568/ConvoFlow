@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RefreshCw, User, ChevronDown, Search, Building2, Users, Send, FileText } from 'lucide-react';
+import { RefreshCw, User, ChevronDown, Search, Building2, Users, Send, FileText, Settings, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -36,13 +36,35 @@ const mockUsers = [
   { id: '5', name: 'David Brown', email: 'david.brown@email.com', type: 'user', business: 'Creative Solutions' },
 ];
 
-// Mock data for admin search
+// Mock data for admin search - Enhanced with new search items
 const mockAdminData = [
+  // Contacts
   { id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890', type: 'contact' },
   { id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+1234567891', type: 'contact' },
-  { id: '3', name: 'Summer Sale Campaign', status: 'active', type: 'campaign' },
-  { id: '4', name: 'Welcome Message', category: 'greeting', type: 'template' },
-  { id: '5', name: 'Follow-up Template', category: 'follow-up', type: 'template' },
+  { id: '3', name: 'Mike Johnson', email: 'mike@example.com', phone: '+1234567892', type: 'contact' },
+  { id: '4', name: 'Sarah Wilson', email: 'sarah@example.com', phone: '+1234567893', type: 'contact' },
+
+  // Campaigns
+  { id: '5', name: 'Summer Sale Campaign', status: 'active', type: 'campaign' },
+  { id: '6', name: 'Black Friday Promotion', status: 'draft', type: 'campaign' },
+  { id: '7', name: 'New Year Special', status: 'completed', type: 'campaign' },
+
+  // Templates
+  { id: '8', name: 'Welcome Message', category: 'greeting', type: 'template' },
+  { id: '9', name: 'Follow-up Template', category: 'follow-up', type: 'template' },
+  { id: '10', name: 'Order Confirmation', category: 'transactional', type: 'template' },
+  { id: '11', name: 'Promotional Offer', category: 'marketing', type: 'template' },
+
+  // Settings
+  { id: '12', name: 'Account Settings', description: 'Manage your account preferences', type: 'settings' },
+  { id: '13', name: 'Notification Settings', description: 'Configure notification preferences', type: 'settings' },
+  { id: '14', name: 'Billing Settings', description: 'Manage billing and subscription', type: 'settings' },
+  { id: '15', name: 'API Settings', description: 'Configure API keys and webhooks', type: 'settings' },
+
+  // Campaign Pages
+  { id: '16', name: 'Campaign Dashboard', description: 'View all campaigns overview', type: 'page' },
+  { id: '17', name: 'Create Campaign', description: 'Create a new marketing campaign', type: 'page' },
+  { id: '18', name: 'Campaign Analytics', description: 'View campaign performance metrics', type: 'page' },
 ];
 
 const UserHeader: React.FC<UserHeaderProps> = ({
@@ -51,12 +73,21 @@ const UserHeader: React.FC<UserHeaderProps> = ({
   refreshing = false
 }) => {
   const navigate = useNavigate();
-  const user = authService.getCurrentUser();
+
+  // Define the user type to include 'avatar'
+  interface CurrentUser {
+    name?: string;
+    email?: string;
+    company?: string;
+    avatar?: string;
+  }
+  const user: CurrentUser = authService.getCurrentUser();
 
   // Search functionality for both Admin and SuperAdmin
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Search functionality
@@ -78,19 +109,25 @@ const UserHeader: React.FC<UserHeaderProps> = ({
 
         results = [...filteredBusinesses, ...filteredUsers].slice(0, 8);
       } else {
-        // Admin search functionality
+        // Admin search functionality - Enhanced to search in more fields
         results = mockAdminData.filter(item =>
           item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (item.email && item.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (item.phone && item.phone.includes(searchTerm))
+          (item.phone && item.phone.includes(searchTerm)) ||
+          (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (item.status && item.status.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          item.type.toLowerCase().includes(searchTerm.toLowerCase())
         ).slice(0, 8);
       }
 
       setSearchResults(results);
       setShowSuggestions(true);
+      setSelectedIndex(-1);
     } else {
       setSearchResults([]);
       setShowSuggestions(false);
+      setSelectedIndex(-1);
     }
   }, [searchTerm, role]);
 
@@ -114,7 +151,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({
         navigate('/superadmin/businesses'); // Could navigate to user management page
       }
     } else {
-      // Admin navigation
+      // Admin navigation - Enhanced with new types
       switch (item.type) {
         case 'contact':
           navigate('/admin/contacts');
@@ -125,12 +162,28 @@ const UserHeader: React.FC<UserHeaderProps> = ({
         case 'template':
           navigate('/admin/templates');
           break;
+        case 'settings':
+          navigate('/admin/settings');
+          break;
+        case 'page':
+          // Handle specific page navigation based on item name
+          if (item.name.includes('Campaign Dashboard')) {
+            navigate('/admin/campaigns');
+          } else if (item.name.includes('Create Campaign')) {
+            navigate('/admin/campaigns?action=create');
+          } else if (item.name.includes('Analytics')) {
+            navigate('/admin/campaigns?tab=analytics');
+          } else {
+            navigate('/admin/dashboard');
+          }
+          break;
         default:
           navigate('/admin/dashboard');
       }
     }
     setSearchTerm('');
     setShowSuggestions(false);
+    setSelectedIndex(-1);
   };
 
   const handleLogout = () => {
@@ -144,14 +197,44 @@ const UserHeader: React.FC<UserHeaderProps> = ({
     <div className="bg-white border-b border-gray-200 px-6 py-3">
       <div className="flex items-center justify-between gap-4">
         {/* Global Search - Available for both Admin and SuperAdmin */}
-        <div className="flex-1 max-w-md relative" ref={searchRef}>
+        <div className="flex-1 max-w-sm relative" ref={searchRef}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder={role === 'superadmin' ? "Search businesses or users..." : "Search contacts, campaigns, templates..."}
+              placeholder={
+                typeof window !== 'undefined' && window.innerWidth < 640
+                  ? 'Search...'
+                  : role === 'superadmin'
+                  ? 'Search businesses or users...'
+                  : 'Search contacts, campaigns, templates, settings...'
+              }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full"
+              className="pl-9 pr-4 h-9 w-full text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-teal-500 transition-all duration-150 shadow-sm sm:w-[280px] md:w-[320px] lg:w-[360px]"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (selectedIndex >= 0 && searchResults[selectedIndex]) {
+                    handleSearchSelect(searchResults[selectedIndex]);
+                  } else if (searchResults.length > 0) {
+                    handleSearchSelect(searchResults[0]);
+                  }
+                } else if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setSelectedIndex(prev =>
+                    prev < searchResults.length - 1 ? prev + 1 : 0
+                  );
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setSelectedIndex(prev =>
+                    prev > 0 ? prev - 1 : searchResults.length - 1
+                  );
+                } else if (e.key === 'Escape') {
+                  setShowSuggestions(false);
+                  setSearchTerm('');
+                  setSelectedIndex(-1);
+                }
+              }}
               onFocus={() => searchTerm && setShowSuggestions(true)}
             />
           </div>
@@ -159,16 +242,18 @@ const UserHeader: React.FC<UserHeaderProps> = ({
           {/* Search Suggestions Dropdown */}
           {showSuggestions && searchResults.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
-              {searchResults.map((item) => {
+              {searchResults.map((item, index) => {
                 const getItemIcon = () => {
                   if (role === 'superadmin') {
                     return item.type === 'business' ? Building2 : Users;
                   } else {
-                    // Admin icons
+                    // Admin icons - Enhanced with new types
                     switch (item.type) {
                       case 'contact': return Users;
                       case 'campaign': return Send;
                       case 'template': return FileText;
+                      case 'settings': return Settings;
+                      case 'page': return Globe;
                       default: return Users;
                     }
                   }
@@ -182,6 +267,8 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                       case 'contact': return 'green';
                       case 'campaign': return 'purple';
                       case 'template': return 'orange';
+                      case 'settings': return 'blue';
+                      case 'page': return 'indigo';
                       default: return 'gray';
                     }
                   }
@@ -193,6 +280,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                     green: { bg: 'bg-green-100', text: 'text-green-600' },
                     purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
                     orange: { bg: 'bg-orange-100', text: 'text-orange-600' },
+                    indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
                     gray: { bg: 'bg-gray-100', text: 'text-gray-600' }
                   };
                   return colorMap[color as keyof typeof colorMap] || colorMap.gray;
@@ -206,7 +294,9 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                       case 'contact': return `${item.email} • ${item.phone}`;
                       case 'campaign': return `Status: ${item.status}`;
                       case 'template': return `Category: ${item.category}`;
-                      default: return item.email || '';
+                      case 'settings': return item.description || 'Settings configuration';
+                      case 'page': return item.description || 'Navigate to page';
+                      default: return item.email || item.description || '';
                     }
                   }
                 };
@@ -219,7 +309,9 @@ const UserHeader: React.FC<UserHeaderProps> = ({
                   <div
                     key={`${item.type}-${item.id}`}
                     onClick={() => handleSearchSelect(item)}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer border-b border-gray-100 last:border-b-0 ${
+                      index === selectedIndex ? 'bg-gray-100' : 'hover:bg-gray-50'
+                    }`}
                   >
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${colorClasses.bg}`}>
                       <IconComponent className={`h-4 w-4 ${colorClasses.text}`} />
@@ -252,6 +344,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({
           )}
         </div>
 
+        {/* Right side: Refresh button and User dropdown */}
         <div className="flex items-center gap-4">
           {/* Refresh Button */}
           {onRefresh && (
@@ -262,67 +355,75 @@ const UserHeader: React.FC<UserHeaderProps> = ({
               disabled={refreshing}
               className="flex items-center gap-2"
             >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refreshing...' : 'Refresh'}
+              <RefreshCw
+                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+              />
+              {refreshing ? "Refreshing..." : "Refresh"}
             </Button>
           )}
 
           {/* User Details */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-3 px-3 py-2 h-auto">
-                {/* User Avatar */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  brandColor === 'teal' ? 'bg-teal-100' : 'bg-purple-100'
-                }`}>
+              <Button
+                variant="ghost"
+                className="flex items-center gap-3 px-3 py-2 h-auto"
+              >
+                {/* Avatar always visible */}
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    brandColor === "teal" ? "bg-teal-100" : "bg-purple-100"
+                  }`}
+                >
                   {user?.avatar ? (
                     <img
                       src={getUserAvatarPath(user.avatar)}
                       alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover"
+                      className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <User className={`h-4 w-4 ${
-                      brandColor === 'teal' ? 'text-teal-600' : 'text-purple-600'
-                    }`} />
+                    <User
+                      className={`h-5 w-5 ${
+                        brandColor === "teal"
+                          ? "text-teal-600"
+                          : "text-purple-600"
+                      }`}
+                    />
                   )}
                 </div>
-
-                {/* User Info */}
-                <div className="flex flex-col items-start">
+                {/* Hide on mobile, show on md+ */}
+                <div className="hidden md:flex flex-col items-start">
                   <span className="text-sm font-medium text-gray-900">
-                    {user?.name || 'User'}
+                    {user?.name || "User"}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {role === 'admin'
-                      ? (user?.company || user?.email || 'Admin')
-                      : 'Super Administrator'
-                    }
+                    {role === "admin"
+                      ? user?.company || user?.email || "Admin"
+                      : "Super Administrator"}
                   </span>
                 </div>
-
-                <ChevronDown className="h-4 w-4 text-gray-400" />
+                <ChevronDown className="h-4 w-4 text-gray-400 hidden md:block" />
               </Button>
             </DropdownMenuTrigger>
-
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-1.5">
-                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {user?.name}
+                </p>
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
-
               <DropdownMenuSeparator />
-
               <DropdownMenuItem onClick={() => navigate(`/${role}/settings`)}>
                 Settings
               </DropdownMenuItem>
-
-              <DropdownMenuItem onClick={() => navigate(`/${role}/${role === 'admin' ? 'billing' : 'plans'}`)}>
-                {role === 'admin' ? 'Billing' : 'Plans'}
+              <DropdownMenuItem
+                onClick={() =>
+                  navigate(`/${role}/${role === "admin" ? "billing" : "plans"}`)
+                }
+              >
+                {role === "admin" ? "Billing" : "Plans"}
               </DropdownMenuItem>
-
               <DropdownMenuSeparator />
-
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 Sign out
               </DropdownMenuItem>

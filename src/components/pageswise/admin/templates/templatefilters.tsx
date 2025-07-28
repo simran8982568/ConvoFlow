@@ -58,8 +58,9 @@ const TemplateFilters: React.FC<TemplateFiltersProps> = ({
   return (
     <div className="space-y-4">
       {/* Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative sm:w-64">
+      <div className="flex flex-col gap-4">
+        {/* Search Bar - Full width on all screens */}
+        <div className="relative w-full sm:w-64">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search templates..."
@@ -70,31 +71,34 @@ const TemplateFilters: React.FC<TemplateFiltersProps> = ({
           />
         </div>
 
-        <select
-          value={filterCategory}
-          onChange={(e) => onCategoryChange(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-          disabled={loading}
-        >
-          {categoryOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        {/* Dropdowns - Same row on mobile, flexible on larger screens */}
+        <div className="flex flex-row gap-2 sm:gap-4">
+          <select
+            value={filterCategory}
+            onChange={(e) => onCategoryChange(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            disabled={loading}
+          >
+            {categoryOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
 
-        <select
-          value={filterType}
-          onChange={(e) => onTypeChange(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-          disabled={loading}
-        >
-          {typeOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          <select
+            value={filterType}
+            onChange={(e) => onTypeChange(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            disabled={loading}
+          >
+            {typeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {hasActiveFilters && (
           <Button
