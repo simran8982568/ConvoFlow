@@ -35,6 +35,7 @@
   flex-shrink: 0;
   border-bottom: 1px solid #e5e7eb;
   background: white;
+  height: 6%;
 }
 
 .mobile-search-section {
@@ -141,6 +142,7 @@
   flex-shrink: 0;
   border-bottom: 1px solid #e5e7eb;
   background: white;
+ margin-top: 9.3%;
 }
 
 .conversations-search {
@@ -171,6 +173,7 @@
   flex-shrink: 0;
   background: white;
   border-bottom: 1px solid #e5e7eb;
+
 }
 
 .chat-messages-section {

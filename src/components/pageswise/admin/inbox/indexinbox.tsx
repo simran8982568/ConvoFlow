@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Paperclip, Smile, Search, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, Smile, Search, ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,11 +16,14 @@ import "./inbox.css";
 
 const AdminInbox: React.FC = () => {
   const [conversations, setConversations] = useState(mockConversations);
-  const [selectedConversation, setSelectedConversation] = useState(mockConversations[0]);
+  const [selectedConversation, setSelectedConversation] = useState(
+    mockConversations[0]
+  );
   const [messageInput, setMessageInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMobileConversations, setShowMobileConversations] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // for mobile menu
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -30,10 +33,10 @@ const AdminInbox: React.FC = () => {
     onSuccess: () => {
       setMessageInput("");
       if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = "auto";
       }
       setTimeout(scrollToBottom, 100);
-    }
+    },
   });
 
   const scrollToBottom = () => {
@@ -50,15 +53,15 @@ const AdminInbox: React.FC = () => {
         setShowEmojiPicker(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showEmojiPicker]);
 
   const handleSendMessage = async () => {
     if (!messageInput.trim()) return;
     await sendMessageOperation.execute(async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Message sent:', messageInput);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Message sent:", messageInput);
       return { success: true };
     });
   };
@@ -66,13 +69,16 @@ const AdminInbox: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessageInput(e.target.value);
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(
+        textareaRef.current.scrollHeight,
+        120
+      )}px`;
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -82,10 +88,21 @@ const AdminInbox: React.FC = () => {
     setShowEmojiPicker(!showEmojiPicker);
   };
 
-  const commonEmojis = ['😊', '😂', '❤️', '👍', '👎', '😢', '😮', '😡', '🎉', '🔥'];
+  const commonEmojis = [
+    "😊",
+    "😂",
+    "❤️",
+    "👍",
+    "👎",
+    "😢",
+    "😮",
+    "😡",
+    "🎉",
+    "🔥",
+  ];
 
   const handleEmojiSelect = (emoji: string) => {
-    setMessageInput(prev => prev + emoji);
+    setMessageInput((prev) => prev + emoji);
     setShowEmojiPicker(false);
     if (textareaRef.current) {
       textareaRef.current.focus();
@@ -104,14 +121,20 @@ const AdminInbox: React.FC = () => {
   return (
     <RouteErrorBoundary>
       <div className="app-container">
-        
         {/* Mobile Layout */}
         <div className="mobile-layout md:hidden">
+          {/*  Mobile Menu Button - Only show in list view */}
+          {showMobileConversations && (
+            <div className="fixed top-4 left-4 z-50 md:hidden">
+             
+            </div>
+          )}
+
           {showMobileConversations ? (
             // Mobile Conversations View
             <div className="mobile-conversations-view">
               <div className="mobile-header">
-                <InboxHeader />
+                <InboxHeader showBackButton={false} />
               </div>
               <div className="mobile-search-section">
                 <div className="relative">
@@ -142,16 +165,16 @@ const AdminInbox: React.FC = () => {
                   onToggleMobileConversations={toggleMobileConversations}
                   onCloseChat={() => setShowMobileConversations(true)}
                   showBackButton={true}
-                  showCloseButton={true}
+                  showCloseButton={false}
                 />
               </div>
-              
+
               <div className="mobile-messages-section">
                 <div
                   className="mobile-messages-content"
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                    backgroundColor: '#f0f2f5'
+                    backgroundColor: "#f0f2f5",
                   }}
                 >
                   <Messages messages={selectedConversation.messages} />
@@ -178,7 +201,11 @@ const AdminInbox: React.FC = () => {
 
                 <div className="mobile-input-wrapper">
                   <div className="flex items-end gap-2">
-                    <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 p-2 rounded-full flex-shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-500 hover:text-gray-700 p-2 rounded-full flex-shrink-0"
+                    >
                       <Paperclip className="w-5 h-5" />
                     </Button>
 
@@ -196,7 +223,9 @@ const AdminInbox: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           onClick={handleEmojiClick}
-                          className={`text-gray-500 hover:text-gray-700 p-1 ml-2 flex-shrink-0 ${showEmojiPicker ? 'bg-gray-100' : ''}`}
+                          className={`text-gray-500 hover:text-gray-700 p-1 ml-2 flex-shrink-0 ${
+                            showEmojiPicker ? "bg-gray-100" : ""
+                          }`}
                         >
                           <Smile className="w-5 h-5" />
                         </Button>
@@ -205,14 +234,21 @@ const AdminInbox: React.FC = () => {
 
                     <Button
                       onClick={handleSendMessage}
-                      disabled={!messageInput.trim() || sendMessageOperation.loading}
+                      disabled={
+                        !messageInput.trim() || sendMessageOperation.loading
+                      }
                       className={`p-3 rounded-full transition-all flex-shrink-0 ${
-                        messageInput.trim() && !sendMessageOperation.loading
+                        messageInput.trim() &&
+                        !sendMessageOperation.loading
                           ? "bg-teal-500 hover:bg-teal-600 text-white"
                           : "bg-gray-200 text-gray-400 cursor-not-allowed"
                       }`}
                     >
-                      {sendMessageOperation.loading ? <LoadingSpinner size="sm" /> : <Send className="w-5 h-5" />}
+                      {sendMessageOperation.loading ? (
+                        <LoadingSpinner size="sm" />
+                      ) : (
+                        <Send className="w-5 h-5" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -230,7 +266,7 @@ const AdminInbox: React.FC = () => {
           {/* Conversations Panel */}
           <div className="conversations-panel">
             <div className="conversations-header">
-              <InboxHeader />
+              <InboxHeader showBackButton={false} />
             </div>
             <div className="conversations-search">
               <div className="relative">
@@ -256,21 +292,21 @@ const AdminInbox: React.FC = () => {
           {/* Chat Panel */}
           <div className="chat-panel">
             <div className="chat-header">
-              <ChatHeader 
+              <ChatHeader
                 conversation={selectedConversation}
                 onCloseChat={() => {
-                  console.log('Chat closed on desktop');
+                  console.log("Chat closed on desktop");
                 }}
                 showCloseButton={true}
               />
             </div>
-            
+
             <div className="chat-messages-section">
               <div
                 className="chat-messages-content"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                  backgroundColor: '#f0f2f5'
+                  backgroundColor: "#f0f2f5",
                 }}
               >
                 <Messages messages={selectedConversation.messages} />
@@ -297,7 +333,11 @@ const AdminInbox: React.FC = () => {
 
               <div className="chat-input-wrapper">
                 <div className="flex items-end gap-3">
-                  <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 p-2 rounded-full flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-500 hover:text-gray-700 p-2 rounded-full flex-shrink-0"
+                  >
                     <Paperclip className="w-5 h-5" />
                   </Button>
 
@@ -315,7 +355,9 @@ const AdminInbox: React.FC = () => {
                         variant="ghost"
                         size="sm"
                         onClick={handleEmojiClick}
-                        className={`text-gray-500 hover:text-gray-700 p-1 ml-2 flex-shrink-0 ${showEmojiPicker ? 'bg-gray-100' : ''}`}
+                        className={`text-gray-500 hover:text-gray-700 p-1 ml-2 flex-shrink-0 ${
+                          showEmojiPicker ? "bg-gray-100" : ""
+                        }`}
                       >
                         <Smile className="w-5 h-5" />
                       </Button>
@@ -324,14 +366,20 @@ const AdminInbox: React.FC = () => {
 
                   <Button
                     onClick={handleSendMessage}
-                    disabled={!messageInput.trim() || sendMessageOperation.loading}
+                    disabled={
+                      !messageInput.trim() || sendMessageOperation.loading
+                    }
                     className={`p-3 rounded-full transition-all flex-shrink-0 ${
                       messageInput.trim() && !sendMessageOperation.loading
                         ? "bg-teal-500 hover:bg-teal-600 text-white"
                         : "bg-gray-200 text-gray-400 cursor-not-allowed"
                     }`}
                   >
-                    {sendMessageOperation.loading ? <LoadingSpinner size="sm" /> : <Send className="w-5 h-5" />}
+                    {sendMessageOperation.loading ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
                   </Button>
                 </div>
               </div>

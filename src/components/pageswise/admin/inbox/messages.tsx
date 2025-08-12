@@ -19,7 +19,9 @@ const Messages = ({ messages }: { messages: any[] }) => (
   <div className="space-y-3 pb-4">
     {messages.map((message, index) => {
       const isAgent = message.sender === "agent";
-      const showAvatar = !isAgent && (index === 0 || messages[index - 1]?.sender !== message.sender);
+      const showAvatar =
+        !isAgent &&
+        (index === 0 || messages[index - 1]?.sender !== message.sender);
 
       return (
         <div
@@ -35,7 +37,7 @@ const Messages = ({ messages }: { messages: any[] }) => (
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={message.avatar} />
                   <AvatarFallback className="text-xs bg-gray-300">
-                    {message.senderName?.charAt(0) || 'C'}
+                    {message.senderName?.charAt(0) || "C"}
                   </AvatarFallback>
                 </Avatar>
               ) : (
@@ -53,7 +55,7 @@ const Messages = ({ messages }: { messages: any[] }) => (
             }`}
           >
             {/* Message Content */}
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            <p className="text-base leading-relaxed whitespace-pre-wrap">
               {message.content}
             </p>
 
@@ -63,9 +65,7 @@ const Messages = ({ messages }: { messages: any[] }) => (
                 isAgent ? "text-teal-100" : "text-gray-500"
               }`}
             >
-              <span className="text-xs opacity-75">
-                {message.timestamp}
-              </span>
+              <span className="text-xs opacity-75">{message.timestamp}</span>
               {isAgent && (
                 <div className="text-xs opacity-75">
                   {getMessageStatusIcon(message.status)}
@@ -83,7 +83,7 @@ const Messages = ({ messages }: { messages: any[] }) => (
               style={{
                 clipPath: isAgent
                   ? "polygon(0 0, 100% 100%, 0 100%)"
-                  : "polygon(100% 0, 0 100%, 100% 100%)"
+                  : "polygon(100% 0, 0 100%, 100% 100%)",
               }}
             />
           </div>
@@ -96,4 +96,4 @@ const Messages = ({ messages }: { messages: any[] }) => (
   </div>
 );
 
-export default Messages;// mockdata.tsx
+export default Messages; // mockdata.tsx

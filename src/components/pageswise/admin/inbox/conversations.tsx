@@ -23,7 +23,7 @@ const Conversations = ({
       conv.contact.phone.includes(searchTerm) ||
       conv.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-2">
@@ -56,15 +56,15 @@ const Conversations = ({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-base font-medium text-gray-900 truncate">
                     {conversation.contact.name}
                   </p>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-sm text-gray-500">
                     {conversation.timestamp}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-1">
-                  <p className="text-sm text-gray-600 truncate">
+                  <p className="text-base text-gray-600 truncate">
                     {conversation.lastMessage}
                   </p>
                   {conversation.unreadCount > 0 && (

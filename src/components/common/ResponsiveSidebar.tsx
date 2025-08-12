@@ -29,9 +29,13 @@ interface MenuItem {
 
 interface ResponsiveSidebarProps {
   role: UserRole;
+  isOpen?: boolean;
 }
 
-const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
+const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({
+  role,
+  isOpen = true,
+}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
@@ -120,17 +124,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
             {brandName}
           </span>
         </div>
-        {/* Mobile close button */}
-        {isMobile && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden"
-          >
-            <X className="h-6 w-6" />
-          </Button>
-        )}
+
       </div>
 
       {/* Navigation */}
@@ -180,7 +174,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
             variant="outline"
             size="sm"
             onClick={() => setIsMobileMenuOpen(true)}
-            className="bg-white shadow-lg border-gray-200"
+            className=" bg-white shadow-lg border-gray-100"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -189,8 +183,13 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ role }) => {
 
       {/* Desktop Sidebar */}
       {!isMobile && (
-        <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-          {sidebarContent}
+        <div
+          className={cn(
+            "hidden md:flex md:flex-col md:fixed md:inset-y-0 transition-all duration-300",
+            isOpen ? "md:w-64" : "md:w-0"
+          )}
+        >
+          {isOpen && sidebarContent}
         </div>
       )}
 
