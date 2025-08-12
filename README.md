@@ -1,3 +1,5 @@
+# AyuChat
+whatsapp Automation
 # AyuChat - Message Automation Command Center
 
 A comprehensive WhatsApp Business API management platform with role-based access control for administrators and super administrators.
