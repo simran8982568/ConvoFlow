@@ -38,7 +38,7 @@ const SuperAdminSidebar: React.FC = () => {
           <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
             <Shield className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-gray-900">AyuChat Admin</span>
+          <span className="text-xl font-bold text-gray-900">ConvoFlow Super Admin</span>
         </div>
       </div>
 

@@ -1,12 +1,12 @@
-# AyuChat
+# ConvoFlow
 whatsapp Automation
-# AyuChat - Message Automation Command Center
+# ConvoFlow - Message Automation Command Center
 
 A comprehensive WhatsApp Business API management platform with role-based access control for administrators and super administrators.
 
 ## 🚀 Overview
 
-AyuChat is a modern, React-based web application designed to streamline WhatsApp Business API operations. The platform provides powerful tools for message automation, campaign management, contact organization, and business analytics through an intuitive, role-based interface.
+ConvoFlow is a modern, React-based web application designed to streamline WhatsApp Business API operations. The platform provides powerful tools for message automation, campaign management, contact organization, and business analytics through an intuitive, role-based interface.
 
 ### Key Features
 
@@ -209,7 +209,7 @@ VITE_BRAND_COLOR=teal
 ### Super Admin Access
 - **URL**: `/superadmin/login`
 - **Default Credentials**: 
-  - Email: `superadmin@ayuchat.com`
+  - Email: `superadmin@convoflow.com`
   - Password: `superadmin123`
 
 ## 🎯 Key Features by Role
@@ -342,5 +342,5 @@ This project is proprietary software. All rights reserved.
 
 ---
 
-**AyuChat** - Streamlining WhatsApp Business Communication
+**ConvoFlow** - Streamlining WhatsApp Business Communication
 

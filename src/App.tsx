@@ -37,6 +37,8 @@ import SuperAdminPlans from "@/components/pageswise/superadmin/plans/indexplans"
 import ErrorHandlingTest from "@/components/common/ErrorHandlingTest";
 import SuperAdminLogs from "@/components/pageswise/superadmin/logs/indexlogs";
 import SuperAdminSettings from "@/components/pageswise/superadmin/settings/indexsettings";
+import FlowList from "@/components/pageswise/admin/flow/FlowList";
+import FlowBuilder from "@/components/pageswise/admin/flow/FlowBuilder";
 // import NavigationTest from "@/components/common/NavigationTest";
 
 const queryClient = new QueryClient();
@@ -78,6 +80,8 @@ const App = () => {
             <Route path="contacts" element={<AdminContacts />} />
             <Route path="automation" element={<AdminAutomation />} />
             <Route path="templates" element={<AdminTemplates />} />
+            <Route path="flows" element={<FlowList />} />
+                <Route path="flows/:id" element={<FlowBuilder />} />
             <Route path="phone-numbers" element={<AdminPhoneNumbers />} />
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="billing" element={<AdminBilling />} />

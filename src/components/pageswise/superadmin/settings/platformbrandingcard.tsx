@@ -94,7 +94,7 @@ const PlatformBrandingCard: React.FC<PlatformBrandingCardProps> = ({
             id="platformName"
             value={data.platformName}
             onChange={(e) => onUpdate('platformName', e.target.value)}
-            placeholder="AyuChat"
+            placeholder="ConvoFlow"
             disabled={loading}
           />
         </div>
@@ -106,7 +106,7 @@ const PlatformBrandingCard: React.FC<PlatformBrandingCardProps> = ({
             type="email"
             value={data.supportEmail}
             onChange={(e) => onUpdate('supportEmail', e.target.value)}
-            placeholder="support@ayuchat.com"
+            placeholder="support@convoflow.com"
             disabled={loading}
           />
         </div>

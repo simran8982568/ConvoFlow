@@ -31,7 +31,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
           <section>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h3>
             <p>
-              By accessing and using AyuChat ("the Service"), you accept and agree to be bound by the terms 
+              By accessing and using ConvoFlow ("the Service"), you accept and agree to be bound by the terms
               and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
             </p>
           </section>
@@ -39,7 +39,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
           <section>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">2. Description of Service</h3>
             <p>
-              AyuChat is a WhatsApp Business API platform that enables businesses to send automated messages, 
+              ConvoFlow is a WhatsApp Business API platform that enables businesses to send automated messages,
               manage customer communications, and create marketing campaigns through WhatsApp. The service includes 
               but is not limited to:
             </p>
@@ -125,7 +125,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
           <section>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">9. Limitation of Liability</h3>
             <p>
-              To the maximum extent permitted by law, AyuChat shall not be liable for any indirect, incidental, 
+              To the maximum extent permitted by law, ConvoFlow shall not be liable for any indirect, incidental,
               special, consequential, or punitive damages, including but not limited to loss of profits, data, 
               or business interruption.
             </p>
@@ -155,8 +155,8 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose }) => {
               If you have any questions about these Terms, please contact us at:
             </p>
             <div className="mt-2">
-              <p>Email: legal@ayuchat.com</p>
-              <p>Address: AyuChat Legal Department</p>
+              <p>Email: legal@convoflow.com</p>
+              <p>Address: ConvoFlow Legal Department</p>
             </div>
           </section>
         </div>

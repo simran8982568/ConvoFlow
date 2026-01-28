@@ -39,7 +39,7 @@ export const loginAdmin = createAsyncThunk(
         id: '1',
         email: credentials.email,
         name: 'Admin User',
-        company: 'AyuChat Inc.',
+        company: 'ConvoFlow Inc.',
         role: 'admin',
         avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face',
         phone: '+1 (555) 123-4567',

@@ -174,9 +174,9 @@ const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) => {
               If you have any questions about this Privacy Policy or our data practices, please contact us:
             </p>
             <div className="mt-2">
-              <p>Email: privacy@ayuchat.com</p>
-              <p>Address: AyuChat Privacy Team</p>
-              <p>Data Protection Officer: dpo@ayuchat.com</p>
+              <p>Email: privacy@convoflow.com</p>
+              <p>Address: ConvoFlow Privacy Team</p>
+              <p>Data Protection Officer: dpo@convoflow.com</p>
             </div>
           </section>
         </div>

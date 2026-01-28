@@ -68,10 +68,10 @@ export const fetchTemplates = createAsyncThunk(
         type: 'text',
         status: 'approved',
         content: {
-          body: 'Welcome to AyuChat! 🎉 We\'re excited to have you on board. Get ready to revolutionize your WhatsApp marketing!',
+          body: 'Welcome to ConvoFlow! 🎉 We\'re excited to have you on board. Get ready to revolutionize your WhatsApp marketing!',
           buttons: [
             { type: 'quick_reply', text: 'Get Started', value: 'get_started' },
-            { type: 'url', text: 'Learn More', value: 'https://ayuchat.com/guide' }
+            { type: 'url', text: 'Learn More', value: 'https://convoflow.com/guide' }
           ]
         },
         createdAt: '2024-01-15T10:00:00Z',
@@ -94,7 +94,7 @@ export const fetchTemplates = createAsyncThunk(
             filename: 'product-launch.jpg'
           },
           buttons: [
-            { type: 'url', text: 'View Features', value: 'https://ayuchat.com/features' }
+            { type: 'url', text: 'View Features', value: 'https://convoflow.com/features' }
           ]
         },
         createdAt: '2024-01-10T09:00:00Z',

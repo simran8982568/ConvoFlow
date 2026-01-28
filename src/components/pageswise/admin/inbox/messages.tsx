@@ -16,7 +16,7 @@ const getMessageStatusIcon = (status: string) => {
 };
 
 const Messages = ({ messages }: { messages: any[] }) => (
-  <div className="space-y-3 pb-4">
+  <div className="messages-container space-y-3 pb-4">
     {messages.map((message, index) => {
       const isAgent = message.sender === "agent";
       const showAvatar =

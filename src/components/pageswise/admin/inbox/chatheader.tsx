@@ -25,12 +25,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   return (
     <div className="w-full p-4 border-b border-gray-200 flex items-center justify-between bg-white">
       {/* Left Side: Back Button + Avatar + Info */}
-      <div className="flex items-center space-x-3 flex-1 min-w-0">
+      <div className="flex items-center space-x-2 flex-1 min-w-0">
         {showBackButton && (
           <Button
             variant="ghost"
-            size="sm"
-            className="md:hidden p-2 flex-shrink-0 hover:bg-gray-100"
+            size="icon"
+            className="block md:hidden flex-shrink-0"
             onClick={onToggleMobileConversations}
           >
             <ArrowLeft className="w-5 h-5 text-gray-600" />

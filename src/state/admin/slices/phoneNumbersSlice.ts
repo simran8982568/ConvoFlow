@@ -51,7 +51,7 @@ export const fetchPhoneNumbers = createAsyncThunk(
         displayName: 'Main Business Line',
         status: 'connected',
         businessAccountId: 'ba123',
-        webhookUrl: 'https://api.ayuchat.com/webhook/whatsapp',
+        webhookUrl: 'https://api.convoflow.com/webhook/whatsapp',
         lastActivity: '2024-01-20T10:30:00Z',
         messagesSent: 1250,
         messagesReceived: 890,

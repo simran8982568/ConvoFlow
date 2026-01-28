@@ -38,10 +38,10 @@ const AdminSettings: React.FC = () => {
 
   // Business Profile Settings
   const [businessProfile, setBusinessProfile] = useState<BusinessProfileType>({
-    businessName: "AyuChat Inc.",
+    businessName: "ConvoFlow Inc.",
     description: "Leading WhatsApp marketing automation platform",
-    website: "https://ayuchat.com",
-    email: "contact@ayuchat.com",
+    website: "https://convoflow.com",
+    email: "contact@convoflow.com",
     phone: "+1234567890",
     address: "123 Business St, City, State 12345",
     logo: null,

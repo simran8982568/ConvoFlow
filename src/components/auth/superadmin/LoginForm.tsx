@@ -52,7 +52,7 @@ const SuperAdminLoginForm: React.FC = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Super Admin Access</CardTitle>
           <CardDescription>
-            Sign in to the AyuChat Super Admin Panel
+            Sign in to the ConvoFlow Super Admin Panel
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,13 +62,13 @@ const SuperAdminLoginForm: React.FC = () => {
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="superadmin@ayuchat.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
+                   id="email"
+                   type="email"
+                   placeholder="superadmin@convoflow.com"
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
+                   className="pl-10"
+                   required
                 />
               </div>
             </div>
@@ -99,7 +99,7 @@ const SuperAdminLoginForm: React.FC = () => {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <div className="text-sm text-blue-800">
                 <p className="font-medium mb-1">Demo Credentials:</p>
-                <p>Email: superadmin@ayuchat.com</p>
+                <p>Email: superadmin@convoflow.com</p>
                 <p>Password: superadmin123</p>
               </div>
             </div>

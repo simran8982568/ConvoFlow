@@ -57,9 +57,9 @@ const SuperAdminBusinesses: React.FC = () => {
     email: '',
     description: `Hi {{name}},
 
-We're excited to invite you to join AyuChat - our comprehensive WhatsApp automation platform designed to help businesses like yours streamline communication and boost engagement.
+We're excited to invite you to join ConvoFlow - our comprehensive WhatsApp automation platform designed to help businesses like yours streamline communication and boost engagement.
 
-AyuChat Features:
+ConvoFlow Features:
 ✅ WhatsApp Business API Integration
 ✅ Automated Message Campaigns
 ✅ Smart Template Management
@@ -70,9 +70,9 @@ AyuChat Features:
 Transform your customer communication with our powerful automation tools. Get started today and experience the difference!
 
 Best regards,
-AyuChat Team
+ConvoFlow Team
 
-Ready to get started? Click the link below to begin your journey with AyuChat.`
+Ready to get started? Click the link below to begin your journey with ConvoFlow.`
   });
 
   const {
@@ -144,9 +144,9 @@ Ready to get started? Click the link below to begin your journey with AyuChat.`
         email: '',
         description: `Hi {{name}},
 
-We're excited to invite you to join AyuChat - our comprehensive WhatsApp automation platform designed to help businesses like yours streamline communication and boost engagement.
+We're excited to invite you to join ConvoFlow - our comprehensive WhatsApp automation platform designed to help businesses like yours streamline communication and boost engagement.
 
-AyuChat Features:
+ConvoFlow Features:
 ✅ WhatsApp Business API Integration
 ✅ Automated Message Campaigns
 ✅ Smart Template Management
@@ -157,9 +157,9 @@ AyuChat Features:
 Transform your customer communication with our powerful automation tools. Get started today and experience the difference!
 
 Best regards,
-AyuChat Team
+ConvoFlow Team
 
-Ready to get started? Click the link below to begin your journey with AyuChat.`
+Ready to get started? Click the link below to begin your journey with ConvoFlow.`
       });
 
       setShowInviteModal(false);
@@ -407,7 +407,7 @@ Ready to get started? Click the link below to begin your journey with AyuChat.`
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5 text-teal-600" />
-              Invite Business to AyuChat
+              Invite Business to ConvoFlow
             </DialogTitle>
             <DialogDescription>
               Send an invitation email to a business to join our WhatsApp automation platform.
@@ -464,7 +464,7 @@ Ready to get started? Click the link below to begin your journey with AyuChat.`
               </h4>
               <div className="bg-white p-4 rounded border text-sm">
                 <div className="font-semibold text-gray-900 mb-2">
-                  Subject: Invitation to Join AyuChat - WhatsApp Automation Platform
+                   Subject: Invitation to Join ConvoFlow - WhatsApp Automation Platform
                 </div>
                 <div className="whitespace-pre-wrap text-gray-700">
                   {inviteForm.description.replace(/\{\{name\}\}/g, inviteForm.name || '[Business Name]')}

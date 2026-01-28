@@ -11,7 +11,8 @@ import {
   Phone,
   BarChart3,
   CreditCard,
-  LogOut
+  LogOut,
+  Workflow
 } from 'lucide-react';
 import { authService } from '@/utils/auth';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ const AdminSidebar: React.FC = () => {
     { icon: Send, label: 'Campaigns', path: '/admin/campaigns' },
     { icon: Users, label: 'Contacts', path: '/admin/contacts' },
     { icon: Zap, label: 'Automation', path: '/admin/automation' },
+    { icon: Workflow, label: 'Flows', path: '/admin/flows' },
     { icon: FileText, label: 'Templates', path: '/admin/templates' },
     { icon: Phone, label: 'Phone Numbers', path: '/admin/phone-numbers' },
     { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
@@ -44,7 +46,7 @@ const AdminSidebar: React.FC = () => {
           <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
             <MessageSquare className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-gray-900">AyuChat</span>
+          <span className="text-xl font-bold text-gray-900">ConvoFlow</span>
         </div>
       </div>
 

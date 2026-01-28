@@ -183,7 +183,7 @@ const SystemConfigurationCard: React.FC<SystemConfigurationCardProps> = ({
               id="termsUrl"
               value={data.termsUrl}
               onChange={(e) => onUpdate('termsUrl', e.target.value)}
-              placeholder="https://ayuchat.com/terms"
+              placeholder="https://convoflow.com/terms"
               disabled={loading}
             />
           </div>
@@ -193,7 +193,7 @@ const SystemConfigurationCard: React.FC<SystemConfigurationCardProps> = ({
               id="privacyUrl"
               value={data.privacyUrl}
               onChange={(e) => onUpdate('privacyUrl', e.target.value)}
-              placeholder="https://ayuchat.com/privacy"
+              placeholder="https://convoflow.com/privacy"
               disabled={loading}
             />
           </div>

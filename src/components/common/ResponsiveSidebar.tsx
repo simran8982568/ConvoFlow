@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   DollarSign,
+  Workflow,
 } from "lucide-react";
 import { authService, UserRole } from "@/utils/auth";
 import { Button } from "@/components/ui/button";
@@ -82,6 +83,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({
     { icon: Send, label: "Campaigns", path: "/admin/campaigns" },
     { icon: Users, label: "Contacts", path: "/admin/contacts" },
     { icon: Zap, label: "Automation", path: "/admin/automation" },
+    { icon: Workflow, label: "Flows", path: "/admin/flows" },
     { icon: FileText, label: "Templates", path: "/admin/templates" },
     { icon: Phone, label: "Phone Numbers", path: "/admin/phone-numbers" },
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
@@ -103,7 +105,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({
   const menuItems = role === "admin" ? adminMenuItems : superAdminMenuItems;
   const brandColor = role === "admin" ? "teal" : "purple";
   const brandIcon = role === "admin" ? MessageSquare : Shield;
-  const brandName = role === "admin" ? "AyuChat" : "AyuChat Admin";
+  const brandName = role === "admin" ? "ConvoFlow" : "ConvoFlow Super Admin";
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 min-w-[256px]">

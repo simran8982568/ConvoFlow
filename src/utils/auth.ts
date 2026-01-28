@@ -30,7 +30,7 @@ class AuthService {
         email,
         role: role!,
         name: role === 'admin' ? 'Admin User' : 'Super Admin',
-        company: role === 'admin' ? 'AyuChat Inc.' : undefined
+        company: role === 'admin' ? 'ConvoFlow Inc.' : undefined
       };
       
       this.currentUser = mockUser;

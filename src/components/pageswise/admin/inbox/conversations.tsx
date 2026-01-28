@@ -25,9 +25,8 @@ const Conversations = ({
   );
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="p-2">
-        {filteredConversations.map((conversation) => (
+    <div className="conversation-list p-2">
+      {filteredConversations.map((conversation) => (
           <div
             key={conversation.id}
             onClick={() => setSelected(conversation)}
@@ -77,7 +76,6 @@ const Conversations = ({
             </div>
           </div>
         ))}
-      </div>
     </div>
   );
 };

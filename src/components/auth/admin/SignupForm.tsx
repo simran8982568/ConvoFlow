@@ -64,7 +64,7 @@ const AdminSignupForm: React.FC = () => {
       
       toast({
         title: "Account Created Successfully",
-        description: "Welcome to AyuChat! Your account has been created.",
+        description: "Welcome to ConvoFlow! Your account has been created.",
       });
       
       navigate('/admin/dashboard');
@@ -90,7 +90,7 @@ const AdminSignupForm: React.FC = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
           <CardDescription>
-            Join AyuChat and start your WhatsApp marketing journey
+            Join ConvoFlow and start your WhatsApp marketing journey
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -88,7 +88,7 @@ export const fetchCampaigns = createAsyncThunk(
         template: {
           id: 't1',
           name: 'Welcome Template',
-          preview: 'Welcome to AyuChat! We\'re excited to have you...'
+          preview: 'Welcome to ConvoFlow! We\'re excited to have you...'
         },
         analytics: {
           deliveryRate: 96,

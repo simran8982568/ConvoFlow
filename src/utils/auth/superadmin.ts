@@ -18,7 +18,7 @@ class SuperAdminAuthService {
 
   // Hardcoded superadmin credentials
   private readonly SUPERADMIN_CREDENTIALS = {
-    email: 'superadmin@ayuchat.com',
+    email: 'superadmin@convoflow.com',
     password: 'superadmin123'
   };
 
@@ -41,7 +41,7 @@ class SuperAdminAuthService {
             email,
             role: 'superadmin',
             name: 'Super Administrator',
-            company: 'AyuChat Platform',
+            company: 'ConvoFlow Platform',
             avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face',
             permissions: ['all'],
             lastLogin: new Date().toISOString(),

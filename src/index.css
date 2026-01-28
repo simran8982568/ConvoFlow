@@ -104,6 +104,13 @@ All colors MUST be HSL.
   }
 }
 
+/* Root and HTML height fixes for proper layout */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 /* Global Scrollbar Hiding - Applied universally across the entire application */
 /* This removes visible scrollbars while maintaining scroll functionality */
 body, * {
@@ -122,21 +129,22 @@ html {
 }
 
 /* Apply to all scrollable containers including modals and sidebars */
-.overflow-auto,
-.overflow-x-auto,
-.overflow-y-auto,
-.overflow-scroll,
-.overflow-x-scroll,
-.overflow-y-scroll {
+/* EXCEPT for conversation-list and messages-container which are handled in inbox.css */
+.overflow-auto:not(.conversation-list):not(.messages-container),
+.overflow-x-auto:not(.conversation-list):not(.messages-container),
+.overflow-y-auto:not(.conversation-list):not(.messages-container),
+.overflow-scroll:not(.conversation-list):not(.messages-container),
+.overflow-x-scroll:not(.conversation-list):not(.messages-container),
+.overflow-y-scroll:not(.conversation-list):not(.messages-container) {
   scrollbar-width: none;           /* Firefox */
   -ms-overflow-style: none;        /* IE 10+ */
 }
 
-.overflow-auto::-webkit-scrollbar,
-.overflow-x-auto::-webkit-scrollbar,
-.overflow-y-auto::-webkit-scrollbar,
-.overflow-scroll::-webkit-scrollbar,
-.overflow-x-scroll::-webkit-scrollbar,
-.overflow-y-scroll::-webkit-scrollbar {
+.overflow-auto:not(.conversation-list):not(.messages-container)::-webkit-scrollbar,
+.overflow-x-auto:not(.conversation-list):not(.messages-container)::-webkit-scrollbar,
+.overflow-y-auto:not(.conversation-list):not(.messages-container)::-webkit-scrollbar,
+.overflow-scroll:not(.conversation-list):not(.messages-container)::-webkit-scrollbar,
+.overflow-x-scroll:not(.conversation-list):not(.messages-container)::-webkit-scrollbar,
+.overflow-y-scroll:not(.conversation-list):not(.messages-container)::-webkit-scrollbar {
   display: none;                   /* Chrome, Safari, Edge */
 }

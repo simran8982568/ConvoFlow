@@ -33,7 +33,7 @@ export const loginSuperAdmin = createAsyncThunk(
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Hardcoded credentials check
-      if (credentials.email === 'superadmin@ayuchat.com' && credentials.password === 'superadmin123') {
+      if (credentials.email === 'superadmin@convoflow.com' && credentials.password === 'superadmin123') {
         const mockUser: SuperAdminUser = {
           id: 'superadmin-1',
           email: credentials.email,

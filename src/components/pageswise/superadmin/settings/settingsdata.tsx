@@ -40,18 +40,18 @@ export interface SettingsDataState {
 // Mock data
 const mockSettings: SettingsData = {
   platformBranding: {
-    platformName: 'AyuChat',
-    supportEmail: 'support@ayuchat.com',
+    platformName: 'ConvoFlow',
+    supportEmail: 'support@convoflow.com',
     logo: null,
-    welcomeMessage: 'Welcome to AyuChat! Start your WhatsApp marketing journey today.'
+    welcomeMessage: 'Welcome to ConvoFlow! Start your WhatsApp marketing journey today.'
   },
   systemConfiguration: {
     timezone: 'Asia/Kolkata',
     currency: 'INR',
     signupEnabled: true,
     maintenanceMode: false,
-    termsUrl: 'https://ayuchat.com/terms',
-    privacyUrl: 'https://ayuchat.com/privacy'
+    termsUrl: 'https://convoflow.com/terms',
+    privacyUrl: 'https://convoflow.com/privacy'
   },
   notifications: {
     newSignups: true,

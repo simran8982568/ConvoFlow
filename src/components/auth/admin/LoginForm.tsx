@@ -51,7 +51,7 @@ const AdminLoginForm: React.FC = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
-            Sign in to your AyuChat admin account
+            Sign in to your ConvoFlow admin account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -61,13 +61,13 @@ const AdminLoginForm: React.FC = () => {
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@ayuchat.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
+                   id="email"
+                   type="email"
+                   placeholder="admin@convoflow.com"
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
+                   className="pl-10"
+                   required
                 />
               </div>
             </div>
