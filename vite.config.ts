@@ -42,7 +42,6 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           charts: ['recharts'],
-          ui: ['@/components/ui'],
         },
       }
     },
